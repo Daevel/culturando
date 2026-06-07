@@ -46,6 +46,21 @@
       }
     }
   ],
+  "targetDefaults": {
+    "build": {
+      "cache": true,
+      "outputs": ["{projectRoot}/.next"]
+    },
+    "lint": {
+      "cache": true
+    },
+    "test": {
+      "cache": true
+    }
+  },
+  "sync": {
+    "applyChanges": true
+  },
   "generators": {
     "@nx/next": {
       "application": {

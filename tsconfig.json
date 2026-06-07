@@ -4,7 +4,7 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/culturando"
+      "path": "./apps/web"
     }
   ]
 }

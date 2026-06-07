@@ -2,7 +2,14 @@
   "name": "@culturando/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "nx dev web",
+    "build": "nx build web",
+    "start": "nx start web",
+    "lint": "nx lint web",
+    "graph": "nx graph",
+    "affected": "nx affected"
+  },
   "private": true,
   "dependencies": {
     "next": "~16.1.6",
