@@ -5,7 +5,67 @@
 :root {
   --background: #fafaf9;
   --foreground: #1c1917;
+
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+
+  --popover: #ffffff;
+  --popover-foreground: #1c1917;
+
+  --primary: #7c2d12;
+  --primary-foreground: #fff7ed;
+
+  --secondary: #f5f5f4;
+  --secondary-foreground: #1c1917;
+
+  --muted: #f5f5f4;
   --muted-foreground: #78716c;
+
+  --accent: #f5f5f4;
+  --accent-foreground: #1c1917;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #fff7ed;
+
+  --border: #e7e5e4;
+  --input: #e7e5e4;
+  --ring: #7c2d12;
+
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: #1c1917;
+  --foreground: #fafaf9;
+
+  --card: #292524;
+  --card-foreground: #fafaf9;
+
+  --popover: #292524;
+  --popover-foreground: #fafaf9;
+
+  --primary: #fb923c;
+  --primary-foreground: #1c1917;
+
+  --secondary: #44403c;
+  --secondary-foreground: #fafaf9;
+
+  --muted: #44403c;
+  --muted-foreground: #d6d3d1;
+
+  --accent: #44403c;
+  --accent-foreground: #fafaf9;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafaf9;
+
+  --border: #44403c;
+  --input: #44403c;
+  --ring: #fb923c;
+}
+
+* {
+  border-color: var(--border);
 }
 
 body {

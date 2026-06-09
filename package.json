@@ -8,15 +8,29 @@
     "start": "nx start web",
     "lint": "nx lint web",
     "graph": "nx graph",
-    "affected": "nx affected"
+    "affected": "nx affected",
+    "biome:check": "biome check .",
+    "biome:write": "biome check --write .",
+    "biome:format": "biome format --write .",
+    "biome:lint": "biome lint .",
+    "biome:ci": "biome ci ."
   },
   "private": true,
+  "packageManager": "pnpm@11.5.2",
   "dependencies": {
+    "@radix-ui/react-label": "^2.1.9",
+    "@radix-ui/react-slot": "^1.2.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.17.0",
     "next": "~16.1.6",
+    "radix-ui": "^1.5.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.16",
     "@eslint/js": "^9.8.0",
     "@next/eslint-plugin-next": "^16.1.6",
     "@nx/eslint": "22.6.0",
@@ -39,8 +53,9 @@
     "eslint-plugin-react": "7.35.0",
     "eslint-plugin-react-hooks": "5.0.0",
     "nx": "22.6.0",
-    "postcss": "8.4.38",
-    "tailwindcss": "3.4.3",
+    "postcss": "^8.5.15",
+    "tailwindcss": "3.4.17",
+    "tailwindcss-animate": "^1.0.7",
     "tslib": "^2.3.0",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.40.0"
