@@ -1,14 +1,15 @@
+import { appConfig } from "@culturando/config";
 import "./global.css";
-import type { Metadata } from "next";
 import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 
 export const metadata: Metadata = {
   title: {
-    default: "Culturando",
-    template: "%s | Culturando",
+    default: appConfig.name,
+    template: `%s | ${appConfig.name}`,
   },
-  description:
-    "Culturando è una piattaforma web geolocalizzata per la valorizzazione e condivisione del patrimonio librario privato.",
+  description: appConfig.description,
+  authors: appConfig.authors,
+  publisher: appConfig.publisher,
 };
 
 const fontSans = Inter({
@@ -32,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang={appConfig.defaultLocale}>
       <body
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
