@@ -1,0 +1,1 @@
+export const CULTURANDO_SUPPORT_EMAIL = "support@culturando.local";

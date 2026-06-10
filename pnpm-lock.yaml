@@ -129,6 +129,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@culturando/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@culturando/geo':
+        specifier: workspace:*
+        version: link:../../packages/geo
+      '@culturando/types':
+        specifier: workspace:*
+        version: link:../../packages/types
       next:
         specifier: ~16.1.6
         version: 16.1.7(@babel/core@7.29.7)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.100.0)
@@ -138,6 +147,34 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.7(react@19.2.7)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+
+  packages/ai:
+    dependencies:
+      '@culturando/config':
+        specifier: workspace:*
+        version: link:../config
+      '@culturando/types':
+        specifier: workspace:*
+        version: link:../types
+
+  packages/config: {}
+
+  packages/db:
+    dependencies:
+      '@culturando/types':
+        specifier: workspace:*
+        version: link:../types
+
+  packages/geo:
+    dependencies:
+      '@culturando/types':
+        specifier: workspace:*
+        version: link:../types
+
+  packages/types: {}
 
 packages:
 
