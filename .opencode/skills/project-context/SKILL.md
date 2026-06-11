@@ -1,3 +1,8 @@
+---
+name: project-context
+description: Culturando project context, architecture, stack, packages, product behavior. Use when needing technical or functional context for this repository.
+---
+
 # Culturando — Contesto tecnico e funzionale del progetto
 
 ## 1. Descrizione generale del progetto

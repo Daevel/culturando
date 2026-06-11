@@ -1,3 +1,8 @@
+---
+name: pre-push-sync-knowledge
+description: Git push, pre-push, project knowledge, internal documentation. Use before suggesting or running git push to keep Culturando agent knowledge synchronized.
+---
+
 # Pre-Push Knowledge Sync Skill — Culturando
 
 ## Scopo della skill
@@ -10,7 +15,7 @@ Questa skill va eseguita dopo che:
 
 - l’agente ha già letto `git status`;
 - l’agente ha già analizzato i file modificati;
-- l’agente ha già costruito uno o più commit secondo la skill `git-commits.md`;
+- l’agente ha già costruito uno o più commit secondo la skill `git-commits`;
 - l’agente sta per suggerire o lanciare una `git push`.
 
 Prima della push, l’agente deve chiedersi:
@@ -163,9 +168,9 @@ Se una di queste cose è presente, la documentazione/skill deve essere valutata.
 I file di conoscenza del progetto possono includere, ad esempio:
 
 ```txt
-culturando_project_context.md
-git-commits.md
-pre-push-knowledge-sync.md
+.opencode/skills/project-context/SKILL.md
+.opencode/skills/git-commits/SKILL.md
+.opencode/skills/pre-push-sync-knowledge/SKILL.md
 altre skill future del progetto
 README.md
 docs/*
@@ -174,7 +179,7 @@ docs/*
 La skill principale di contesto progetto è:
 
 ```txt
-culturando_project_context.md
+.opencode/skills/project-context/SKILL.md
 ```
 
 Questa deve essere aggiornata quando cambiano:
@@ -192,7 +197,7 @@ Questa deve essere aggiornata quando cambiano:
 La skill dei commit è:
 
 ```txt
-git-commits.md
+.opencode/skills/git-commits/SKILL.md
 ```
 
 Questa deve essere aggiornata quando cambiano:
@@ -207,7 +212,7 @@ Questa deve essere aggiornata quando cambiano:
 Questa skill è:
 
 ```txt
-pre-push-knowledge-sync.md
+.opencode/skills/pre-push-sync-knowledge/SKILL.md
 ```
 
 Questa deve essere aggiornata quando cambiano:
@@ -240,7 +245,7 @@ file creati:
 - middleware.ts
 ```
 
-Allora aggiornare `culturando_project_context.md` nelle sezioni:
+Allora aggiornare `.opencode/skills/project-context/SKILL.md` nelle sezioni:
 
 ```txt
 - Stack tecnico
@@ -267,7 +272,7 @@ Se viene creato:
 packages/translation
 ```
 
-Allora aggiornare `culturando_project_context.md` nelle sezioni:
+Allora aggiornare `.opencode/skills/project-context/SKILL.md` nelle sezioni:
 
 ```txt
 - Package condivisi
@@ -466,17 +471,17 @@ Se l’agente aggiorna una skill o un documento di contesto, deve creare un comm
 Esempi:
 
 ```bash
-git add culturando_project_context.md
+git add .opencode/skills/project-context/SKILL.md
 git commit -m "docs(project): update architecture context for Auth.js"
 ```
 
 ```bash
-git add git-commits.md
+git add .opencode/skills/git-commits/SKILL.md
 git commit -m "docs(git): update commit grouping rules"
 ```
 
 ```bash
-git add pre-push-knowledge-sync.md
+git add .opencode/skills/pre-push-sync-knowledge/SKILL.md
 git commit -m "docs(workflow): add pre-push knowledge sync skill"
 ```
 
@@ -533,9 +538,9 @@ Knowledge impact:
 - Does this change conventions? yes/no
 
 Skill updates required:
-- culturando_project_context.md: yes/no
-- git-commits.md: yes/no
-- pre-push-knowledge-sync.md: yes/no
+- .opencode/skills/project-context/SKILL.md: yes/no
+- .opencode/skills/git-commits/SKILL.md: yes/no
+- .opencode/skills/pre-push-sync-knowledge/SKILL.md: yes/no
 
 Action:
 - update skill before push
@@ -575,13 +580,13 @@ Introduce route API e middleware.
 ### Skill da aggiornare
 
 ```txt
-culturando_project_context.md
+.opencode/skills/project-context/SKILL.md
 ```
 
 ### Commit documentazione
 
 ```bash
-git add culturando_project_context.md
+git add .opencode/skills/project-context/SKILL.md
 git commit -m "docs(project): update auth architecture context"
 ```
 
@@ -626,7 +631,7 @@ Cambia le convenzioni di scrittura dei testi nei componenti.
 ### Skill da aggiornare
 
 ```txt
-culturando_project_context.md
+.opencode/skills/project-context/SKILL.md
 ```
 
 Possibile aggiornamento:
@@ -640,7 +645,7 @@ I componenti devono usare t("...") invece di testi hardcoded quando una chiave e
 ### Commit documentazione
 
 ```bash
-git add culturando_project_context.md
+git add .opencode/skills/project-context/SKILL.md
 git commit -m "docs(project): update translation architecture context"
 ```
 
@@ -672,13 +677,13 @@ La conoscenza dell'area components/ui deve essere aggiornata.
 ### Skill da aggiornare
 
 ```txt
-culturando_project_context.md
+.opencode/skills/project-context/SKILL.md
 ```
 
 ### Commit documentazione
 
 ```bash
-git add culturando_project_context.md
+git add .opencode/skills/project-context/SKILL.md
 git commit -m "docs(project): update shared UI components context"
 ```
 
@@ -733,7 +738,7 @@ La push è pronta: i commit sono coerenti, non ci sono aggiornamenti di skill ne
 Oppure:
 
 ```txt
-Prima della push è necessario aggiornare culturando_project_context.md, perché questa modifica introduce una nuova decisione architetturale che gli agenti futuri devono conoscere.
+Prima della push è necessario aggiornare .opencode/skills/project-context/SKILL.md, perché questa modifica introduce una nuova decisione architetturale che gli agenti futuri devono conoscere.
 ```
 
 ---

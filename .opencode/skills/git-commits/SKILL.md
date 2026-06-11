@@ -1,3 +1,8 @@
+---
+name: git-commits
+description: Git commit, commit message, git status, git diff. Use when preparing, suggesting, reviewing, or creating commits for the Culturando project.
+---
+
 # Git Commits Skill — Culturando
 
 ## Scopo della skill

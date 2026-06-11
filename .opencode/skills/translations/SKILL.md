@@ -1,3 +1,8 @@
+---
+name: translations
+description: Translations, i18n, dictionaries, packages/translation. Use when editing or reviewing Culturando translation dictionaries and localized text keys.
+---
+
 # Translations Skill — Culturando
 
 ## Scopo della skill
@@ -245,7 +250,7 @@ Quando l'agente deve aggiornare il dizionario inglese:
 
 ## Commit
 
-Quando viene aggiornato `en.ts`, usare le convenzioni di `.git-commits.md`.
+Quando viene aggiornato `en.ts`, usare le convenzioni della skill `git-commits`.
 
 Scope consigliato:
 
