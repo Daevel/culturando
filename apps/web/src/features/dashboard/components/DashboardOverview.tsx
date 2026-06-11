@@ -11,14 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { routes } from "@/config/routes";
-import { logoutAction } from "@/features/auth/actions/logout.action";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type DashboardOverviewProps = {
+  logoutAction: () => Promise<void>;
   user: NonNullable<Session["user"]>;
 };
 
-export function DashboardOverview({ user }: DashboardOverviewProps) {
+export function DashboardOverview({ logoutAction, user }: DashboardOverviewProps) {
   const t = useTranslation();
   const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
 
