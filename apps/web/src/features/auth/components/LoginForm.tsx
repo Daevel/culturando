@@ -1,7 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useActionState } from "react";
+import { startTransition, useActionState } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,7 +13,11 @@ import { Label } from "@/components/ui/label";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { loginAction } from "../actions/login.action";
+import { loginSchema } from "../schemas/login.schema";
 import type { AuthFormState } from "../types/auth-form.types";
+
+type LoginFormInput = z.input<typeof loginSchema>;
+type LoginFormValues = z.output<typeof loginSchema>;
 
 const initialState: AuthFormState<"email" | "password" | "rememberMe"> = {
   success: false,
@@ -19,10 +26,44 @@ const initialState: AuthFormState<"email" | "password" | "rememberMe"> = {
 
 export function LoginForm() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<LoginFormInput, unknown, LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
   const t = useTranslation();
 
+  function onSubmit(values: LoginFormValues) {
+    const formData = new FormData();
+
+    formData.set("email", values.email);
+    formData.set("password", values.password);
+
+    if (values.rememberMe) {
+      formData.set("rememberMe", "on");
+    }
+
+    startTransition(() => {
+      formAction(formData);
+    });
+  }
+
+  const emailError = errors.email?.message ?? state.errors?.email;
+  const passwordError = errors.password?.message ?? state.errors?.password;
+
   return (
-    <form action={formAction} className="flex w-full max-w-sm flex-col gap-y-6" noValidate>
+    <form
+      className="flex w-full max-w-sm flex-col gap-y-6"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">{t("auth.login.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("auth.login.description")}</p>
@@ -32,16 +73,16 @@ export function LoginForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="email">{t("auth.login.fields.email.label")}</Label>
           <Input
-            aria-describedby={state.errors?.email ? "login-email-error" : undefined}
-            aria-invalid={Boolean(state.errors?.email)}
+            aria-describedby={emailError ? "login-email-error" : undefined}
+            aria-invalid={Boolean(emailError)}
             id="email"
-            name="email"
             type="email"
             placeholder={t("auth.login.fields.email.placeholder")}
+            {...register("email")}
           />
-          {state.errors?.email ? (
+          {emailError ? (
             <p className="text-sm text-destructive" id="login-email-error">
-              {state.errors.email}
+              {emailError}
             </p>
           ) : null}
         </div>
@@ -49,23 +90,23 @@ export function LoginForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="password">{t("auth.login.fields.password.label")}</Label>
           <Input
-            aria-describedby={state.errors?.password ? "login-password-error" : undefined}
-            aria-invalid={Boolean(state.errors?.password)}
+            aria-describedby={passwordError ? "login-password-error" : undefined}
+            aria-invalid={Boolean(passwordError)}
             id="password"
-            name="password"
             type="password"
             placeholder={t("auth.login.fields.password.placeholder")}
+            {...register("password")}
           />
-          {state.errors?.password ? (
+          {passwordError ? (
             <p className="text-sm text-destructive" id="login-password-error">
-              {state.errors.password}
+              {passwordError}
             </p>
           ) : null}
         </div>
       </div>
 
       <div className="flex items-center gap-x-2">
-        <Checkbox id="rememberMe" name="rememberMe" />
+        <Checkbox id="rememberMe" {...register("rememberMe")} />
         <Label htmlFor="rememberMe">{t("auth.login.fields.rememberMe.label")}</Label>
       </div>
 

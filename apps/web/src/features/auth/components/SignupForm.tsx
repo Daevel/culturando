@@ -1,7 +1,10 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useActionState } from "react";
+import { startTransition, useActionState } from "react";
+import { useForm } from "react-hook-form";
+import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +12,11 @@ import { Label } from "@/components/ui/label";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { signupAction } from "../actions/signup.action";
+import { signupSchema } from "../schemas/signup.schema";
 import type { AuthFormState } from "../types/auth-form.types";
+
+type SignupFormInput = z.input<typeof signupSchema>;
+type SignupFormValues = z.output<typeof signupSchema>;
 
 const initialState: AuthFormState<"name" | "email" | "password" | "confirmPassword"> = {
   success: false,
@@ -18,10 +25,45 @@ const initialState: AuthFormState<"name" | "email" | "password" | "confirmPasswo
 
 export function SignupForm() {
   const [state, formAction, isPending] = useActionState(signupAction, initialState);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<SignupFormInput, unknown, SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
   const t = useTranslation();
 
+  function onSubmit(values: SignupFormValues) {
+    const formData = new FormData();
+
+    formData.set("name", values.name);
+    formData.set("email", values.email);
+    formData.set("password", values.password);
+    formData.set("confirmPassword", values.confirmPassword);
+
+    startTransition(() => {
+      formAction(formData);
+    });
+  }
+
+  const nameError = errors.name?.message ?? state.errors?.name;
+  const emailError = errors.email?.message ?? state.errors?.email;
+  const passwordError = errors.password?.message ?? state.errors?.password;
+  const confirmPasswordError = errors.confirmPassword?.message ?? state.errors?.confirmPassword;
+
   return (
-    <form action={formAction} className="flex w-full max-w-sm flex-col gap-y-6" noValidate>
+    <form
+      className="flex w-full max-w-sm flex-col gap-y-6"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-semibold tracking-tight">{t("auth.signup.title")}</h1>
         <p className="text-sm text-muted-foreground">{t("auth.signup.description")}</p>
@@ -31,16 +73,16 @@ export function SignupForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="name">{t("auth.signup.fields.name.label")}</Label>
           <Input
-            aria-describedby={state.errors?.name ? "signup-name-error" : undefined}
-            aria-invalid={Boolean(state.errors?.name)}
+            aria-describedby={nameError ? "signup-name-error" : undefined}
+            aria-invalid={Boolean(nameError)}
             id="name"
-            name="name"
             type="text"
             placeholder={t("auth.signup.fields.name.placeholder")}
+            {...register("name")}
           />
-          {state.errors?.name ? (
+          {nameError ? (
             <p className="text-sm text-destructive" id="signup-name-error">
-              {state.errors.name}
+              {nameError}
             </p>
           ) : null}
         </div>
@@ -48,16 +90,16 @@ export function SignupForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="email">{t("auth.signup.fields.email.label")}</Label>
           <Input
-            aria-describedby={state.errors?.email ? "signup-email-error" : undefined}
-            aria-invalid={Boolean(state.errors?.email)}
+            aria-describedby={emailError ? "signup-email-error" : undefined}
+            aria-invalid={Boolean(emailError)}
             id="email"
-            name="email"
             type="email"
             placeholder={t("auth.signup.fields.email.placeholder")}
+            {...register("email")}
           />
-          {state.errors?.email ? (
+          {emailError ? (
             <p className="text-sm text-destructive" id="signup-email-error">
-              {state.errors.email}
+              {emailError}
             </p>
           ) : null}
         </div>
@@ -65,16 +107,16 @@ export function SignupForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="password">{t("auth.signup.fields.password.label")}</Label>
           <Input
-            aria-describedby={state.errors?.password ? "signup-password-error" : undefined}
-            aria-invalid={Boolean(state.errors?.password)}
+            aria-describedby={passwordError ? "signup-password-error" : undefined}
+            aria-invalid={Boolean(passwordError)}
             id="password"
-            name="password"
             type="password"
             placeholder={t("auth.signup.fields.password.placeholder")}
+            {...register("password")}
           />
-          {state.errors?.password ? (
+          {passwordError ? (
             <p className="text-sm text-destructive" id="signup-password-error">
-              {state.errors.password}
+              {passwordError}
             </p>
           ) : null}
         </div>
@@ -82,18 +124,16 @@ export function SignupForm() {
         <div className="flex flex-col gap-y-2">
           <Label htmlFor="confirmPassword">{t("auth.signup.fields.confirmPassword.label")}</Label>
           <Input
-            aria-describedby={
-              state.errors?.confirmPassword ? "signup-confirm-password-error" : undefined
-            }
-            aria-invalid={Boolean(state.errors?.confirmPassword)}
+            aria-describedby={confirmPasswordError ? "signup-confirm-password-error" : undefined}
+            aria-invalid={Boolean(confirmPasswordError)}
             id="confirmPassword"
-            name="confirmPassword"
             type="password"
             placeholder={t("auth.signup.fields.confirmPassword.placeholder")}
+            {...register("confirmPassword")}
           />
-          {state.errors?.confirmPassword ? (
+          {confirmPasswordError ? (
             <p className="text-sm text-destructive" id="signup-confirm-password-error">
-              {state.errors.confirmPassword}
+              {confirmPasswordError}
             </p>
           ) : null}
         </div>
