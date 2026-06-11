@@ -7,7 +7,8 @@ export const it = {
       pendingLabel: "Accesso in corso...",
       alternativeLabel: "Non hai ancora un account?",
       secondaryActionLabel: "Registrati",
-      successMessage: "Dati di accesso validati. Integrazione Auth.js da completare.",
+      successMessage: "Accesso effettuato correttamente.",
+      invalidCredentialsMessage: "Credenziali non valide o utente demo non configurato.",
       fields: {
         email: {
           label: "Email",
@@ -49,6 +50,27 @@ export const it = {
           placeholder: "••••••••",
         },
       },
+    },
+  },
+  dashboard: {
+    eyebrow: "Area personale",
+    title: "Dashboard",
+    description:
+      "Gestisci il tuo profilo, prepara la pubblicazione dei tuoi libri e verifica lo stato della sessione.",
+    logoutLabel: "Esci",
+    userFallback: "Utente Culturando",
+    sessionCard: {
+      title: "Sessione attiva",
+      description: "Questi dati arrivano dalla sessione Auth.js corrente.",
+      nameLabel: "Nome",
+      emailLabel: "Email",
+      emptyValue: "Non disponibile",
+    },
+    quickActions: {
+      title: "Azioni rapide",
+      description: "I prossimi flussi partiranno da qui.",
+      newBookLabel: "Aggiungi libro",
+      booksLabel: "Esplora libri",
     },
   },
 } as const;

@@ -1,5 +1,9 @@
 "use server";
 
+import { AuthError } from "next-auth";
+
+import { signIn } from "@/auth";
+import { routes } from "@/config/routes";
 import { validateLoginForm } from "../schemas/login.schema";
 import type { AuthFormState } from "../types/auth-form.types";
 
@@ -30,7 +34,34 @@ export async function loginAction(
     };
   }
 
-  // TODO: integrare Auth.js
+  const loginValues = validation.data;
+
+  if (!loginValues) {
+    return {
+      success: false,
+      errors: {},
+      messageKey: "auth.login.invalidCredentialsMessage",
+    };
+  }
+
+  try {
+    await signIn("credentials", {
+      email: loginValues.email,
+      password: loginValues.password,
+      redirectTo: routes.dashboard,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        success: false,
+        errors: {},
+        messageKey: "auth.login.invalidCredentialsMessage",
+      };
+    }
+
+    throw error;
+  }
+
   return {
     success: true,
     errors: {},
