@@ -5,6 +5,7 @@
   "dependencies": {
     "@culturando/config": "workspace:*",
     "@culturando/geo": "workspace:*",
+    "@culturando/translation": "workspace:*",
     "@culturando/types": "workspace:*",
     "next": "~16.1.6",
     "react": "^19.0.0",

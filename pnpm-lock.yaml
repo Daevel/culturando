@@ -135,6 +135,9 @@ importers:
       '@culturando/geo':
         specifier: workspace:*
         version: link:../../packages/geo
+      '@culturando/translation':
+        specifier: workspace:*
+        version: link:../../packages/translation
       '@culturando/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -173,6 +176,8 @@ importers:
       '@culturando/types':
         specifier: workspace:*
         version: link:../types
+
+  packages/translation: {}
 
   packages/types: {}
 

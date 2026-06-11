@@ -1,4 +1,5 @@
 import { appConfig } from "@culturando/config";
+import type { Metadata } from "next";
 import "./global.css";
 import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
     template: `%s | ${appConfig.name}`,
   },
   description: appConfig.description,
-  authors: appConfig.authors,
+  authors: [...appConfig.authors],
   publisher: appConfig.publisher,
 };
 
