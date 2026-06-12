@@ -189,7 +189,7 @@ I componenti di dominio devono stare dentro le rispettive feature.
 
 La cartella `features/` contiene le funzionalità applicative della web app.
 
-Esempio attuale:
+Feature attuali:
 
 ```txt
 apps/web/src/features/auth/
@@ -204,6 +204,24 @@ apps/web/src/features/auth/
 │   └── signup.schema.ts
 └── types/
     └── auth-form.types.ts
+
+apps/web/src/features/books/
+├── actions/
+│   └── create-book.action.ts
+├── components/
+│   ├── BookCard.tsx
+│   ├── BookForm.tsx
+│   ├── BookGrid.tsx
+│   ├── BooksCatalog.tsx
+│   └── NewBookPlaceholder.tsx
+├── data/
+│   └── books.repository.ts
+├── mocks/
+│   └── books.mock.ts
+├── schemas/
+│   └── book.schema.ts
+└── types/
+    └── book-form.types.ts
 ```
 
 Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
@@ -212,7 +230,6 @@ I testi riutilizzabili non devono essere duplicati nelle feature: quando esiste 
 In futuro saranno previste feature come:
 
 ```txt
-features/books/
 features/nearby/
 features/dashboard/
 features/cataloging/
@@ -758,7 +775,7 @@ Responsabilità attuali:
 
 - verificare il flusso `login -> sessione -> dashboard -> logout`;
 - mostrare i dati base della sessione Auth.js;
-- esporre una CTA verso la futura creazione libro;
+- esporre una CTA verso la creazione libro;
 - esporre logout tramite `logoutAction`.
 
 Funzionalità previste:
@@ -774,33 +791,50 @@ Route previste/attuali:
 
 ```txt
 /dashboard                # attuale, placeholder protetto
-/dashboard/books
-/dashboard/books/new
+/dashboard/books/new      # attuale, form libro protetto
+/dashboard/books          # previsto
 ```
 
 ### 11.2 Books
 
-La feature books sarà centrale.
+La feature books è stata introdotta come primo flusso funzionale dopo auth e dashboard.
 
-Funzionalità previste:
+Funzionalità attuali:
 
-- catalogo libri;
-- card libro;
+- catalogo pubblico `/books`;
+- card libro con titolo, autore, descrizione, ISBN, stato e visibilità;
+- mock data iniziali in `features/books/mocks/books.mock.ts`;
+- form nuovo libro protetto in `/dashboard/books/new`;
+- validazione Zod in `features/books/schemas/book.schema.ts`;
+- server action `createBookAction`;
+- persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/data/books.repository.ts`;
+- revalidazione della route `/books` dopo il salvataggio;
+- testi UI centralizzati in `@culturando/translation`.
+
+Funzionalità ancora previste:
+
 - dettaglio libro;
-- form nuovo libro;
 - filtri;
 - ricerca;
-- gestione stato disponibilità;
-- visibilità pubblica/privata.
+- CRUD reale tramite database;
+- upload copertine;
+- gestione avanzata stato disponibilità;
+- integrazione con geolocalizzazione e disponibilità vicine.
 
-Struttura futura:
+Struttura attuale:
 
 ```txt
 features/books/
+├── actions/
+│   └── create-book.action.ts
 ├── components/
 │   ├── BookCard.tsx
 │   ├── BookGrid.tsx
-│   └── BookForm.tsx
+│   ├── BooksCatalog.tsx
+│   ├── BookForm.tsx
+│   └── NewBookPlaceholder.tsx
+├── data/
+│   └── books.repository.ts
 ├── mocks/
 │   └── books.mock.ts
 ├── schemas/
@@ -933,15 +967,18 @@ Stato dei primi step:
 4. creare `useTranslation` nella web app — completato;
 5. sostituire `auth-copy.ts` con dizionari condivisi — completato;
 6. configurare Auth.js con Credentials provider demo — completato;
-7. creare dashboard placeholder protetta — completato.
+7. creare dashboard placeholder protetta — completato;
+8. iniziare feature books con mock data — completato;
+9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato.
 
 Ordine dei prossimi step:
 
-1. iniziare feature books con mock data;
+1. completare la feature books con dettaglio libro, ricerca e filtri;
 2. collegare Auth.js a utenti reali quando sarà disponibile il database;
 3. configurare database con Prisma/PostgreSQL/PostGIS;
-4. introdurre feature nearby con MapLibre;
-5. introdurre AI catalogazione.
+4. migrare la persistenza mock JSON dei libri verso CRUD reale;
+5. introdurre feature nearby con MapLibre;
+6. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
