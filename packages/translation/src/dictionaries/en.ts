@@ -73,4 +73,69 @@ export const en = {
       booksLabel: "Explore books",
     },
   },
+  books: {
+    catalog: {
+      eyebrow: "Book catalog",
+      title: "Discover the first books shared by the community",
+      description:
+        "This demo data prepares Culturando's main flow: publishing, browsing and making private collections searchable.",
+      dashboardLabel: "Back to dashboard",
+      newBookLabel: "Add book",
+    },
+    grid: {
+      emptyState: "There are no books to show yet.",
+    },
+    card: {
+      emptyDescription: "Description not available.",
+      isbnLabel: "ISBN",
+    },
+    status: {
+      available: "Available",
+      reserved: "Reserved",
+      unavailable: "Unavailable",
+    },
+    visibility: {
+      public: "Public",
+      private: "Private",
+    },
+    new: {
+      eyebrow: "New book",
+      title: "Prepare a new book record",
+      description:
+        "The form is still non-persistent: it defines the user flow before connecting the database and real CRUD.",
+      backToDashboardLabel: "Dashboard",
+      backToCatalogLabel: "Catalog",
+      formTitle: "Main details",
+      formDescription: "Fill in a book record saved to the local mock JSON file.",
+      submitLabel: "Save book",
+      pendingLabel: "Saving...",
+      successMessage: "Book saved to the local mock JSON file.",
+      unauthorizedMessage: "You must sign in to add a book.",
+      genericErrorMessage: "The book could not be saved.",
+      fields: {
+        title: {
+          label: "Title",
+          placeholder: "The Name of the Rose",
+        },
+        author: {
+          label: "Author",
+          placeholder: "Umberto Eco",
+        },
+        isbn: {
+          label: "ISBN",
+          placeholder: "9788845292613",
+        },
+        description: {
+          label: "Description",
+          placeholder: "Add a short description of the book.",
+        },
+        status: {
+          label: "Status",
+        },
+        visibility: {
+          label: "Visibility",
+        },
+      },
+    },
+  },
 } as const;
