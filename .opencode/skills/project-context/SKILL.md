@@ -548,7 +548,7 @@ La route `/auth` può reindirizzare a `/auth/login`.
 Auth.js è configurato in:
 
 ```txt
-apps/web/src/auth.ts
+apps/web/src/config/auth.ts
 ```
 
 La route API Auth.js espone gli handler in:
@@ -811,7 +811,7 @@ Funzionalità attuali:
 - validazione Zod in `features/books/schemas/book.schema.ts`;
 - server action `createBookAction`;
 - recupero singolo libro tramite `getBookById`;
-- persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/data/books.repository.ts`;
+- persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/actions/books.repository.ts`;
 - revalidazione della route `/books` dopo il salvataggio;
 - testi UI centralizzati in `@culturando/translation`.
 

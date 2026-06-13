@@ -240,7 +240,7 @@ Se viene installato e configurato Auth.js:
 packages installati:
 - next-auth oppure @auth/*
 file creati:
-- apps/web/src/auth.ts
+- apps/web/src/config/auth.ts
 - apps/web/src/app/api/auth/[...nextauth]/route.ts
 - middleware.ts
 ```
@@ -560,7 +560,7 @@ feat(auth): setup Auth.js credentials authentication
 ### File modificati
 
 ```txt
-apps/web/src/auth.ts
+apps/web/src/config/auth.ts
 apps/web/src/app/api/auth/[...nextauth]/route.ts
 apps/web/src/features/auth/actions/login.action.ts
 apps/web/src/middleware.ts
