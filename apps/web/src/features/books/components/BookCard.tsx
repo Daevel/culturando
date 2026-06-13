@@ -1,4 +1,4 @@
-import type { Book, BookStatus, BookVisibility } from "@culturando/types";
+import type { Book, BookCondition, BookStatus, BookVisibility } from "@culturando/types";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +21,11 @@ export function BookCard({ book }: BookCardProps) {
     public: t("books.visibility.public"),
     private: t("books.visibility.private"),
   } satisfies Record<BookVisibility, string>;
+  const conditionLabels = {
+    new: t("books.condition.new"),
+    good: t("books.condition.good"),
+    worn: t("books.condition.worn"),
+  } satisfies Record<BookCondition, string>;
 
   return (
     <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-primary/50">
@@ -45,6 +50,7 @@ export function BookCard({ book }: BookCardProps) {
         </p>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           <Badge variant="outline">{visibilityLabels[book.visibility]}</Badge>
+          <Badge variant="outline">{conditionLabels[book.condition]}</Badge>
           {book.isbn ? (
             <span>
               {t("books.card.isbnLabel")} {book.isbn}

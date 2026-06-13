@@ -1,4 +1,30 @@
 export const it = {
+  home: {
+    hero: {
+      eyebrow: "Patrimonio librario privato geolocalizzato",
+      title: "Culturando",
+      description:
+        "Scopri, condividi e valorizza libri, collezioni e biblioteche private vicino a te attraverso una piattaforma web geolocalizzata, accessibile e attenta alla privacy.",
+      primaryActionLabel: "Esplora libri",
+      secondaryActionLabel: "Pubblica un libro",
+    },
+    highlights: {
+      map: {
+        title: "Mappa 3D",
+        description:
+          "Esplora disponibilità librarie e luoghi culturali vicini tramite una mappa interattiva.",
+      },
+      cataloging: {
+        title: "Catalogazione assistita",
+        description: "Carica una copertina e usa OCR e ISBN per precompilare i dati del libro.",
+      },
+      privacy: {
+        title: "Privacy",
+        description:
+          "La posizione precisa non viene mostrata pubblicamente: vengono usate zone approssimate.",
+      },
+    },
+  },
   auth: {
     login: {
       title: "Accedi a Culturando",
@@ -103,6 +129,9 @@ export const it = {
       backToCatalogLabel: "Torna al catalogo",
       descriptionTitle: "Descrizione",
       ownerLabel: "Proprietario",
+      publisherLabel: "Editore",
+      publicationYearLabel: "Anno",
+      languageLabel: "Lingua",
       emptyValue: "Non disponibile",
     },
     status: {
@@ -113,6 +142,11 @@ export const it = {
     visibility: {
       public: "Pubblico",
       private: "Privato",
+    },
+    condition: {
+      new: "Nuovo",
+      good: "Buono",
+      worn: "Usurato",
     },
     new: {
       eyebrow: "Nuovo libro",
@@ -141,6 +175,18 @@ export const it = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
+        publisher: {
+          label: "Editore",
+          placeholder: "Bompiani",
+        },
+        publicationYear: {
+          label: "Anno pubblicazione",
+          placeholder: "1980",
+        },
+        language: {
+          label: "Lingua",
+          placeholder: "Italiano",
+        },
         description: {
           label: "Descrizione",
           placeholder: "Aggiungi una breve descrizione del libro.",
@@ -150,6 +196,9 @@ export const it = {
         },
         visibility: {
           label: "Visibilita",
+        },
+        condition: {
+          label: "Condizione",
         },
       },
     },

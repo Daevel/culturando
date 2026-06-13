@@ -25,9 +25,15 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
   const normalizedQuery = deferredQuery.trim().toLowerCase();
 
   const filteredBooks = books.filter((book) => {
-    const searchableValues = [book.title, book.author, book.isbn, book.description].filter(
-      (value): value is string => Boolean(value),
-    );
+    const searchableValues = [
+      book.title,
+      book.author,
+      book.isbn,
+      book.publisher,
+      book.publicationYear?.toString(),
+      book.language,
+      book.description,
+    ].filter((value): value is string => Boolean(value));
     const matchesQuery =
       normalizedQuery.length === 0 ||
       searchableValues.some((value) => value.toLowerCase().includes(normalizedQuery));

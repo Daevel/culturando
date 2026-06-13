@@ -17,6 +17,27 @@ export const bookSchema = z.object({
     .max(20, "L'ISBN è troppo lungo.")
     .optional()
     .transform((value) => (value ? value : undefined)),
+  publisher: z
+    .string()
+    .trim()
+    .max(120, "L'editore è troppo lungo.")
+    .optional()
+    .transform((value) => (value ? value : undefined)),
+  publicationYear: z
+    .string()
+    .trim()
+    .optional()
+    .transform((value) => (value ? Number(value) : undefined))
+    .refine(
+      (value) => value === undefined || (Number.isInteger(value) && value >= 1000 && value <= 2100),
+      "Inserisci un anno valido.",
+    ),
+  language: z
+    .string()
+    .trim()
+    .max(60, "La lingua è troppo lunga.")
+    .optional()
+    .transform((value) => (value ? value : undefined)),
   description: z
     .string()
     .trim()
@@ -25,6 +46,7 @@ export const bookSchema = z.object({
     .transform((value) => (value ? value : undefined)),
   status: z.enum(["available", "reserved", "unavailable"]),
   visibility: z.enum(["public", "private"]),
+  condition: z.enum(["new", "good", "worn"]),
 });
 
 export function validateBookForm(values: unknown) {

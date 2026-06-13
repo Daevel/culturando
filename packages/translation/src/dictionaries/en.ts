@@ -1,4 +1,28 @@
 export const en = {
+  home: {
+    hero: {
+      eyebrow: "Geolocated private book heritage",
+      title: "Culturando",
+      description:
+        "Discover, share and promote books, collections and private libraries near you through a geolocated, accessible and privacy-aware web platform.",
+      primaryActionLabel: "Explore books",
+      secondaryActionLabel: "Publish a book",
+    },
+    highlights: {
+      map: {
+        title: "3D map",
+        description: "Explore nearby book availability and cultural places through an interactive map.",
+      },
+      cataloging: {
+        title: "Assisted cataloging",
+        description: "Upload a cover and use OCR and ISBN to prefill the book details.",
+      },
+      privacy: {
+        title: "Privacy",
+        description: "Precise locations are not shown publicly: approximate areas are used instead.",
+      },
+    },
+  },
   auth: {
     login: {
       title: "Sign in to Culturando",
@@ -103,6 +127,9 @@ export const en = {
       backToCatalogLabel: "Back to catalog",
       descriptionTitle: "Description",
       ownerLabel: "Owner",
+      publisherLabel: "Publisher",
+      publicationYearLabel: "Year",
+      languageLabel: "Language",
       emptyValue: "Not available",
     },
     status: {
@@ -113,6 +140,11 @@ export const en = {
     visibility: {
       public: "Public",
       private: "Private",
+    },
+    condition: {
+      new: "New",
+      good: "Good",
+      worn: "Worn",
     },
     new: {
       eyebrow: "New book",
@@ -141,6 +173,18 @@ export const en = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
+        publisher: {
+          label: "Publisher",
+          placeholder: "Bompiani",
+        },
+        publicationYear: {
+          label: "Publication year",
+          placeholder: "1980",
+        },
+        language: {
+          label: "Language",
+          placeholder: "Italian",
+        },
         description: {
           label: "Description",
           placeholder: "Add a short description of the book.",
@@ -150,6 +194,9 @@ export const en = {
         },
         visibility: {
           label: "Visibility",
+        },
+        condition: {
+          label: "Condition",
         },
       },
     },

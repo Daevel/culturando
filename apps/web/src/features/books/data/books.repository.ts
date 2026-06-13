@@ -78,6 +78,7 @@ function isBook(value: unknown): value is Book {
     typeof book.ownerId === "string" &&
     isBookStatus(book.status) &&
     isBookVisibility(book.visibility) &&
+    isBookCondition(book.condition) &&
     typeof book.createdAt === "string" &&
     typeof book.updatedAt === "string"
   );
@@ -89,6 +90,10 @@ function isBookStatus(value: unknown) {
 
 function isBookVisibility(value: unknown) {
   return value === "public" || value === "private";
+}
+
+function isBookCondition(value: unknown) {
+  return value === "new" || value === "good" || value === "worn";
 }
 
 function isFileSystemError(error: unknown): error is NodeJS.ErrnoException {

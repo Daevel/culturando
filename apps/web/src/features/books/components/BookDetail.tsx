@@ -1,4 +1,4 @@
-import type { Book, BookStatus, BookVisibility } from "@culturando/types";
+import type { Book, BookCondition, BookStatus, BookVisibility } from "@culturando/types";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,11 @@ export function BookDetail({ book }: BookDetailProps) {
     public: t("books.visibility.public"),
     private: t("books.visibility.private"),
   } satisfies Record<BookVisibility, string>;
+  const conditionLabels = {
+    new: t("books.condition.new"),
+    good: t("books.condition.good"),
+    worn: t("books.condition.worn"),
+  } satisfies Record<BookCondition, string>;
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -46,6 +51,7 @@ export function BookDetail({ book }: BookDetailProps) {
                 {statusLabels[book.status]}
               </Badge>
               <Badge variant="outline">{visibilityLabels[book.visibility]}</Badge>
+              <Badge variant="outline">{conditionLabels[book.condition]}</Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-8">
@@ -62,6 +68,26 @@ export function BookDetail({ book }: BookDetailProps) {
                   {t("books.card.isbnLabel")}
                 </p>
                 <p className="mt-1 font-medium">{book.isbn ?? t("books.detail.emptyValue")}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.publisherLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.publisher ?? t("books.detail.emptyValue")}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.publicationYearLabel")}
+                </p>
+                <p className="mt-1 font-medium">
+                  {book.publicationYear ?? t("books.detail.emptyValue")}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.languageLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.language ?? t("books.detail.emptyValue")}</p>
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
