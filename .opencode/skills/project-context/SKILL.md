@@ -802,20 +802,21 @@ La feature books è stata introdotta come primo flusso funzionale dopo auth e da
 Funzionalità attuali:
 
 - catalogo pubblico `/books`;
+- dettaglio libro pubblico `/books/[bookId]`;
+- ricerca client-side nel catalogo per titolo, autore, ISBN e descrizione;
+- filtri client-side per stato e visibilità;
 - card libro con titolo, autore, descrizione, ISBN, stato e visibilità;
 - mock data iniziali in `features/books/mocks/books.mock.ts`;
 - form nuovo libro protetto in `/dashboard/books/new`;
 - validazione Zod in `features/books/schemas/book.schema.ts`;
 - server action `createBookAction`;
+- recupero singolo libro tramite `getBookById`;
 - persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/data/books.repository.ts`;
 - revalidazione della route `/books` dopo il salvataggio;
 - testi UI centralizzati in `@culturando/translation`.
 
 Funzionalità ancora previste:
 
-- dettaglio libro;
-- filtri;
-- ricerca;
 - CRUD reale tramite database;
 - upload copertine;
 - gestione avanzata stato disponibilità;
@@ -829,6 +830,7 @@ features/books/
 │   └── create-book.action.ts
 ├── components/
 │   ├── BookCard.tsx
+│   ├── BookDetail.tsx
 │   ├── BookGrid.tsx
 │   ├── BooksCatalog.tsx
 │   ├── BookForm.tsx
@@ -969,16 +971,18 @@ Stato dei primi step:
 6. configurare Auth.js con Credentials provider demo — completato;
 7. creare dashboard placeholder protetta — completato;
 8. iniziare feature books con mock data — completato;
-9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato.
+9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato;
+10. completare la prima esperienza catalogo con dettaglio libro, ricerca e filtri — completato.
 
 Ordine dei prossimi step:
 
-1. completare la feature books con dettaglio libro, ricerca e filtri;
-2. collegare Auth.js a utenti reali quando sarà disponibile il database;
-3. configurare database con Prisma/PostgreSQL/PostGIS;
-4. migrare la persistenza mock JSON dei libri verso CRUD reale;
-5. introdurre feature nearby con MapLibre;
-6. introdurre AI catalogazione.
+1. consolidare il dominio `Book` MVP con campi bibliografici e disponibilità necessari;
+2. aggiornare form, card, dettaglio e filtri in base al dominio `Book` consolidato;
+3. collegare Auth.js a utenti reali quando sarà disponibile il database;
+4. configurare database con Prisma/PostgreSQL/PostGIS;
+5. migrare la persistenza mock JSON dei libri verso CRUD reale;
+6. introdurre feature nearby con MapLibre;
+7. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
