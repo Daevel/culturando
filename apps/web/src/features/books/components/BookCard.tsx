@@ -1,7 +1,9 @@
 import type { Book, BookStatus, BookVisibility } from "@culturando/types";
+import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type BookCardProps = {
@@ -21,11 +23,15 @@ export function BookCard({ book }: BookCardProps) {
   } satisfies Record<BookVisibility, string>;
 
   return (
-    <Card className="flex h-full flex-col overflow-hidden">
+    <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-primary/50">
       <CardHeader className="gap-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
-            <CardTitle className="text-xl leading-tight">{book.title}</CardTitle>
+            <CardTitle className="text-xl leading-tight">
+              <Link className="outline-none hover:text-primary" href={routes.bookDetail(book.id)}>
+                {book.title}
+              </Link>
+            </CardTitle>
             <p className="text-sm font-medium text-muted-foreground">{book.author}</p>
           </div>
           <Badge variant={book.status === "available" ? "default" : "secondary"}>
@@ -44,6 +50,12 @@ export function BookCard({ book }: BookCardProps) {
               {t("books.card.isbnLabel")} {book.isbn}
             </span>
           ) : null}
+          <Link
+            className="ml-auto font-medium text-primary hover:underline"
+            href={routes.bookDetail(book.id)}
+          >
+            {t("books.card.detailLabel")}
+          </Link>
         </div>
       </CardContent>
     </Card>

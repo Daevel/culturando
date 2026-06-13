@@ -15,6 +15,12 @@ export async function getBooks(): Promise<Book[]> {
   return [...storedBooks, ...booksMock];
 }
 
+export async function getBookById(bookId: string): Promise<Book | null> {
+  const books = await getBooks();
+
+  return books.find((book) => book.id === bookId) ?? null;
+}
+
 export async function createStoredBook(book: Book) {
   const filePath = await resolveBooksFilePath();
   const books = await readStoredBooks();

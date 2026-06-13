@@ -81,6 +81,14 @@ export const it = {
         "Questi dati demo preparano il flusso principale di Culturando: pubblicare, consultare e rendere ricercabili collezioni private.",
       dashboardLabel: "Torna alla dashboard",
       newBookLabel: "Aggiungi libro",
+      searchLabel: "Cerca nel catalogo",
+      searchPlaceholder: "Titolo, autore, ISBN o descrizione",
+      statusFilterLabel: "Stato",
+      visibilityFilterLabel: "Visibilita",
+      allStatusesLabel: "Tutti gli stati",
+      allVisibilitiesLabel: "Tutte le visibilita",
+      resultsLabel: "risultati",
+      clearFiltersLabel: "Cancella filtri",
     },
     grid: {
       emptyState: "Non ci sono ancora libri da mostrare.",
@@ -88,6 +96,14 @@ export const it = {
     card: {
       emptyDescription: "Descrizione non disponibile.",
       isbnLabel: "ISBN",
+      detailLabel: "Dettaglio",
+    },
+    detail: {
+      eyebrow: "Scheda libro",
+      backToCatalogLabel: "Torna al catalogo",
+      descriptionTitle: "Descrizione",
+      ownerLabel: "Proprietario",
+      emptyValue: "Non disponibile",
     },
     status: {
       available: "Disponibile",

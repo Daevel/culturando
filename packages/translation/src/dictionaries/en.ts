@@ -81,6 +81,14 @@ export const en = {
         "This demo data prepares Culturando's main flow: publishing, browsing and making private collections searchable.",
       dashboardLabel: "Back to dashboard",
       newBookLabel: "Add book",
+      searchLabel: "Search the catalog",
+      searchPlaceholder: "Title, author, ISBN or description",
+      statusFilterLabel: "Status",
+      visibilityFilterLabel: "Visibility",
+      allStatusesLabel: "All statuses",
+      allVisibilitiesLabel: "All visibilities",
+      resultsLabel: "results",
+      clearFiltersLabel: "Clear filters",
     },
     grid: {
       emptyState: "There are no books to show yet.",
@@ -88,6 +96,14 @@ export const en = {
     card: {
       emptyDescription: "Description not available.",
       isbnLabel: "ISBN",
+      detailLabel: "Details",
+    },
+    detail: {
+      eyebrow: "Book record",
+      backToCatalogLabel: "Back to catalog",
+      descriptionTitle: "Description",
+      ownerLabel: "Owner",
+      emptyValue: "Not available",
     },
     status: {
       available: "Available",
