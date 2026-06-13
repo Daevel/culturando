@@ -4,11 +4,11 @@ import { randomUUID } from "node:crypto";
 import type { Book } from "@culturando/types";
 import { revalidatePath } from "next/cache";
 
-import { auth } from "@/auth";
+import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
-import { createStoredBook } from "../data/books.repository";
 import { validateBookForm } from "../schemas/book.schema";
 import type { BookFormField, BookFormState } from "../types/book-form.types";
+import { createStoredBook } from "./books.repository";
 
 export async function createBookAction(
   _state: BookFormState,
@@ -28,13 +28,14 @@ export async function createBookAction(
     title: formData.get("title"),
     author: formData.get("author"),
     isbn: formData.get("isbn"),
-    publisher: formData.get("publisher"),
-    publicationYear: formData.get("publicationYear"),
-    language: formData.get("language"),
     description: formData.get("description"),
-    status: formData.get("status"),
+    category: formData.get("category"),
+    availability: formData.get("availability"),
     visibility: formData.get("visibility"),
-    condition: formData.get("condition"),
+    physicalCondition: formData.get("physicalCondition"),
+    latitude: formData.get("latitude"),
+    longitude: formData.get("longitude"),
+    radiusMeters: formData.get("radiusMeters"),
   };
 
   const validation = validateBookForm(values);
@@ -48,13 +49,14 @@ export async function createBookAction(
         title: errors.title?.[0],
         author: errors.author?.[0],
         isbn: errors.isbn?.[0],
-        publisher: errors.publisher?.[0],
-        publicationYear: errors.publicationYear?.[0],
-        language: errors.language?.[0],
         description: errors.description?.[0],
-        status: errors.status?.[0],
+        category: errors.category?.[0],
+        availability: errors.availability?.[0],
         visibility: errors.visibility?.[0],
-        condition: errors.condition?.[0],
+        physicalCondition: errors.physicalCondition?.[0],
+        latitude: errors.latitude?.[0],
+        longitude: errors.longitude?.[0],
+        radiusMeters: errors.radiusMeters?.[0],
       },
     };
   }
@@ -68,10 +70,15 @@ export async function createBookAction(
   }
 
   const now = new Date().toISOString();
+  const { latitude, longitude, radiusMeters, ...bookData } = validation.data;
   const book: Book = {
-    ...validation.data,
+    ...bookData,
     id: `book-${randomUUID()}`,
     ownerId: session.user.email ?? session.user.name ?? "demo-user",
+    approximateLocation:
+      latitude !== undefined && longitude !== undefined && radiusMeters !== undefined
+        ? { latitude, longitude, radiusMeters }
+        : undefined,
     createdAt: now,
     updatedAt: now,
   };

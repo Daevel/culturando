@@ -1,23 +1,27 @@
 export type BookVisibility = "public" | "private";
 
-export type BookStatus = "available" | "reserved" | "unavailable";
+export type BookAvailability = "available" | "consultation_only" | "loanable" | "unavailable";
 
-export type BookCondition = "new" | "good" | "worn";
+export type BookPhysicalCondition = "new" | "good" | "worn" | "damaged";
+
+export type BookApproximateLocation = {
+  latitude: number;
+  longitude: number;
+  radiusMeters: number;
+};
 
 export type Book = {
   id: string;
   title: string;
   author: string;
   isbn?: string;
-  publisher?: string;
-  publicationYear?: number;
-  language?: string;
   description?: string;
-  coverUrl?: string;
+  category?: string;
   ownerId: string;
-  status: BookStatus;
+  availability: BookAvailability;
   visibility: BookVisibility;
-  condition: BookCondition;
+  physicalCondition: BookPhysicalCondition;
+  approximateLocation?: BookApproximateLocation;
   createdAt: string;
   updatedAt: string;
 };

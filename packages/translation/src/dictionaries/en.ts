@@ -11,7 +11,8 @@ export const en = {
     highlights: {
       map: {
         title: "3D map",
-        description: "Explore nearby book availability and cultural places through an interactive map.",
+        description:
+          "Explore nearby book availability and cultural places through an interactive map.",
       },
       cataloging: {
         title: "Assisted cataloging",
@@ -19,7 +20,8 @@ export const en = {
       },
       privacy: {
         title: "Privacy",
-        description: "Precise locations are not shown publicly: approximate areas are used instead.",
+        description:
+          "Precise locations are not shown publicly: approximate areas are used instead.",
       },
     },
   },
@@ -106,10 +108,10 @@ export const en = {
       dashboardLabel: "Back to dashboard",
       newBookLabel: "Add book",
       searchLabel: "Search the catalog",
-      searchPlaceholder: "Title, author, ISBN or description",
-      statusFilterLabel: "Status",
+      searchPlaceholder: "Title, author, ISBN, category or description",
+      availabilityFilterLabel: "Availability",
       visibilityFilterLabel: "Visibility",
-      allStatusesLabel: "All statuses",
+      allAvailabilitiesLabel: "All availabilities",
       allVisibilitiesLabel: "All visibilities",
       resultsLabel: "results",
       clearFiltersLabel: "Clear filters",
@@ -127,24 +129,27 @@ export const en = {
       backToCatalogLabel: "Back to catalog",
       descriptionTitle: "Description",
       ownerLabel: "Owner",
-      publisherLabel: "Publisher",
-      publicationYearLabel: "Year",
-      languageLabel: "Language",
+      categoryLabel: "Category",
+      locationLabel: "Public area",
+      radiusLabel: "Approximation radius",
+      approximateLocationValue: "Approximate location available",
       emptyValue: "Not available",
     },
-    status: {
+    availability: {
       available: "Available",
-      reserved: "Reserved",
+      consultationOnly: "Consultation only",
+      loanable: "Loanable",
       unavailable: "Unavailable",
     },
     visibility: {
       public: "Public",
       private: "Private",
     },
-    condition: {
+    physicalCondition: {
       new: "New",
       good: "Good",
       worn: "Worn",
+      damaged: "Damaged",
     },
     new: {
       eyebrow: "New book",
@@ -173,30 +178,34 @@ export const en = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
-        publisher: {
-          label: "Publisher",
-          placeholder: "Bompiani",
-        },
-        publicationYear: {
-          label: "Publication year",
-          placeholder: "1980",
-        },
-        language: {
-          label: "Language",
-          placeholder: "Italian",
+        category: {
+          label: "Category",
+          placeholder: "Historical novel",
         },
         description: {
           label: "Description",
           placeholder: "Add a short description of the book.",
         },
-        status: {
-          label: "Status",
+        availability: {
+          label: "Availability",
         },
         visibility: {
           label: "Visibility",
         },
-        condition: {
-          label: "Condition",
+        physicalCondition: {
+          label: "Physical condition",
+        },
+        latitude: {
+          label: "Approximate latitude",
+          placeholder: "40.8518",
+        },
+        longitude: {
+          label: "Approximate longitude",
+          placeholder: "14.2681",
+        },
+        radiusMeters: {
+          label: "Radius in meters",
+          placeholder: "750",
         },
       },
     },

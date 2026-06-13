@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
+import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { NewBookPlaceholder } from "@/features/books/components/NewBookPlaceholder";
 

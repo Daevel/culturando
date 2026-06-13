@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
+import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { logoutAction } from "@/features/auth/actions/logout.action";
 import { DashboardOverview } from "@/features/dashboard/components/DashboardOverview";

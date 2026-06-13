@@ -2,7 +2,7 @@
 
 import { AuthError } from "next-auth";
 
-import { signIn } from "@/auth";
+import { signIn } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { validateLoginForm } from "../schemas/login.schema";
 import type { AuthFormState } from "../types/auth-form.types";

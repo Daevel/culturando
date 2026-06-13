@@ -108,10 +108,10 @@ export const it = {
       dashboardLabel: "Torna alla dashboard",
       newBookLabel: "Aggiungi libro",
       searchLabel: "Cerca nel catalogo",
-      searchPlaceholder: "Titolo, autore, ISBN o descrizione",
-      statusFilterLabel: "Stato",
+      searchPlaceholder: "Titolo, autore, ISBN, categoria o descrizione",
+      availabilityFilterLabel: "Disponibilita",
       visibilityFilterLabel: "Visibilita",
-      allStatusesLabel: "Tutti gli stati",
+      allAvailabilitiesLabel: "Tutte le disponibilita",
       allVisibilitiesLabel: "Tutte le visibilita",
       resultsLabel: "risultati",
       clearFiltersLabel: "Cancella filtri",
@@ -129,24 +129,27 @@ export const it = {
       backToCatalogLabel: "Torna al catalogo",
       descriptionTitle: "Descrizione",
       ownerLabel: "Proprietario",
-      publisherLabel: "Editore",
-      publicationYearLabel: "Anno",
-      languageLabel: "Lingua",
+      categoryLabel: "Categoria",
+      locationLabel: "Area pubblica",
+      radiusLabel: "Raggio approssimazione",
+      approximateLocationValue: "Posizione approssimata disponibile",
       emptyValue: "Non disponibile",
     },
-    status: {
+    availability: {
       available: "Disponibile",
-      reserved: "Prenotato",
+      consultationOnly: "Solo consultazione",
+      loanable: "Prestabile",
       unavailable: "Non disponibile",
     },
     visibility: {
       public: "Pubblico",
       private: "Privato",
     },
-    condition: {
+    physicalCondition: {
       new: "Nuovo",
       good: "Buono",
       worn: "Usurato",
+      damaged: "Danneggiato",
     },
     new: {
       eyebrow: "Nuovo libro",
@@ -175,30 +178,34 @@ export const it = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
-        publisher: {
-          label: "Editore",
-          placeholder: "Bompiani",
-        },
-        publicationYear: {
-          label: "Anno pubblicazione",
-          placeholder: "1980",
-        },
-        language: {
-          label: "Lingua",
-          placeholder: "Italiano",
+        category: {
+          label: "Categoria",
+          placeholder: "Romanzo storico",
         },
         description: {
           label: "Descrizione",
           placeholder: "Aggiungi una breve descrizione del libro.",
         },
-        status: {
-          label: "Stato",
+        availability: {
+          label: "Disponibilita",
         },
         visibility: {
           label: "Visibilita",
         },
-        condition: {
-          label: "Condizione",
+        physicalCondition: {
+          label: "Condizione fisica",
+        },
+        latitude: {
+          label: "Latitudine approssimata",
+          placeholder: "40.8518",
+        },
+        longitude: {
+          label: "Longitudine approssimata",
+          placeholder: "14.2681",
+        },
+        radiusMeters: {
+          label: "Raggio in metri",
+          placeholder: "750",
         },
       },
     },

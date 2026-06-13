@@ -4,13 +4,14 @@ export type BookFormField =
   | "title"
   | "author"
   | "isbn"
-  | "publisher"
-  | "publicationYear"
-  | "language"
   | "description"
-  | "status"
+  | "category"
+  | "availability"
   | "visibility"
-  | "condition";
+  | "physicalCondition"
+  | "latitude"
+  | "longitude"
+  | "radiusMeters";
 
 export type BookFormState = {
   success: boolean;

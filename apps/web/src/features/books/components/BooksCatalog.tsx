@@ -19,7 +19,7 @@ type BooksCatalogProps = {
 export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
   const t = useTranslation();
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("all");
+  const [availability, setAvailability] = useState("all");
   const [visibility, setVisibility] = useState("all");
   const deferredQuery = useDeferredValue(query);
   const normalizedQuery = deferredQuery.trim().toLowerCase();
@@ -29,18 +29,16 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
       book.title,
       book.author,
       book.isbn,
-      book.publisher,
-      book.publicationYear?.toString(),
-      book.language,
+      book.category,
       book.description,
     ].filter((value): value is string => Boolean(value));
     const matchesQuery =
       normalizedQuery.length === 0 ||
       searchableValues.some((value) => value.toLowerCase().includes(normalizedQuery));
-    const matchesStatus = status === "all" || book.status === status;
+    const matchesAvailability = availability === "all" || book.availability === availability;
     const matchesVisibility = visibility === "all" || book.visibility === visibility;
 
-    return matchesQuery && matchesStatus && matchesVisibility;
+    return matchesQuery && matchesAvailability && matchesVisibility;
   });
 
   return (
@@ -78,17 +76,20 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="books-status-filter">{t("books.catalog.statusFilterLabel")}</Label>
+            <Label htmlFor="books-availability-filter">
+              {t("books.catalog.availabilityFilterLabel")}
+            </Label>
             <select
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              id="books-status-filter"
-              onChange={(event) => setStatus(event.target.value)}
-              value={status}
+              id="books-availability-filter"
+              onChange={(event) => setAvailability(event.target.value)}
+              value={availability}
             >
-              <option value="all">{t("books.catalog.allStatusesLabel")}</option>
-              <option value="available">{t("books.status.available")}</option>
-              <option value="reserved">{t("books.status.reserved")}</option>
-              <option value="unavailable">{t("books.status.unavailable")}</option>
+              <option value="all">{t("books.catalog.allAvailabilitiesLabel")}</option>
+              <option value="available">{t("books.availability.available")}</option>
+              <option value="consultation_only">{t("books.availability.consultationOnly")}</option>
+              <option value="loanable">{t("books.availability.loanable")}</option>
+              <option value="unavailable">{t("books.availability.unavailable")}</option>
             </select>
           </div>
           <div className="space-y-2">
@@ -112,11 +113,11 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
           <p>
             {filteredBooks.length} {t("books.catalog.resultsLabel")}
           </p>
-          {(query || status !== "all" || visibility !== "all") && (
+          {(query || availability !== "all" || visibility !== "all") && (
             <Button
               onClick={() => {
                 setQuery("");
-                setStatus("all");
+                setAvailability("all");
                 setVisibility("all");
               }}
               type="button"

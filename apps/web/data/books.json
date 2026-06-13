@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "title": "elio e le storie tese",
+    "author": "Elio",
+    "isbn": "ioawq239i-092i39-i1",
+    "category": "Musica",
+    "description": "boh ma che ne so",
+    "availability": "available",
+    "visibility": "public",
+    "physicalCondition": "new",
+    "approximateLocation": {
+      "latitude": 40.8518,
+      "longitude": 14.2681,
+      "radiusMeters": 750
+    },
+    "id": "book-cf30c557-ab15-4e61-94d1-373bf746b16f",
+    "ownerId": "prova@email.com",
+    "createdAt": "2026-06-13T09:55:10.724Z",
+    "updatedAt": "2026-06-13T09:55:10.724Z"
+  }
+]

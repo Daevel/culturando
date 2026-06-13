@@ -34,13 +34,14 @@ export function BookForm() {
       title: "",
       author: "",
       isbn: "",
-      publisher: "",
-      publicationYear: "",
-      language: "Italiano",
+      category: "",
       description: "",
-      status: "available",
+      availability: "available",
       visibility: "public",
-      condition: "good",
+      physicalCondition: "good",
+      latitude: "",
+      longitude: "",
+      radiusMeters: "",
     },
   });
   const t = useTranslation();
@@ -51,13 +52,14 @@ export function BookForm() {
     formData.set("title", values.title);
     formData.set("author", values.author);
     formData.set("isbn", values.isbn ?? "");
-    formData.set("publisher", values.publisher ?? "");
-    formData.set("publicationYear", values.publicationYear?.toString() ?? "");
-    formData.set("language", values.language ?? "");
+    formData.set("category", values.category ?? "");
     formData.set("description", values.description ?? "");
-    formData.set("status", values.status);
+    formData.set("availability", values.availability);
     formData.set("visibility", values.visibility);
-    formData.set("condition", values.condition);
+    formData.set("physicalCondition", values.physicalCondition);
+    formData.set("latitude", values.latitude?.toString() ?? "");
+    formData.set("longitude", values.longitude?.toString() ?? "");
+    formData.set("radiusMeters", values.radiusMeters?.toString() ?? "");
 
     startTransition(() => {
       formAction(formData);
@@ -73,13 +75,15 @@ export function BookForm() {
   const titleError = errors.title?.message ?? state.errors.title;
   const authorError = errors.author?.message ?? state.errors.author;
   const isbnError = errors.isbn?.message ?? state.errors.isbn;
-  const publisherError = errors.publisher?.message ?? state.errors.publisher;
-  const publicationYearError = errors.publicationYear?.message ?? state.errors.publicationYear;
-  const languageError = errors.language?.message ?? state.errors.language;
+  const categoryError = errors.category?.message ?? state.errors.category;
   const descriptionError = errors.description?.message ?? state.errors.description;
-  const statusError = errors.status?.message ?? state.errors.status;
+  const availabilityError = errors.availability?.message ?? state.errors.availability;
   const visibilityError = errors.visibility?.message ?? state.errors.visibility;
-  const conditionError = errors.condition?.message ?? state.errors.condition;
+  const physicalConditionError =
+    errors.physicalCondition?.message ?? state.errors.physicalCondition;
+  const latitudeError = errors.latitude?.message ?? state.errors.latitude;
+  const longitudeError = errors.longitude?.message ?? state.errors.longitude;
+  const radiusMetersError = errors.radiusMeters?.message ?? state.errors.radiusMeters;
 
   return (
     <form className="space-y-5" noValidate onSubmit={handleSubmit(onSubmit)}>
@@ -131,55 +135,20 @@ export function BookForm() {
         ) : null}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <div className="space-y-2">
-          <Label htmlFor="publisher">{t("books.new.fields.publisher.label")}</Label>
-          <Input
-            aria-describedby={publisherError ? "book-publisher-error" : undefined}
-            aria-invalid={Boolean(publisherError)}
-            id="publisher"
-            placeholder={t("books.new.fields.publisher.placeholder")}
-            {...register("publisher")}
-          />
-          {publisherError ? (
-            <p className="text-sm text-destructive" id="book-publisher-error">
-              {publisherError}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="publicationYear">{t("books.new.fields.publicationYear.label")}</Label>
-          <Input
-            aria-describedby={publicationYearError ? "book-publication-year-error" : undefined}
-            aria-invalid={Boolean(publicationYearError)}
-            id="publicationYear"
-            inputMode="numeric"
-            placeholder={t("books.new.fields.publicationYear.placeholder")}
-            {...register("publicationYear")}
-          />
-          {publicationYearError ? (
-            <p className="text-sm text-destructive" id="book-publication-year-error">
-              {publicationYearError}
-            </p>
-          ) : null}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="language">{t("books.new.fields.language.label")}</Label>
-          <Input
-            aria-describedby={languageError ? "book-language-error" : undefined}
-            aria-invalid={Boolean(languageError)}
-            id="language"
-            placeholder={t("books.new.fields.language.placeholder")}
-            {...register("language")}
-          />
-          {languageError ? (
-            <p className="text-sm text-destructive" id="book-language-error">
-              {languageError}
-            </p>
-          ) : null}
-        </div>
+      <div className="space-y-2">
+        <Label htmlFor="category">{t("books.new.fields.category.label")}</Label>
+        <Input
+          aria-describedby={categoryError ? "book-category-error" : undefined}
+          aria-invalid={Boolean(categoryError)}
+          id="category"
+          placeholder={t("books.new.fields.category.placeholder")}
+          {...register("category")}
+        />
+        {categoryError ? (
+          <p className="text-sm text-destructive" id="book-category-error">
+            {categoryError}
+          </p>
+        ) : null}
       </div>
 
       <div className="space-y-2">
@@ -201,21 +170,22 @@ export function BookForm() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <div className="space-y-2">
-          <Label htmlFor="status">{t("books.new.fields.status.label")}</Label>
+          <Label htmlFor="availability">{t("books.new.fields.availability.label")}</Label>
           <select
-            aria-describedby={statusError ? "book-status-error" : undefined}
-            aria-invalid={Boolean(statusError)}
+            aria-describedby={availabilityError ? "book-availability-error" : undefined}
+            aria-invalid={Boolean(availabilityError)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            id="status"
-            {...register("status")}
+            id="availability"
+            {...register("availability")}
           >
-            <option value="available">{t("books.status.available")}</option>
-            <option value="reserved">{t("books.status.reserved")}</option>
-            <option value="unavailable">{t("books.status.unavailable")}</option>
+            <option value="available">{t("books.availability.available")}</option>
+            <option value="consultation_only">{t("books.availability.consultationOnly")}</option>
+            <option value="loanable">{t("books.availability.loanable")}</option>
+            <option value="unavailable">{t("books.availability.unavailable")}</option>
           </select>
-          {statusError ? (
-            <p className="text-sm text-destructive" id="book-status-error">
-              {statusError}
+          {availabilityError ? (
+            <p className="text-sm text-destructive" id="book-availability-error">
+              {availabilityError}
             </p>
           ) : null}
         </div>
@@ -240,21 +210,75 @@ export function BookForm() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="condition">{t("books.new.fields.condition.label")}</Label>
+          <Label htmlFor="physicalCondition">{t("books.new.fields.physicalCondition.label")}</Label>
           <select
-            aria-describedby={conditionError ? "book-condition-error" : undefined}
-            aria-invalid={Boolean(conditionError)}
+            aria-describedby={physicalConditionError ? "book-physical-condition-error" : undefined}
+            aria-invalid={Boolean(physicalConditionError)}
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            id="condition"
-            {...register("condition")}
+            id="physicalCondition"
+            {...register("physicalCondition")}
           >
-            <option value="new">{t("books.condition.new")}</option>
-            <option value="good">{t("books.condition.good")}</option>
-            <option value="worn">{t("books.condition.worn")}</option>
+            <option value="new">{t("books.physicalCondition.new")}</option>
+            <option value="good">{t("books.physicalCondition.good")}</option>
+            <option value="worn">{t("books.physicalCondition.worn")}</option>
+            <option value="damaged">{t("books.physicalCondition.damaged")}</option>
           </select>
-          {conditionError ? (
-            <p className="text-sm text-destructive" id="book-condition-error">
-              {conditionError}
+          {physicalConditionError ? (
+            <p className="text-sm text-destructive" id="book-physical-condition-error">
+              {physicalConditionError}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
+        <div className="space-y-2">
+          <Label htmlFor="latitude">{t("books.new.fields.latitude.label")}</Label>
+          <Input
+            aria-describedby={latitudeError ? "book-latitude-error" : undefined}
+            aria-invalid={Boolean(latitudeError)}
+            id="latitude"
+            inputMode="decimal"
+            placeholder={t("books.new.fields.latitude.placeholder")}
+            {...register("latitude")}
+          />
+          {latitudeError ? (
+            <p className="text-sm text-destructive" id="book-latitude-error">
+              {latitudeError}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="longitude">{t("books.new.fields.longitude.label")}</Label>
+          <Input
+            aria-describedby={longitudeError ? "book-longitude-error" : undefined}
+            aria-invalid={Boolean(longitudeError)}
+            id="longitude"
+            inputMode="decimal"
+            placeholder={t("books.new.fields.longitude.placeholder")}
+            {...register("longitude")}
+          />
+          {longitudeError ? (
+            <p className="text-sm text-destructive" id="book-longitude-error">
+              {longitudeError}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="radiusMeters">{t("books.new.fields.radiusMeters.label")}</Label>
+          <Input
+            aria-describedby={radiusMetersError ? "book-radius-error" : undefined}
+            aria-invalid={Boolean(radiusMetersError)}
+            id="radiusMeters"
+            inputMode="numeric"
+            placeholder={t("books.new.fields.radiusMeters.placeholder")}
+            {...register("radiusMeters")}
+          />
+          {radiusMetersError ? (
+            <p className="text-sm text-destructive" id="book-radius-error">
+              {radiusMetersError}
             </p>
           ) : null}
         </div>

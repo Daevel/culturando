@@ -76,24 +76,48 @@ function isBook(value: unknown): value is Book {
     typeof book.title === "string" &&
     typeof book.author === "string" &&
     typeof book.ownerId === "string" &&
-    isBookStatus(book.status) &&
+    isBookAvailability(book.availability) &&
     isBookVisibility(book.visibility) &&
-    isBookCondition(book.condition) &&
+    isBookPhysicalCondition(book.physicalCondition) &&
+    isBookApproximateLocation(book.approximateLocation) &&
     typeof book.createdAt === "string" &&
     typeof book.updatedAt === "string"
   );
 }
 
-function isBookStatus(value: unknown) {
-  return value === "available" || value === "reserved" || value === "unavailable";
+function isBookAvailability(value: unknown) {
+  return (
+    value === "available" ||
+    value === "consultation_only" ||
+    value === "loanable" ||
+    value === "unavailable"
+  );
 }
 
 function isBookVisibility(value: unknown) {
   return value === "public" || value === "private";
 }
 
-function isBookCondition(value: unknown) {
-  return value === "new" || value === "good" || value === "worn";
+function isBookPhysicalCondition(value: unknown) {
+  return value === "new" || value === "good" || value === "worn" || value === "damaged";
+}
+
+function isBookApproximateLocation(value: unknown) {
+  if (value === undefined) {
+    return true;
+  }
+
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const location = value as Partial<NonNullable<Book["approximateLocation"]>>;
+
+  return (
+    typeof location.latitude === "number" &&
+    typeof location.longitude === "number" &&
+    typeof location.radiusMeters === "number"
+  );
 }
 
 function isFileSystemError(error: unknown): error is NodeJS.ErrnoException {

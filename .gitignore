@@ -25,6 +25,8 @@ node_modules
 !.vscode/extensions.json
 
 # misc
+.env
+**/.env
 *.env.local
 .env.local
 **/.env.local
@@ -34,8 +36,10 @@ node_modules
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
+package-lock.json
 testem.log
 /typings
+*.tsbuildinfo
 
 # System Files
 .DS_Store

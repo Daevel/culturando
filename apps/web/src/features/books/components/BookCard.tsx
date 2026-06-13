@@ -1,4 +1,9 @@
-import type { Book, BookCondition, BookStatus, BookVisibility } from "@culturando/types";
+import type {
+  Book,
+  BookAvailability,
+  BookPhysicalCondition,
+  BookVisibility,
+} from "@culturando/types";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,20 +17,22 @@ type BookCardProps = {
 
 export function BookCard({ book }: BookCardProps) {
   const t = useTranslation();
-  const statusLabels = {
-    available: t("books.status.available"),
-    reserved: t("books.status.reserved"),
-    unavailable: t("books.status.unavailable"),
-  } satisfies Record<BookStatus, string>;
+  const availabilityLabels = {
+    available: t("books.availability.available"),
+    consultation_only: t("books.availability.consultationOnly"),
+    loanable: t("books.availability.loanable"),
+    unavailable: t("books.availability.unavailable"),
+  } satisfies Record<BookAvailability, string>;
   const visibilityLabels = {
     public: t("books.visibility.public"),
     private: t("books.visibility.private"),
   } satisfies Record<BookVisibility, string>;
-  const conditionLabels = {
-    new: t("books.condition.new"),
-    good: t("books.condition.good"),
-    worn: t("books.condition.worn"),
-  } satisfies Record<BookCondition, string>;
+  const physicalConditionLabels = {
+    new: t("books.physicalCondition.new"),
+    good: t("books.physicalCondition.good"),
+    worn: t("books.physicalCondition.worn"),
+    damaged: t("books.physicalCondition.damaged"),
+  } satisfies Record<BookPhysicalCondition, string>;
 
   return (
     <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-primary/50">
@@ -39,8 +46,8 @@ export function BookCard({ book }: BookCardProps) {
             </CardTitle>
             <p className="text-sm font-medium text-muted-foreground">{book.author}</p>
           </div>
-          <Badge variant={book.status === "available" ? "default" : "secondary"}>
-            {statusLabels[book.status]}
+          <Badge variant={book.availability !== "unavailable" ? "default" : "secondary"}>
+            {availabilityLabels[book.availability]}
           </Badge>
         </div>
       </CardHeader>
@@ -49,8 +56,9 @@ export function BookCard({ book }: BookCardProps) {
           {book.description ?? t("books.card.emptyDescription")}
         </p>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          {book.category ? <Badge variant="outline">{book.category}</Badge> : null}
           <Badge variant="outline">{visibilityLabels[book.visibility]}</Badge>
-          <Badge variant="outline">{conditionLabels[book.condition]}</Badge>
+          <Badge variant="outline">{physicalConditionLabels[book.physicalCondition]}</Badge>
           {book.isbn ? (
             <span>
               {t("books.card.isbnLabel")} {book.isbn}

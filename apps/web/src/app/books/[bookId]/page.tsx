@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
-
+import { getBookById } from "@/features/books/actions/books.repository";
 import { BookDetail } from "@/features/books/components/BookDetail";
-import { getBookById } from "@/features/books/data/books.repository";
 
 type BookDetailPageProps = {
   params: Promise<{

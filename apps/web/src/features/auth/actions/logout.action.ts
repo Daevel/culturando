@@ -1,6 +1,6 @@
 "use server";
 
-import { signOut } from "@/auth";
+import { signOut } from "@/config/auth";
 import { routes } from "@/config/routes";
 
 export async function logoutAction() {
