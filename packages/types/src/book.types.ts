@@ -4,24 +4,48 @@ export type BookAvailability = "available" | "consultation_only" | "loanable" | 
 
 export type BookPhysicalCondition = "new" | "good" | "worn" | "damaged";
 
-export type BookApproximateLocation = {
-  latitude: number;
-  longitude: number;
-  radiusMeters: number;
+export type BookImageSource = "user_upload" | "external_api";
+
+export type BookLocation = {
+  id: string;
+  addressLabel: string;
+  city?: string;
+  province?: string;
+  region?: string;
+  country: string;
+  latitude?: number;
+  longitude?: number;
+  publicLatitude?: number;
+  publicLongitude?: number;
+  accuracyRadiusMeters: number;
+};
+
+export type BookImage = {
+  id: string;
+  bookId: string;
+  url: string;
+  source: BookImageSource;
+  alt?: string;
+  isPrimary: boolean;
+  createdAt: string;
 };
 
 export type Book = {
   id: string;
+  ownerId: string;
   title: string;
   author: string;
   isbn?: string;
   description?: string;
+  publisher?: string;
+  publishedYear?: number;
+  language?: string;
   category?: string;
-  ownerId: string;
   availability: BookAvailability;
   visibility: BookVisibility;
   physicalCondition: BookPhysicalCondition;
-  approximateLocation?: BookApproximateLocation;
+  location?: BookLocation;
+  images: BookImage[];
   createdAt: string;
   updatedAt: string;
 };

@@ -108,7 +108,7 @@ export const en = {
       dashboardLabel: "Back to dashboard",
       newBookLabel: "Add book",
       searchLabel: "Search the catalog",
-      searchPlaceholder: "Title, author, ISBN, category or description",
+      searchPlaceholder: "Title, author, ISBN, publisher, city, category or description",
       availabilityFilterLabel: "Availability",
       visibilityFilterLabel: "Visibility",
       allAvailabilitiesLabel: "All availabilities",
@@ -130,8 +130,12 @@ export const en = {
       descriptionTitle: "Description",
       ownerLabel: "Owner",
       categoryLabel: "Category",
+      publisherLabel: "Publisher",
+      publishedYearLabel: "Year",
+      languageLabel: "Language",
       locationLabel: "Public area",
-      radiusLabel: "Approximation radius",
+      areaLabel: "Area",
+      imagesLabel: "Images",
       approximateLocationValue: "Approximate location available",
       emptyValue: "Not available",
     },
@@ -160,6 +164,11 @@ export const en = {
       backToCatalogLabel: "Catalog",
       formTitle: "Main details",
       formDescription: "Fill in a book record saved to the local mock JSON file.",
+      locationTitle: "Book address",
+      locationDescription:
+        "Enter a readable address: later it will be geocoded automatically and shown only approximately.",
+      imagesHelpText:
+        "For now you can enter image URLs, one per line. Photo upload and automatic cover lookup will arrive with storage and external APIs.",
       submitLabel: "Save book",
       pendingLabel: "Saving...",
       successMessage: "Book saved to the local mock JSON file.",
@@ -178,6 +187,18 @@ export const en = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
+        publisher: {
+          label: "Publisher",
+          placeholder: "Einaudi",
+        },
+        publishedYear: {
+          label: "Publication year",
+          placeholder: "1980",
+        },
+        language: {
+          label: "Language",
+          placeholder: "Italian",
+        },
         category: {
           label: "Category",
           placeholder: "Historical novel",
@@ -195,17 +216,29 @@ export const en = {
         physicalCondition: {
           label: "Physical condition",
         },
-        latitude: {
-          label: "Approximate latitude",
-          placeholder: "40.8518",
+        addressLabel: {
+          label: "Address",
+          placeholder: "Via Roma 1, Naples",
         },
-        longitude: {
-          label: "Approximate longitude",
-          placeholder: "14.2681",
+        city: {
+          label: "City",
+          placeholder: "Naples",
         },
-        radiusMeters: {
-          label: "Radius in meters",
-          placeholder: "750",
+        province: {
+          label: "Province",
+          placeholder: "Naples",
+        },
+        region: {
+          label: "Region",
+          placeholder: "Campania",
+        },
+        country: {
+          label: "Country",
+          placeholder: "Italy",
+        },
+        imageUrls: {
+          label: "Images",
+          placeholder: "https://example.com/cover.jpg",
         },
       },
     },

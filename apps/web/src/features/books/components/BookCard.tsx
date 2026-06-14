@@ -4,6 +4,7 @@ import type {
   BookPhysicalCondition,
   BookVisibility,
 } from "@culturando/types";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ type BookCardProps = {
 
 export function BookCard({ book }: BookCardProps) {
   const t = useTranslation();
+  const primaryImage = book.images.find((image) => image.isPrimary) ?? book.images[0];
   const availabilityLabels = {
     available: t("books.availability.available"),
     consultation_only: t("books.availability.consultationOnly"),
@@ -36,6 +38,18 @@ export function BookCard({ book }: BookCardProps) {
 
   return (
     <Card className="flex h-full flex-col overflow-hidden transition-colors hover:border-primary/50">
+      {primaryImage ? (
+        <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+          <Image
+            alt={primaryImage.alt ?? book.title}
+            className="h-full w-full object-cover"
+            fill
+            sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
+            src={primaryImage.url}
+            unoptimized
+          />
+        </div>
+      ) : null}
       <CardHeader className="gap-y-4">
         <div className="flex items-start justify-between gap-3">
           <div className="space-y-2">
@@ -57,6 +71,7 @@ export function BookCard({ book }: BookCardProps) {
         </p>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
           {book.category ? <Badge variant="outline">{book.category}</Badge> : null}
+          {book.language ? <Badge variant="outline">{book.language}</Badge> : null}
           <Badge variant="outline">{visibilityLabels[book.visibility]}</Badge>
           <Badge variant="outline">{physicalConditionLabels[book.physicalCondition]}</Badge>
           {book.isbn ? (

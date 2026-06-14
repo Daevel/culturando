@@ -29,8 +29,13 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
       book.title,
       book.author,
       book.isbn,
+      book.publisher,
+      book.publishedYear?.toString(),
+      book.language,
       book.category,
       book.description,
+      book.location?.addressLabel,
+      book.location?.city,
     ].filter((value): value is string => Boolean(value));
     const matchesQuery =
       normalizedQuery.length === 0 ||

@@ -108,7 +108,7 @@ export const it = {
       dashboardLabel: "Torna alla dashboard",
       newBookLabel: "Aggiungi libro",
       searchLabel: "Cerca nel catalogo",
-      searchPlaceholder: "Titolo, autore, ISBN, categoria o descrizione",
+      searchPlaceholder: "Titolo, autore, ISBN, editore, città, categoria o descrizione",
       availabilityFilterLabel: "Disponibilita",
       visibilityFilterLabel: "Visibilita",
       allAvailabilitiesLabel: "Tutte le disponibilita",
@@ -130,8 +130,12 @@ export const it = {
       descriptionTitle: "Descrizione",
       ownerLabel: "Proprietario",
       categoryLabel: "Categoria",
+      publisherLabel: "Editore",
+      publishedYearLabel: "Anno",
+      languageLabel: "Lingua",
       locationLabel: "Area pubblica",
-      radiusLabel: "Raggio approssimazione",
+      areaLabel: "Zona",
+      imagesLabel: "Immagini",
       approximateLocationValue: "Posizione approssimata disponibile",
       emptyValue: "Non disponibile",
     },
@@ -160,6 +164,11 @@ export const it = {
       backToCatalogLabel: "Catalogo",
       formTitle: "Dati principali",
       formDescription: "Compila una scheda libro salvata nel mock JSON locale.",
+      locationTitle: "Indirizzo del libro",
+      locationDescription:
+        "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",
+      imagesHelpText:
+        "Per ora puoi indicare URL immagine, uno per riga. Upload foto e ricerca automatica copertina arriveranno con storage e API esterne.",
       submitLabel: "Salva libro",
       pendingLabel: "Salvataggio in corso...",
       successMessage: "Libro salvato nel mock JSON locale.",
@@ -178,6 +187,18 @@ export const it = {
           label: "ISBN",
           placeholder: "9788845292613",
         },
+        publisher: {
+          label: "Editore",
+          placeholder: "Einaudi",
+        },
+        publishedYear: {
+          label: "Anno pubblicazione",
+          placeholder: "1980",
+        },
+        language: {
+          label: "Lingua",
+          placeholder: "Italiano",
+        },
         category: {
           label: "Categoria",
           placeholder: "Romanzo storico",
@@ -195,17 +216,29 @@ export const it = {
         physicalCondition: {
           label: "Condizione fisica",
         },
-        latitude: {
-          label: "Latitudine approssimata",
-          placeholder: "40.8518",
+        addressLabel: {
+          label: "Indirizzo",
+          placeholder: "Via Roma 1, Napoli",
         },
-        longitude: {
-          label: "Longitudine approssimata",
-          placeholder: "14.2681",
+        city: {
+          label: "Città",
+          placeholder: "Napoli",
         },
-        radiusMeters: {
-          label: "Raggio in metri",
-          placeholder: "750",
+        province: {
+          label: "Provincia",
+          placeholder: "Napoli",
+        },
+        region: {
+          label: "Regione",
+          placeholder: "Campania",
+        },
+        country: {
+          label: "Paese",
+          placeholder: "Italia",
+        },
+        imageUrls: {
+          label: "Immagini",
+          placeholder: "https://example.com/copertina.jpg",
         },
       },
     },

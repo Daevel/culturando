@@ -79,7 +79,8 @@ function isBook(value: unknown): value is Book {
     isBookAvailability(book.availability) &&
     isBookVisibility(book.visibility) &&
     isBookPhysicalCondition(book.physicalCondition) &&
-    isBookApproximateLocation(book.approximateLocation) &&
+    isBookLocation(book.location) &&
+    isBookImages(book.images) &&
     typeof book.createdAt === "string" &&
     typeof book.updatedAt === "string"
   );
@@ -102,7 +103,7 @@ function isBookPhysicalCondition(value: unknown) {
   return value === "new" || value === "good" || value === "worn" || value === "damaged";
 }
 
-function isBookApproximateLocation(value: unknown) {
+function isBookLocation(value: unknown) {
   if (value === undefined) {
     return true;
   }
@@ -111,12 +112,35 @@ function isBookApproximateLocation(value: unknown) {
     return false;
   }
 
-  const location = value as Partial<NonNullable<Book["approximateLocation"]>>;
+  const location = value as Partial<NonNullable<Book["location"]>>;
 
   return (
-    typeof location.latitude === "number" &&
-    typeof location.longitude === "number" &&
-    typeof location.radiusMeters === "number"
+    typeof location.id === "string" &&
+    typeof location.addressLabel === "string" &&
+    typeof location.country === "string" &&
+    typeof location.accuracyRadiusMeters === "number"
+  );
+}
+
+function isBookImages(value: unknown) {
+  return (
+    Array.isArray(value) &&
+    value.every((image) => {
+      if (typeof image !== "object" || image === null) {
+        return false;
+      }
+
+      const bookImage = image as Partial<Book["images"][number]>;
+
+      return (
+        typeof bookImage.id === "string" &&
+        typeof bookImage.bookId === "string" &&
+        typeof bookImage.url === "string" &&
+        (bookImage.source === "user_upload" || bookImage.source === "external_api") &&
+        typeof bookImage.isPrimary === "boolean" &&
+        typeof bookImage.createdAt === "string"
+      );
+    })
   );
 }
 

@@ -4,6 +4,7 @@ import type {
   BookPhysicalCondition,
   BookVisibility,
 } from "@culturando/types";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ type BookDetailProps = {
 
 export function BookDetail({ book }: BookDetailProps) {
   const t = useTranslation();
+  const primaryImage = book.images.find((image) => image.isPrimary) ?? book.images[0];
   const availabilityLabels = {
     available: t("books.availability.available"),
     consultation_only: t("books.availability.consultationOnly"),
@@ -52,6 +54,18 @@ export function BookDetail({ book }: BookDetailProps) {
         </div>
 
         <Card>
+          {primaryImage ? (
+            <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">
+              <Image
+                alt={primaryImage.alt ?? book.title}
+                className="h-full w-full object-cover"
+                fill
+                sizes="(min-width: 768px) 896px, 100vw"
+                src={primaryImage.url}
+                unoptimized
+              />
+            </div>
+          ) : null}
           <CardHeader>
             <div className="flex flex-wrap gap-2">
               <Badge variant={book.availability !== "unavailable" ? "default" : "secondary"}>
@@ -84,21 +98,41 @@ export function BookDetail({ book }: BookDetailProps) {
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {t("books.detail.locationLabel")}
+                  {t("books.detail.publisherLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.publisher ?? t("books.detail.emptyValue")}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.publishedYearLabel")}
                 </p>
                 <p className="mt-1 font-medium">
-                  {book.approximateLocation
-                    ? t("books.detail.approximateLocationValue")
-                    : t("books.detail.emptyValue")}
+                  {book.publishedYear ?? t("books.detail.emptyValue")}
                 </p>
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  {t("books.detail.radiusLabel")}
+                  {t("books.detail.languageLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.language ?? t("books.detail.emptyValue")}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.locationLabel")}
                 </p>
                 <p className="mt-1 font-medium">
-                  {book.approximateLocation
-                    ? `${book.approximateLocation.radiusMeters} m`
+                  {book.location?.addressLabel ?? t("books.detail.emptyValue")}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.areaLabel")}
+                </p>
+                <p className="mt-1 font-medium">
+                  {book.location
+                    ? [book.location.city, book.location.province, book.location.region]
+                        .filter(Boolean)
+                        .join(", ") || book.location.country
                     : t("books.detail.emptyValue")}
                 </p>
               </div>
@@ -107,6 +141,12 @@ export function BookDetail({ book }: BookDetailProps) {
                   {t("books.detail.ownerLabel")}
                 </p>
                 <p className="mt-1 font-medium">{book.ownerId}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.imagesLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.images.length}</p>
               </div>
             </section>
           </CardContent>

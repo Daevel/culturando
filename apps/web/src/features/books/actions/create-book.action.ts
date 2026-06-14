@@ -28,14 +28,20 @@ export async function createBookAction(
     title: formData.get("title"),
     author: formData.get("author"),
     isbn: formData.get("isbn"),
+    publisher: formData.get("publisher"),
+    publishedYear: formData.get("publishedYear"),
+    language: formData.get("language"),
     description: formData.get("description"),
     category: formData.get("category"),
     availability: formData.get("availability"),
     visibility: formData.get("visibility"),
     physicalCondition: formData.get("physicalCondition"),
-    latitude: formData.get("latitude"),
-    longitude: formData.get("longitude"),
-    radiusMeters: formData.get("radiusMeters"),
+    addressLabel: formData.get("addressLabel"),
+    city: formData.get("city"),
+    province: formData.get("province"),
+    region: formData.get("region"),
+    country: formData.get("country"),
+    imageUrls: formData.get("imageUrls"),
   };
 
   const validation = validateBookForm(values);
@@ -49,14 +55,20 @@ export async function createBookAction(
         title: errors.title?.[0],
         author: errors.author?.[0],
         isbn: errors.isbn?.[0],
+        publisher: errors.publisher?.[0],
+        publishedYear: errors.publishedYear?.[0],
+        language: errors.language?.[0],
         description: errors.description?.[0],
         category: errors.category?.[0],
         availability: errors.availability?.[0],
         visibility: errors.visibility?.[0],
         physicalCondition: errors.physicalCondition?.[0],
-        latitude: errors.latitude?.[0],
-        longitude: errors.longitude?.[0],
-        radiusMeters: errors.radiusMeters?.[0],
+        addressLabel: errors.addressLabel?.[0],
+        city: errors.city?.[0],
+        province: errors.province?.[0],
+        region: errors.region?.[0],
+        country: errors.country?.[0],
+        imageUrls: errors.imageUrls?.[0],
       },
     };
   }
@@ -70,15 +82,31 @@ export async function createBookAction(
   }
 
   const now = new Date().toISOString();
-  const { latitude, longitude, radiusMeters, ...bookData } = validation.data;
+  const { addressLabel, city, province, region, country, imageUrls, ...bookData } = validation.data;
+  const bookId = `book-${randomUUID()}`;
+  const imageUrlList = parseImageUrls(imageUrls);
   const book: Book = {
     ...bookData,
-    id: `book-${randomUUID()}`,
+    id: bookId,
     ownerId: session.user.email ?? session.user.name ?? "demo-user",
-    approximateLocation:
-      latitude !== undefined && longitude !== undefined && radiusMeters !== undefined
-        ? { latitude, longitude, radiusMeters }
-        : undefined,
+    location: {
+      id: `location-${randomUUID()}`,
+      addressLabel,
+      city,
+      province,
+      region,
+      country,
+      accuracyRadiusMeters: 750,
+    },
+    images: imageUrlList.map((url, index) => ({
+      id: `book-image-${randomUUID()}`,
+      bookId,
+      url,
+      source: "user_upload",
+      alt: `${bookData.title} - immagine ${index + 1}`,
+      isPrimary: index === 0,
+      createdAt: now,
+    })),
     createdAt: now,
     updatedAt: now,
   };
@@ -91,4 +119,15 @@ export async function createBookAction(
     errors: {},
     messageKey: "books.new.successMessage",
   };
+}
+
+function parseImageUrls(value: string | undefined) {
+  if (!value) {
+    return [];
+  }
+
+  return value
+    .split("\n")
+    .map((url) => url.trim())
+    .filter(Boolean);
 }
