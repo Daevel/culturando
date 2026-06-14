@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum BookVisibility {
+  public
+  private
+}
+
+enum BookAvailability {
+  available
+  consultation_only
+  loanable
+  unavailable
+}
+
+enum BookPhysicalCondition {
+  new
+  good
+  worn
+  damaged
+}
+
+enum BookImageSource {
+  user_upload
+  external_api
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String?
+  role         UserRole @default(user)
+  avatarUrl    String?
+  books        Book[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([role])
+}
+
+model Book {
+  id                String                @id @default(cuid())
+  ownerId           String
+  owner             User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title             String
+  author            String
+  isbn              String?
+  description       String?
+  publisher         String?
+  publishedYear     Int?
+  language          String?
+  category          String?
+  availability      BookAvailability      @default(available)
+  visibility        BookVisibility        @default(public)
+  physicalCondition BookPhysicalCondition @default(good)
+  location          BookLocation?
+  images            BookImage[]
+  createdAt         DateTime              @default(now())
+  updatedAt         DateTime              @updatedAt
+
+  @@index([ownerId])
+  @@index([isbn])
+  @@index([title])
+  @@index([author])
+  @@index([availability])
+  @@index([visibility])
+}
+
+model BookLocation {
+  id                   String  @id @default(cuid())
+  bookId               String  @unique
+  book                 Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  addressLabel         String
+  city                 String?
+  province             String?
+  region               String?
+  country              String  @default("Italia")
+  latitude             Float?
+  longitude            Float?
+  publicLatitude       Float?
+  publicLongitude      Float?
+  accuracyRadiusMeters Int     @default(750)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([city])
+  @@index([province])
+  @@index([region])
+  @@index([country])
+}
+
+model BookImage {
+  id        String          @id @default(cuid())
+  bookId    String
+  book      Book            @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  url       String
+  source    BookImageSource @default(user_upload)
+  alt       String?
+  isPrimary Boolean         @default(false)
+  createdAt DateTime        @default(now())
+
+  @@index([bookId])
+  @@index([source])
+  @@index([isPrimary])
+}

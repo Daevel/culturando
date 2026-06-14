@@ -10,9 +10,17 @@
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./client": {
+      "types": "./src/client.ts",
+      "default": "./src/client.ts"
     }
   },
   "dependencies": {
+    "@prisma/client": "^6.19.0",
     "@culturando/types": "workspace:*"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.0"
   }
 }
