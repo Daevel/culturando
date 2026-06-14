@@ -43,6 +43,7 @@ Stack principale:
 - tema grafico generato tramite tweakcn;
 - Auth.js tramite `next-auth` beta;
 - Zod per validazione form;
+- Prisma come ORM e schema database locale iniziale;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
 - Biome per linting e formatting;
 - package condivisi sotto `packages/*`.
@@ -51,7 +52,6 @@ Stack previsto nelle fasi successive:
 
 - PostgreSQL come database relazionale;
 - PostGIS per funzionalità geospaziali;
-- Prisma come ORM;
 - MapLibre GL JS per mappe interattive 2D/3D;
 - eventuale pipeline AI/OCR per catalogazione assistita;
 - package di traduzione condiviso per i18n;
@@ -383,19 +383,24 @@ Questi restano nella feature auth della web app.
 
 ### 6.3 `packages/db`
 
-Package previsto per la gestione database.
+Package condiviso per la gestione database.
 
-Responsabilità future:
+Responsabilità attuali:
 
 - Prisma Client;
 - schema Prisma;
+- client condiviso esportato come `prisma`;
+- script root per `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
+
+Responsabilità future:
+
 - query condivise;
 - seed;
 - migrazioni;
 - accesso a PostgreSQL;
 - supporto futuro a PostGIS.
 
-Struttura futura prevista:
+Struttura attuale:
 
 ```txt
 packages/db/
@@ -404,13 +409,10 @@ packages/db/
 │   └── schema.prisma
 └── src/
     ├── client.ts
-    ├── queries/
-    │   ├── users.queries.ts
-    │   └── books.queries.ts
     └── index.ts
 ```
 
-Non deve essere riempito prima che il dominio dati sia sufficientemente chiaro.
+Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app non è ancora collegata al database: la persistenza libri usa ancora JSON locale finché non verrà introdotto il CRUD reale.
 
 ### 6.4 `packages/geo`
 
@@ -803,9 +805,9 @@ Funzionalità attuali:
 
 - catalogo pubblico `/books`;
 - dettaglio libro pubblico `/books/[bookId]`;
-- ricerca client-side nel catalogo per titolo, autore, ISBN e descrizione;
+- ricerca client-side nel catalogo per titolo, autore, ISBN, editore, città, categoria e descrizione;
 - filtri client-side per stato e visibilità;
-- card libro con titolo, autore, descrizione, ISBN, stato e visibilità;
+- card libro con titolo, autore, descrizione, ISBN, stato, visibilità, lingua e immagine principale quando presente;
 - mock data iniziali in `features/books/mocks/books.mock.ts`;
 - form nuovo libro protetto in `/dashboard/books/new`;
 - validazione Zod in `features/books/schemas/book.schema.ts`;
@@ -813,12 +815,15 @@ Funzionalità attuali:
 - recupero singolo libro tramite `getBookById`;
 - persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/actions/books.repository.ts`;
 - revalidazione della route `/books` dopo il salvataggio;
-- testi UI centralizzati in `@culturando/translation`.
+- testi UI centralizzati in `@culturando/translation`;
+- dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
+- l'utente inserisce un indirizzo, non coordinate manuali; le coordinate restano previste nel modello per geocoding futuro.
 
 Funzionalità ancora previste:
 
 - CRUD reale tramite database;
-- upload copertine;
+- upload copertine e storage immagini;
+- ricerca automatica copertina tramite API esterna;
 - gestione avanzata stato disponibilità;
 - integrazione con geolocalizzazione e disponibilità vicine.
 
@@ -972,17 +977,20 @@ Stato dei primi step:
 7. creare dashboard placeholder protetta — completato;
 8. iniziare feature books con mock data — completato;
 9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato;
-10. completare la prima esperienza catalogo con dettaglio libro, ricerca e filtri — completato.
+10. completare la prima esperienza catalogo con dettaglio libro, ricerca e filtri — completato;
+11. consolidare il dominio `Book` MVP con indirizzo e immagini — completato;
+12. introdurre schema Prisma locale in `packages/db` — completato.
 
 Ordine dei prossimi step:
 
-1. consolidare il dominio `Book` MVP con campi bibliografici e disponibilità necessari;
-2. aggiornare form, card, dettaglio e filtri in base al dominio `Book` consolidato;
-3. collegare Auth.js a utenti reali quando sarà disponibile il database;
-4. configurare database con Prisma/PostgreSQL/PostGIS;
-5. migrare la persistenza mock JSON dei libri verso CRUD reale;
+1. aggiungere PostgreSQL locale tramite Docker;
+2. eseguire `db:push` o una prima migration Prisma;
+3. migrare la persistenza mock JSON dei libri verso CRUD reale;
+4. collegare Auth.js a utenti reali quando il database sarà operativo;
+5. introdurre geocoding indirizzo -> coordinate approssimate;
 6. introdurre feature nearby con MapLibre;
-7. introdurre AI catalogazione.
+7. introdurre upload immagini/storage e fallback copertina da API esterna;
+8. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
