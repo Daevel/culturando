@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@culturando/config": "workspace:*",
+    "@culturando/db": "workspace:*",
     "@culturando/geo": "workspace:*",
     "@culturando/translation": "workspace:*",
     "@culturando/types": "workspace:*",

@@ -1,7 +1,5 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import type { Book } from "@culturando/types";
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/config/auth";
@@ -81,37 +79,32 @@ export async function createBookAction(
     };
   }
 
-  const now = new Date().toISOString();
   const { addressLabel, city, province, region, country, imageUrls, ...bookData } = validation.data;
-  const bookId = `book-${randomUUID()}`;
-  const imageUrlList = parseImageUrls(imageUrls);
-  const book: Book = {
-    ...bookData,
-    id: bookId,
-    ownerId: session.user.email ?? session.user.name ?? "demo-user",
+  const ownerEmail = session.user.email?.trim().toLowerCase();
+
+  if (!ownerEmail) {
+    return {
+      success: false,
+      errors: {},
+      messageKey: "books.new.unauthorizedMessage",
+    };
+  }
+
+  await createStoredBook({
+    owner: {
+      email: ownerEmail,
+      name: session.user.name ?? undefined,
+    },
+    book: bookData,
     location: {
-      id: `location-${randomUUID()}`,
       addressLabel,
       city,
       province,
       region,
       country,
-      accuracyRadiusMeters: 750,
     },
-    images: imageUrlList.map((url, index) => ({
-      id: `book-image-${randomUUID()}`,
-      bookId,
-      url,
-      source: "user_upload",
-      alt: `${bookData.title} - immagine ${index + 1}`,
-      isPrimary: index === 0,
-      createdAt: now,
-    })),
-    createdAt: now,
-    updatedAt: now,
-  };
-
-  await createStoredBook(book);
+    imageUrls: parseImageUrls(imageUrls),
+  });
   revalidatePath(routes.books);
 
   return {

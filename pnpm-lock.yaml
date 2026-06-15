@@ -135,6 +135,9 @@ importers:
       '@culturando/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@culturando/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@culturando/geo':
         specifier: workspace:*
         version: link:../../packages/geo
