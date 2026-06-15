@@ -416,26 +416,33 @@ Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, c
 
 ### 6.4 `packages/geo`
 
-Package previsto per logiche geospaziali pure.
+Package condiviso per logiche geospaziali pure.
+
+Responsabilità attuali:
+
+- normalizzazione coordinate;
+- approssimazione coordinate per privacy;
+- geocoding indirizzo -> coordinate tramite adapter iniziale Nominatim/OpenStreetMap;
+- funzioni riutilizzabili da web, API e mobile.
 
 Responsabilità future:
 
 - calcolo distanza;
-- normalizzazione coordinate;
-- approssimazione coordinate per privacy;
 - conversione in GeoJSON;
-- funzioni riutilizzabili da web, API e mobile.
+- sostituzione o affiancamento di Nominatim con provider più stabile, cloud o self-hosted.
 
-Esempi futuri:
+Esempi attuali/futuri:
 
 ```ts
+geocodeAddress()
 calculateDistance()
 approximateCoordinates()
+normalizeCoordinates()
 generatePublicLocation()
 toGeoJsonFeature()
 ```
 
-Questo package è importante per la natura geolocalizzata di Culturando.
+Nominatim è una scelta temporanea e pragmatica per l'MVP: il codice deve restare isolato dietro l'adapter `geocodeAddress`, così la web app non dipende direttamente dal provider e potrà passare a un geocoder cloud, commerciale o self-hosted senza cambiare il dominio applicativo.
 
 ### 6.5 `packages/ai`
 
@@ -564,16 +571,15 @@ Configurazione attuale:
 - `next-auth` beta;
 - session strategy JWT;
 - pagina custom di login su `/auth/login`;
-- Credentials provider temporaneo basato su variabili demo;
-- nessun adapter database finché Prisma/PostgreSQL non saranno introdotti.
+- Credentials provider collegato agli utenti reali nel database PostgreSQL tramite Prisma;
+- sessione arricchita con `session.user.id`, corrispondente all'id reale della tabella `User`;
+- password salvate come hash `scrypt` con salt, tramite utility server-side in `apps/web/src/lib/password.ts`.
 
-Variabili richieste per provare il login demo:
+Variabili richieste per Auth.js:
 
 ```txt
 AUTH_SECRET=
 AUTH_URL=http://localhost:3000
-AUTH_DEMO_EMAIL=
-AUTH_DEMO_PASSWORD=
 ```
 
 ### 7.2 Login
@@ -593,7 +599,7 @@ Responsabilità:
 - gestire remember me;
 - validare input con Zod;
 - chiamare Auth.js tramite `signIn("credentials")`;
-- mostrare errore tradotto quando le credenziali non sono valide o l'utente demo non è configurato;
+- mostrare errore tradotto quando le credenziali non sono valide;
 - linkare alla signup.
 
 ### 7.3 Signup
@@ -612,7 +618,8 @@ Responsabilità:
 - mostrare form nome/email/password/conferma password;
 - validare input con Zod;
 - verificare corrispondenza password;
-- preparare futura registrazione utente;
+- creare o completare un utente reale in PostgreSQL tramite Prisma;
+- salvare la password come hash, mai in chiaro;
 - linkare alla login.
 
 ### 7.4 Validazione Zod
@@ -814,12 +821,14 @@ Funzionalità attuali:
 - server action `createBookAction`;
 - recupero singolo libro tramite `getBookById`;
 - persistenza reale dei libri tramite Prisma e PostgreSQL in `features/books/actions/books.repository.ts`;
-- creazione automatica/upsert dell'utente proprietario durante il salvataggio libro;
+- associazione dei nuovi libri a `session.user.id`, cioè all'utente reale autenticato;
+- geocoding dell'indirizzo durante il salvataggio tramite `@culturando/geo`;
+- salvataggio di coordinate private (`latitude`, `longitude`) e coordinate pubbliche approssimate (`publicLatitude`, `publicLongitude`);
 - revalidazione della route `/books` dopo il salvataggio;
 - route `/books` dinamica per leggere il catalogo aggiornato dal database;
 - testi UI centralizzati in `@culturando/translation`;
 - dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
-- l'utente inserisce un indirizzo, non coordinate manuali; le coordinate restano previste nel modello per geocoding futuro.
+- l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde.
 
 Funzionalità ancora previste:
 
@@ -989,13 +998,15 @@ Stato dei primi step:
 12. introdurre schema Prisma locale in `packages/db` — completato;
 13. aggiungere PostgreSQL locale tramite Docker — completato;
 14. eseguire `db:push` e generare Prisma Client — completato;
-15. migrare la persistenza mock JSON dei libri verso CRUD reale con Prisma — completato.
+15. migrare la persistenza mock JSON dei libri verso CRUD reale con Prisma — completato;
+16. collegare Auth.js a utenti reali tramite database — completato;
+17. introdurre geocoding indirizzo -> coordinate private/pubbliche approssimate — completato.
 
 Ordine dei prossimi step:
 
-1. collegare Auth.js a utenti reali tramite database;
-2. introdurre geocoding indirizzo -> coordinate approssimate;
-3. introdurre feature nearby con MapLibre;
+1. introdurre feature nearby con lista di disponibilità vicine basata sulle coordinate pubbliche;
+2. introdurre MapLibre per una prima mappa interattiva;
+3. introdurre query geospaziali più robuste con PostGIS;
 4. introdurre upload immagini/storage e fallback copertina da API esterna;
 5. introdurre AI catalogazione.
 
