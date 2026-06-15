@@ -390,14 +390,14 @@ Responsabilità attuali:
 - Prisma Client;
 - schema Prisma;
 - client condiviso esportato come `prisma`;
-- script root per `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
+- PostgreSQL locale tramite Docker Compose;
+- script root per `db:up`, `db:down`, `db:logs`, `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
 
 Responsabilità future:
 
 - query condivise;
 - seed;
 - migrazioni;
-- accesso a PostgreSQL;
 - supporto futuro a PostGIS.
 
 Struttura attuale:
@@ -412,7 +412,7 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app non è ancora collegata al database: la persistenza libri usa ancora JSON locale finché non verrà introdotto il CRUD reale.
+Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`.
 
 ### 6.4 `packages/geo`
 
@@ -813,15 +813,16 @@ Funzionalità attuali:
 - validazione Zod in `features/books/schemas/book.schema.ts`;
 - server action `createBookAction`;
 - recupero singolo libro tramite `getBookById`;
-- persistenza mock JSON locale in `apps/web/data/books.json` tramite `features/books/actions/books.repository.ts`;
+- persistenza reale dei libri tramite Prisma e PostgreSQL in `features/books/actions/books.repository.ts`;
+- creazione automatica/upsert dell'utente proprietario durante il salvataggio libro;
 - revalidazione della route `/books` dopo il salvataggio;
+- route `/books` dinamica per leggere il catalogo aggiornato dal database;
 - testi UI centralizzati in `@culturando/translation`;
 - dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
 - l'utente inserisce un indirizzo, non coordinate manuali; le coordinate restano previste nel modello per geocoding futuro.
 
 Funzionalità ancora previste:
 
-- CRUD reale tramite database;
 - upload copertine e storage immagini;
 - ricerca automatica copertina tramite API esterna;
 - gestione avanzata stato disponibilità;
@@ -832,6 +833,7 @@ Struttura attuale:
 ```txt
 features/books/
 ├── actions/
+│   ├── books.repository.ts
 │   └── create-book.action.ts
 ├── components/
 │   ├── BookCard.tsx
@@ -840,8 +842,6 @@ features/books/
 │   ├── BooksCatalog.tsx
 │   ├── BookForm.tsx
 │   └── NewBookPlaceholder.tsx
-├── data/
-│   └── books.repository.ts
 ├── mocks/
 │   └── books.mock.ts
 ├── schemas/
@@ -887,20 +887,27 @@ La disponibilità verificata sarà solo quella proveniente dagli utenti Culturan
 
 ### 11.5 Database
 
-Il database previsto è PostgreSQL con PostGIS.
+Il database attuale è PostgreSQL gestito in locale tramite Docker Compose. Prisma è l'ORM usato dall'applicazione e lo schema vive in `packages/db/prisma/schema.prisma`.
+
+PostGIS resta previsto per le fasi geospaziali successive.
 
 Motivazioni:
 
 - dominio relazionale: utenti, libri, richieste, posizioni, statistiche;
 - necessità di query consistenti;
-- supporto geospaziale tramite PostGIS;
+- supporto geospaziale futuro tramite PostGIS;
 - possibilità di usare JSONB per metadati AI o risposte da API esterne.
 
-Entità previste:
+Entità attuali:
 
 - User;
 - Book;
-- Location;
+- BookLocation;
+- BookImage.
+
+Entità previste:
+
+- Location geospaziale avanzata;
 - LoanRequest;
 - BookStats;
 - BookView;
@@ -979,18 +986,18 @@ Stato dei primi step:
 9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato;
 10. completare la prima esperienza catalogo con dettaglio libro, ricerca e filtri — completato;
 11. consolidare il dominio `Book` MVP con indirizzo e immagini — completato;
-12. introdurre schema Prisma locale in `packages/db` — completato.
+12. introdurre schema Prisma locale in `packages/db` — completato;
+13. aggiungere PostgreSQL locale tramite Docker — completato;
+14. eseguire `db:push` e generare Prisma Client — completato;
+15. migrare la persistenza mock JSON dei libri verso CRUD reale con Prisma — completato.
 
 Ordine dei prossimi step:
 
-1. aggiungere PostgreSQL locale tramite Docker;
-2. eseguire `db:push` o una prima migration Prisma;
-3. migrare la persistenza mock JSON dei libri verso CRUD reale;
-4. collegare Auth.js a utenti reali quando il database sarà operativo;
-5. introdurre geocoding indirizzo -> coordinate approssimate;
-6. introdurre feature nearby con MapLibre;
-7. introdurre upload immagini/storage e fallback copertina da API esterna;
-8. introdurre AI catalogazione.
+1. collegare Auth.js a utenti reali tramite database;
+2. introdurre geocoding indirizzo -> coordinate approssimate;
+3. introdurre feature nearby con MapLibre;
+4. introdurre upload immagini/storage e fallback copertina da API esterna;
+5. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
