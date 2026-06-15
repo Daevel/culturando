@@ -1,5 +1,8 @@
+import { prisma } from "@culturando/db";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+
+import { verifyPassword } from "@/lib/password";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
@@ -9,6 +12,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
+  },
+  callbacks: {
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = String(token.id ?? token.sub ?? "");
+      }
+
+      return session;
+    },
   },
   providers: [
     Credentials({
@@ -21,21 +40,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .trim()
           .toLowerCase();
         const password = String(credentials?.password ?? "");
-        const demoEmail = process.env.AUTH_DEMO_EMAIL?.trim().toLowerCase();
-        const demoPassword = process.env.AUTH_DEMO_PASSWORD;
-
-        if (!demoEmail || !demoPassword) {
+        if (!email || !password) {
           return null;
         }
 
-        if (email !== demoEmail || password !== demoPassword) {
+        const user = await prisma.user.findUnique({
+          where: {
+            email,
+          },
+        });
+
+        if (!user?.passwordHash) {
+          return null;
+        }
+
+        const isValidPassword = await verifyPassword(password, user.passwordHash);
+
+        if (!isValidPassword) {
           return null;
         }
 
         return {
-          id: "demo-user",
-          email: demoEmail,
-          name: "Demo Culturando",
+          id: user.id,
+          email: user.email,
+          name: user.name,
         };
       },
     }),

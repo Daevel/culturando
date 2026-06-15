@@ -34,7 +34,7 @@ export const en = {
       alternativeLabel: "Don't have an account yet?",
       secondaryActionLabel: "Sign up",
       successMessage: "Signed in successfully.",
-      invalidCredentialsMessage: "Invalid credentials or demo user not configured.",
+      invalidCredentialsMessage: "Invalid credentials.",
       fields: {
         email: {
           label: "Email",
@@ -57,7 +57,9 @@ export const en = {
       pendingLabel: "Signing up...",
       alternativeLabel: "Already have an account?",
       secondaryActionLabel: "Sign in",
-      successMessage: "Sign-up data validated. User creation still needs to be completed.",
+      successMessage: "Account created successfully. You can now sign in.",
+      emailAlreadyExistsMessage: "An account with this email already exists.",
+      genericErrorMessage: "The account could not be created.",
       fields: {
         name: {
           label: "Name",
@@ -159,11 +161,11 @@ export const en = {
       eyebrow: "New book",
       title: "Prepare a new book record",
       description:
-        "The form is still non-persistent: it defines the user flow before connecting the database and real CRUD.",
+        "Fill in a real book record: it will be associated with your account and saved to the local database.",
       backToDashboardLabel: "Dashboard",
       backToCatalogLabel: "Catalog",
       formTitle: "Main details",
-      formDescription: "Fill in a book record saved to the local mock JSON file.",
+      formDescription: "Fill in a book record saved to the local PostgreSQL database.",
       locationTitle: "Book address",
       locationDescription:
         "Enter a readable address: later it will be geocoded automatically and shown only approximately.",
@@ -171,7 +173,7 @@ export const en = {
         "For now you can enter image URLs, one per line. Photo upload and automatic cover lookup will arrive with storage and external APIs.",
       submitLabel: "Save book",
       pendingLabel: "Saving...",
-      successMessage: "Book saved to the local mock JSON file.",
+      successMessage: "Book saved successfully to the database.",
       unauthorizedMessage: "You must sign in to add a book.",
       genericErrorMessage: "The book could not be saved.",
       fields: {

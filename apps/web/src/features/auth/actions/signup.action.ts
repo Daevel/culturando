@@ -1,5 +1,8 @@
 "use server";
 
+import { prisma } from "@culturando/db";
+
+import { hashPassword } from "@/lib/password";
 import { validateSignupForm } from "../schemas/signup.schema";
 import type { AuthFormState } from "../types/auth-form.types";
 
@@ -32,7 +35,57 @@ export async function signupAction(
     };
   }
 
-  // TODO: integrare registrazione utente
+  if (!validation.data) {
+    return {
+      success: false,
+      errors: {},
+      messageKey: "auth.signup.genericErrorMessage",
+    };
+  }
+
+  const email = validation.data.email.trim().toLowerCase();
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      email,
+    },
+    select: {
+      id: true,
+      passwordHash: true,
+    },
+  });
+
+  if (existingUser?.passwordHash) {
+    return {
+      success: false,
+      errors: {
+        email: "Esiste già un account con questa email.",
+      },
+      messageKey: "auth.signup.emailAlreadyExistsMessage",
+    };
+  }
+
+  const passwordHash = await hashPassword(validation.data.password);
+
+  if (existingUser) {
+    await prisma.user.update({
+      where: {
+        id: existingUser.id,
+      },
+      data: {
+        name: validation.data.name,
+        passwordHash,
+      },
+    });
+  } else {
+    await prisma.user.create({
+      data: {
+        email,
+        name: validation.data.name,
+        passwordHash,
+      },
+    });
+  }
+
   return {
     success: true,
     errors: {},

@@ -34,7 +34,7 @@ export const it = {
       alternativeLabel: "Non hai ancora un account?",
       secondaryActionLabel: "Registrati",
       successMessage: "Accesso effettuato correttamente.",
-      invalidCredentialsMessage: "Credenziali non valide o utente demo non configurato.",
+      invalidCredentialsMessage: "Credenziali non valide.",
       fields: {
         email: {
           label: "Email",
@@ -57,7 +57,9 @@ export const it = {
       pendingLabel: "Registrazione in corso...",
       alternativeLabel: "Hai già un account?",
       secondaryActionLabel: "Accedi",
-      successMessage: "Dati di registrazione validati. Creazione utente da completare.",
+      successMessage: "Account creato correttamente. Ora puoi accedere.",
+      emailAlreadyExistsMessage: "Esiste già un account con questa email.",
+      genericErrorMessage: "Non è stato possibile creare l'account.",
       fields: {
         name: {
           label: "Nome",
@@ -159,11 +161,11 @@ export const it = {
       eyebrow: "Nuovo libro",
       title: "Prepara una nuova scheda libro",
       description:
-        "Il form e ancora non persistente: serve a definire il flusso utente prima di collegare database e CRUD reale.",
+        "Compila una scheda libro reale: verrà associata al tuo account e salvata nel database locale.",
       backToDashboardLabel: "Dashboard",
       backToCatalogLabel: "Catalogo",
       formTitle: "Dati principali",
-      formDescription: "Compila una scheda libro salvata nel mock JSON locale.",
+      formDescription: "Compila una scheda libro salvata nel database PostgreSQL locale.",
       locationTitle: "Indirizzo del libro",
       locationDescription:
         "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",
@@ -171,7 +173,7 @@ export const it = {
         "Per ora puoi indicare URL immagine, uno per riga. Upload foto e ricerca automatica copertina arriveranno con storage e API esterne.",
       submitLabel: "Salva libro",
       pendingLabel: "Salvataggio in corso...",
-      successMessage: "Libro salvato nel mock JSON locale.",
+      successMessage: "Libro salvato correttamente nel database.",
       unauthorizedMessage: "Devi accedere per aggiungere un libro.",
       genericErrorMessage: "Non è stato possibile salvare il libro.",
       fields: {

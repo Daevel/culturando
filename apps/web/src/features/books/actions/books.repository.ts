@@ -6,10 +6,7 @@ import { booksMock } from "../mocks/books.mock";
 type StoredBook = Awaited<ReturnType<typeof findStoredBooks>>[number];
 
 export type CreateStoredBookInput = {
-  owner: {
-    email: string;
-    name?: string;
-  };
+  ownerId: string;
   book: {
     title: string;
     author: string;
@@ -29,6 +26,11 @@ export type CreateStoredBookInput = {
     province?: string;
     region?: string;
     country: string;
+    latitude?: number;
+    longitude?: number;
+    publicLatitude?: number;
+    publicLongitude?: number;
+    accuracyRadiusMeters?: number;
   };
   imageUrls: string[];
 };
@@ -62,37 +64,22 @@ export async function getBookById(bookId: string): Promise<Book | null> {
 }
 
 export async function createStoredBook(input: CreateStoredBookInput) {
-  return prisma.$transaction(async (transaction) => {
-    const owner = await transaction.user.upsert({
-      where: {
-        email: input.owner.email,
+  return prisma.book.create({
+    data: {
+      ...input.book,
+      ownerId: input.ownerId,
+      location: {
+        create: input.location,
       },
-      update: {
-        name: input.owner.name,
+      images: {
+        create: input.imageUrls.map((url, index) => ({
+          url,
+          source: "user_upload",
+          alt: `${input.book.title} - immagine ${index + 1}`,
+          isPrimary: index === 0,
+        })),
       },
-      create: {
-        email: input.owner.email,
-        name: input.owner.name,
-      },
-    });
-
-    return transaction.book.create({
-      data: {
-        ...input.book,
-        ownerId: owner.id,
-        location: {
-          create: input.location,
-        },
-        images: {
-          create: input.imageUrls.map((url, index) => ({
-            url,
-            source: "user_upload",
-            alt: `${input.book.title} - immagine ${index + 1}`,
-            isPrimary: index === 0,
-          })),
-        },
-      },
-    });
+    },
   });
 }
 

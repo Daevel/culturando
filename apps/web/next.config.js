@@ -10,6 +10,13 @@ const nextConfig = {
   // Use this to set Nx-specific options
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: {},
+  transpilePackages: [
+    "@culturando/config",
+    "@culturando/db",
+    "@culturando/geo",
+    "@culturando/translation",
+    "@culturando/types",
+  ],
   turbopack: {
     root: path.join(__dirname, "../.."),
   },

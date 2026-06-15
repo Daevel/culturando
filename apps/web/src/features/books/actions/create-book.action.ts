@@ -1,5 +1,6 @@
 "use server";
 
+import { geocodeAddress } from "@culturando/geo";
 import { revalidatePath } from "next/cache";
 
 import { auth } from "@/config/auth";
@@ -80,9 +81,9 @@ export async function createBookAction(
   }
 
   const { addressLabel, city, province, region, country, imageUrls, ...bookData } = validation.data;
-  const ownerEmail = session.user.email?.trim().toLowerCase();
+  const ownerId = getSessionUserId(session.user);
 
-  if (!ownerEmail) {
+  if (!ownerId) {
     return {
       success: false,
       errors: {},
@@ -90,11 +91,16 @@ export async function createBookAction(
     };
   }
 
+  const geocodingResult = await geocodeAddress({
+    addressLabel,
+    city,
+    province,
+    region,
+    country,
+  });
+
   await createStoredBook({
-    owner: {
-      email: ownerEmail,
-      name: session.user.name ?? undefined,
-    },
+    ownerId,
     book: bookData,
     location: {
       addressLabel,
@@ -102,6 +108,11 @@ export async function createBookAction(
       province,
       region,
       country,
+      latitude: geocodingResult?.coordinates.latitude,
+      longitude: geocodingResult?.coordinates.longitude,
+      publicLatitude: geocodingResult?.publicCoordinates.latitude,
+      publicLongitude: geocodingResult?.publicCoordinates.longitude,
+      accuracyRadiusMeters: geocodingResult?.accuracyRadiusMeters,
     },
     imageUrls: parseImageUrls(imageUrls),
   });
@@ -123,4 +134,8 @@ function parseImageUrls(value: string | undefined) {
     .split("\n")
     .map((url) => url.trim())
     .filter(Boolean);
+}
+
+function getSessionUserId(user: { id?: string }) {
+  return user.id?.trim() || undefined;
 }
