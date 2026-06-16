@@ -36,6 +36,8 @@ export function BookDetail({ book }: BookDetailProps) {
     worn: t("books.physicalCondition.worn"),
     damaged: t("books.physicalCondition.damaged"),
   } satisfies Record<BookPhysicalCondition, string>;
+  const hasPublicLocation =
+    book.location?.publicLatitude !== undefined && book.location.publicLongitude !== undefined;
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -48,9 +50,16 @@ export function BookDetail({ book }: BookDetailProps) {
             </h1>
             <p className="text-lg text-muted-foreground">{book.author}</p>
           </div>
-          <Button asChild variant="outline">
-            <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {hasPublicLocation ? (
+              <Button asChild>
+                <Link href={routes.nearbyBooks(book.id)}>{t("books.detail.nearbyLabel")}</Link>
+              </Button>
+            ) : null}
+            <Button asChild variant="outline">
+              <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
+            </Button>
+          </div>
         </div>
 
         <Card>

@@ -6,6 +6,7 @@ export const en = {
       description:
         "Discover, share and promote books, collections and private libraries near you through a geolocated, accessible and privacy-aware web platform.",
       primaryActionLabel: "Explore books",
+      nearbyActionLabel: "Search nearby",
       secondaryActionLabel: "Publish a book",
     },
     highlights: {
@@ -108,6 +109,7 @@ export const en = {
       description:
         "This demo data prepares Culturando's main flow: publishing, browsing and making private collections searchable.",
       dashboardLabel: "Back to dashboard",
+      nearbyLabel: "Search by area",
       newBookLabel: "Add book",
       searchLabel: "Search the catalog",
       searchPlaceholder: "Title, author, ISBN, publisher, city, category or description",
@@ -129,6 +131,7 @@ export const en = {
     detail: {
       eyebrow: "Book record",
       backToCatalogLabel: "Back to catalog",
+      nearbyLabel: "Find nearby availability",
       descriptionTitle: "Description",
       ownerLabel: "Owner",
       categoryLabel: "Category",
@@ -140,6 +143,17 @@ export const en = {
       imagesLabel: "Images",
       approximateLocationValue: "Approximate location available",
       emptyValue: "Not available",
+    },
+    nearby: {
+      eyebrow: "Nearby availability",
+      title: "Books available in the same area",
+      description: "Results sorted by approximate distance from",
+      mapTitle: "Availability map",
+      mapDescription:
+        "Markers use only approximate public coordinates, not users' precise locations.",
+      mapEmptyState: "The map is not available for this book because a public location is missing.",
+      emptyState:
+        "There are no other public books with an approximate location available near this volume yet.",
     },
     availability: {
       available: "Available",
@@ -243,6 +257,44 @@ export const en = {
           placeholder: "https://example.com/cover.jpg",
         },
       },
+    },
+  },
+  nearby: {
+    search: {
+      eyebrow: "Territorial search",
+      title: "Find books near an area",
+      description:
+        "Enter a city or address: Culturando shows public books using approximate locations only.",
+      formTitle: "Search area",
+      queryLabel: "City or address",
+      queryPlaceholder: "Naples, Rome Prati, Turin city center...",
+      radiusLabel: "Radius",
+      radius5Label: "5 km",
+      radius10Label: "10 km",
+      radius25Label: "25 km",
+      radius50Label: "50 km",
+      submitLabel: "Search nearby books",
+      originLabel: "Search area",
+      mapTitle: "Results map",
+      mapDescription:
+        "The map shows the searched area and books found through approximate public coordinates.",
+      mapEmptyState: "Search for an area to display the results map.",
+      resultsLabel: "results near the searched area",
+      emptyState: "There are no public available books near this area yet.",
+      geocodingFailedMessage: "This area could not be found. Try a more specific city or address.",
+    },
+  },
+  maps: {
+    controls: {
+      pauseRotationLabel: "Pause rotation",
+      resetCameraLabel: "Reset view",
+      resumeRotationLabel: "Resume rotation",
+      switchTo2dLabel: "2D view",
+      switchTo3dLabel: "3D view",
+    },
+    legend: {
+      originLabel: "Search area",
+      nearbyLabel: "Available book",
     },
   },
 } as const;

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "nx dev web",
+    "dev": "docker compose up -d --wait postgres && pnpm db:postgis && nx dev web",
     "build": "nx build web",
     "start": "nx start web",
     "lint": "nx lint web",
@@ -17,6 +17,7 @@
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",
+    "db:postgis": "docker compose exec -T postgres psql -U culturando -d culturando -c \"CREATE EXTENSION IF NOT EXISTS postgis;\"",
     "db:generate": "prisma generate --schema packages/db/prisma/schema.prisma",
     "db:push": "prisma db push --schema packages/db/prisma/schema.prisma",
     "db:migrate:dev": "prisma migrate dev --schema packages/db/prisma/schema.prisma",

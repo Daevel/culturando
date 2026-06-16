@@ -6,6 +6,7 @@ export const it = {
       description:
         "Scopri, condividi e valorizza libri, collezioni e biblioteche private vicino a te attraverso una piattaforma web geolocalizzata, accessibile e attenta alla privacy.",
       primaryActionLabel: "Esplora libri",
+      nearbyActionLabel: "Cerca vicino a te",
       secondaryActionLabel: "Pubblica un libro",
     },
     highlights: {
@@ -108,6 +109,7 @@ export const it = {
       description:
         "Questi dati demo preparano il flusso principale di Culturando: pubblicare, consultare e rendere ricercabili collezioni private.",
       dashboardLabel: "Torna alla dashboard",
+      nearbyLabel: "Cerca per zona",
       newBookLabel: "Aggiungi libro",
       searchLabel: "Cerca nel catalogo",
       searchPlaceholder: "Titolo, autore, ISBN, editore, città, categoria o descrizione",
@@ -129,6 +131,7 @@ export const it = {
     detail: {
       eyebrow: "Scheda libro",
       backToCatalogLabel: "Torna al catalogo",
+      nearbyLabel: "Trova disponibilita vicine",
       descriptionTitle: "Descrizione",
       ownerLabel: "Proprietario",
       categoryLabel: "Categoria",
@@ -140,6 +143,18 @@ export const it = {
       imagesLabel: "Immagini",
       approximateLocationValue: "Posizione approssimata disponibile",
       emptyValue: "Non disponibile",
+    },
+    nearby: {
+      eyebrow: "Disponibilita vicine",
+      title: "Libri disponibili nella stessa area",
+      description: "Risultati ordinati per distanza approssimata rispetto a",
+      mapTitle: "Mappa delle disponibilita",
+      mapDescription:
+        "I marker usano solo coordinate pubbliche approssimate, non la posizione precisa degli utenti.",
+      mapEmptyState:
+        "La mappa non e disponibile per questo libro perche manca una posizione pubblica.",
+      emptyState:
+        "Non ci sono ancora altri libri pubblici con posizione approssimata disponibile vicino a questo volume.",
     },
     availability: {
       available: "Disponibile",
@@ -243,6 +258,45 @@ export const it = {
           placeholder: "https://example.com/copertina.jpg",
         },
       },
+    },
+  },
+  nearby: {
+    search: {
+      eyebrow: "Ricerca territoriale",
+      title: "Trova libri vicino a una zona",
+      description:
+        "Inserisci una citta o un indirizzo: Culturando mostra libri pubblici usando solo posizioni approssimate.",
+      formTitle: "Zona di ricerca",
+      queryLabel: "Citta o indirizzo",
+      queryPlaceholder: "Napoli, Roma Prati, Torino centro...",
+      radiusLabel: "Raggio",
+      radius5Label: "5 km",
+      radius10Label: "10 km",
+      radius25Label: "25 km",
+      radius50Label: "50 km",
+      submitLabel: "Cerca libri vicini",
+      originLabel: "Area cercata",
+      mapTitle: "Mappa dei risultati",
+      mapDescription:
+        "La mappa mostra l'area cercata e i libri trovati tramite coordinate pubbliche approssimate.",
+      mapEmptyState: "Cerca una zona per visualizzare la mappa dei risultati.",
+      resultsLabel: "risultati vicino alla zona cercata",
+      emptyState: "Non ci sono ancora libri pubblici disponibili vicino a questa zona.",
+      geocodingFailedMessage:
+        "Non e stato possibile trovare questa zona. Prova con una citta o un indirizzo piu specifico.",
+    },
+  },
+  maps: {
+    controls: {
+      pauseRotationLabel: "Pausa rotazione",
+      resetCameraLabel: "Ripristina vista",
+      resumeRotationLabel: "Riprendi rotazione",
+      switchTo2dLabel: "Vista 2D",
+      switchTo3dLabel: "Vista 3D",
+    },
+    legend: {
+      originLabel: "Area cercata",
+      nearbyLabel: "Libro disponibile",
     },
   },
 } as const;

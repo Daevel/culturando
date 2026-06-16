@@ -5,6 +5,19 @@ import { booksMock } from "../mocks/books.mock";
 
 type StoredBook = Awaited<ReturnType<typeof findStoredBooks>>[number];
 
+export type NearbyBook = {
+  book: Book;
+  distanceKm: number;
+};
+
+export type NearbyBooksSearchInput = {
+  latitude: number;
+  longitude: number;
+  excludeBookId?: string;
+  limit?: number;
+  radiusKm?: number;
+};
+
 export type CreateStoredBookInput = {
   ownerId: string;
   book: {
@@ -63,6 +76,44 @@ export async function getBookById(bookId: string): Promise<Book | null> {
   return book ? toBook(book) : null;
 }
 
+export async function getNearbyBooks(bookId: string, limit = 6): Promise<NearbyBook[]> {
+  const origin = await getBookById(bookId);
+  const originLatitude = origin?.location?.publicLatitude;
+  const originLongitude = origin?.location?.publicLongitude;
+
+  if (!origin || originLatitude === undefined || originLongitude === undefined) {
+    return [];
+  }
+
+  return getNearbyBooksByCoordinates({
+    latitude: originLatitude,
+    longitude: originLongitude,
+    excludeBookId: origin.id,
+    limit,
+  });
+}
+
+export async function getNearbyBooksByCoordinates({
+  latitude,
+  longitude,
+  excludeBookId,
+  limit = 12,
+  radiusKm = 25,
+}: NearbyBooksSearchInput): Promise<NearbyBook[]> {
+  const storedBooks = await findNearbyStoredBooks({
+    latitude,
+    longitude,
+    excludeBookId,
+    limit,
+    radiusKm,
+  });
+  const mockBooks = findNearbyMockBooks({ latitude, longitude, excludeBookId, radiusKm });
+
+  return [...storedBooks, ...mockBooks]
+    .sort((first, second) => first.distanceKm - second.distanceKm)
+    .slice(0, limit);
+}
+
 export async function createStoredBook(input: CreateStoredBookInput) {
   return prisma.book.create({
     data: {
@@ -83,6 +134,113 @@ export async function createStoredBook(input: CreateStoredBookInput) {
   });
 }
 
+function findNearbyMockBooks({
+  latitude,
+  longitude,
+  excludeBookId,
+  radiusKm,
+}: Required<Pick<NearbyBooksSearchInput, "latitude" | "longitude" | "radiusKm">> &
+  Pick<NearbyBooksSearchInput, "excludeBookId">): NearbyBook[] {
+  return booksMock
+    .filter((book) => {
+      const location = book.location;
+
+      return (
+        book.id !== excludeBookId &&
+        book.visibility === "public" &&
+        book.availability !== "unavailable" &&
+        location?.publicLatitude !== undefined &&
+        location.publicLongitude !== undefined
+      );
+    })
+    .map((book) => {
+      const distanceKm = calculateDistanceKm(
+        latitude,
+        longitude,
+        book.location?.publicLatitude ?? latitude,
+        book.location?.publicLongitude ?? longitude,
+      );
+
+      return {
+        book,
+        distanceKm,
+      };
+    })
+    .filter(({ distanceKm }) => distanceKm <= radiusKm);
+}
+
+async function findNearbyStoredBooks({
+  latitude,
+  longitude,
+  excludeBookId,
+  limit,
+  radiusKm,
+}: Required<Omit<NearbyBooksSearchInput, "excludeBookId">> &
+  Pick<NearbyBooksSearchInput, "excludeBookId">): Promise<NearbyBook[]> {
+  const rows = excludeBookId
+    ? await prisma.$queryRaw<NearbyStoredBookRow[]>`
+        SELECT
+          b.id,
+          ST_Distance(
+            ST_SetSRID(ST_MakePoint(l."publicLongitude", l."publicLatitude"), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
+          ) / 1000 AS "distanceKm"
+        FROM "Book" b
+        INNER JOIN "BookLocation" l ON l."bookId" = b.id
+        WHERE b.id != ${excludeBookId}
+          AND b.visibility = 'public'
+          AND b.availability != 'unavailable'
+          AND l."publicLatitude" IS NOT NULL
+          AND l."publicLongitude" IS NOT NULL
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(l."publicLongitude", l."publicLatitude"), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            ${radiusKm * 1000}
+          )
+        ORDER BY "distanceKm" ASC
+        LIMIT ${limit}
+      `
+    : await prisma.$queryRaw<NearbyStoredBookRow[]>`
+        SELECT
+          b.id,
+          ST_Distance(
+            ST_SetSRID(ST_MakePoint(l."publicLongitude", l."publicLatitude"), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography
+          ) / 1000 AS "distanceKm"
+        FROM "Book" b
+        INNER JOIN "BookLocation" l ON l."bookId" = b.id
+        WHERE b.visibility = 'public'
+          AND b.availability != 'unavailable'
+          AND l."publicLatitude" IS NOT NULL
+          AND l."publicLongitude" IS NOT NULL
+          AND ST_DWithin(
+            ST_SetSRID(ST_MakePoint(l."publicLongitude", l."publicLatitude"), 4326)::geography,
+            ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+            ${radiusKm * 1000}
+          )
+        ORDER BY "distanceKm" ASC
+        LIMIT ${limit}
+      `;
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const books = await findStoredBooksByIds(rows.map((row) => row.id));
+  const booksById = new Map(books.map((book) => [book.id, toBook(book)]));
+
+  return rows.flatMap((row) => {
+    const book = booksById.get(row.id);
+
+    return book ? [{ book, distanceKm: Number(row.distanceKm) }] : [];
+  });
+}
+
+type NearbyStoredBookRow = {
+  id: string;
+  distanceKm: number;
+};
+
 function findStoredBooks() {
   return prisma.book.findMany({
     include: {
@@ -93,6 +251,22 @@ function findStoredBooks() {
     },
     orderBy: {
       createdAt: "desc",
+    },
+  });
+}
+
+function findStoredBooksByIds(bookIds: string[]) {
+  return prisma.book.findMany({
+    where: {
+      id: {
+        in: bookIds,
+      },
+    },
+    include: {
+      images: {
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      },
+      location: true,
     },
   });
 }
@@ -139,4 +313,26 @@ function toBook(book: StoredBook): Book {
     createdAt: book.createdAt.toISOString(),
     updatedAt: book.updatedAt.toISOString(),
   };
+}
+
+function calculateDistanceKm(
+  fromLatitude: number,
+  fromLongitude: number,
+  toLatitude: number,
+  toLongitude: number,
+) {
+  const earthRadiusKm = 6371;
+  const latitudeDelta = toRadians(toLatitude - fromLatitude);
+  const longitudeDelta = toRadians(toLongitude - fromLongitude);
+  const fromLatitudeRadians = toRadians(fromLatitude);
+  const toLatitudeRadians = toRadians(toLatitude);
+  const haversine =
+    Math.sin(latitudeDelta / 2) ** 2 +
+    Math.cos(fromLatitudeRadians) * Math.cos(toLatitudeRadians) * Math.sin(longitudeDelta / 2) ** 2;
+
+  return 2 * earthRadiusKm * Math.asin(Math.sqrt(haversine));
+}
+
+function toRadians(value: number) {
+  return (value * Math.PI) / 180;
 }

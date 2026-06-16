@@ -60,6 +60,9 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
             <p className="max-w-2xl text-muted-foreground">{t("books.catalog.description")}</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
+            <Button asChild variant="secondary">
+              <Link href={routes.nearby}>{t("books.catalog.nearbyLabel")}</Link>
+            </Button>
             <Button asChild variant="outline">
               <Link href={routes.dashboard}>{t("books.catalog.dashboardLabel")}</Link>
             </Button>

@@ -1,5 +1,6 @@
 import { appConfig } from "@culturando/config";
 import type { Metadata } from "next";
+import "maplibre-gl/dist/maplibre-gl.css";
 import "./global.css";
 import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
 

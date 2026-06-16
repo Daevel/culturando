@@ -27,6 +27,10 @@ export function HomePageContent() {
             <Link href={routes.books}>{t("home.hero.primaryActionLabel")}</Link>
           </Button>
 
+          <Button asChild size="lg" variant="secondary">
+            <Link href={routes.nearby}>{t("home.hero.nearbyActionLabel")}</Link>
+          </Button>
+
           <Button asChild size="lg" variant="outline">
             <Link href={routes.newBook}>{t("home.hero.secondaryActionLabel")}</Link>
           </Button>
