@@ -43,18 +43,16 @@ Stack principale:
 - tema grafico generato tramite tweakcn;
 - Auth.js tramite `next-auth` beta;
 - Zod per validazione form;
-- Prisma come ORM e schema database locale iniziale;
+- Prisma come ORM e schema database locale;
+- PostgreSQL con estensione PostGIS per persistenza e query geospaziali;
+- MapLibre GL JS per mappe interattive 2D/3D;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
 - Biome per linting e formatting;
 - package condivisi sotto `packages/*`.
 
 Stack previsto nelle fasi successive:
 
-- PostgreSQL come database relazionale;
-- PostGIS per funzionalità geospaziali;
-- MapLibre GL JS per mappe interattive 2D/3D;
 - eventuale pipeline AI/OCR per catalogazione assistita;
-- package di traduzione condiviso per i18n;
 - futura app mobile React Native/Expo, non inclusa nell’MVP iniziale.
 
 ## 4. Architettura generale
@@ -207,21 +205,27 @@ apps/web/src/features/auth/
 
 apps/web/src/features/books/
 ├── actions/
+│   ├── books.repository.ts
 │   └── create-book.action.ts
 ├── components/
 │   ├── BookCard.tsx
+│   ├── BookDetail.tsx
 │   ├── BookForm.tsx
 │   ├── BookGrid.tsx
 │   ├── BooksCatalog.tsx
+│   ├── NearbyBooks.tsx
+│   ├── NearbyMap.tsx
 │   └── NewBookPlaceholder.tsx
-├── data/
-│   └── books.repository.ts
 ├── mocks/
 │   └── books.mock.ts
 ├── schemas/
 │   └── book.schema.ts
 └── types/
     └── book-form.types.ts
+
+apps/web/src/features/nearby/
+└── components/
+    └── NearbySearchPage.tsx
 ```
 
 Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
@@ -230,8 +234,6 @@ I testi riutilizzabili non devono essere duplicati nelle feature: quando esiste 
 In futuro saranno previste feature come:
 
 ```txt
-features/nearby/
-features/dashboard/
 features/cataloging/
 features/profile/
 ```
@@ -255,7 +257,10 @@ export const routes = {
   login: "/auth/login",
   signup: "/auth/signup",
   dashboard: "/dashboard",
+  nearby: "/nearby",
   books: "/books",
+  bookDetail: (bookId: string) => `/books/${bookId}`,
+  nearbyBooks: (bookId: string) => `/books/${bookId}/nearby`,
   newBook: "/dashboard/books/new",
 } as const;
 ```
@@ -390,15 +395,15 @@ Responsabilità attuali:
 - Prisma Client;
 - schema Prisma;
 - client condiviso esportato come `prisma`;
-- PostgreSQL locale tramite Docker Compose;
-- script root per `db:up`, `db:down`, `db:logs`, `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
+- PostgreSQL locale tramite Docker Compose con immagine PostGIS;
+- estensione PostGIS inizializzata tramite script root `db:postgis`;
+- script root per `db:up`, `db:down`, `db:logs`, `db:postgis`, `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
 
 Responsabilità future:
 
 - query condivise;
 - seed;
-- migrazioni;
-- supporto futuro a PostGIS.
+- migrazioni.
 
 Struttura attuale:
 
@@ -412,7 +417,7 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`.
+Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
 
 ### 6.4 `packages/geo`
 
@@ -861,51 +866,65 @@ features/books/
 
 ### 11.3 Nearby / disponibilità vicine
 
-La feature nearby permetterà di cercare libri o luoghi culturali vicini a una zona.
+La feature nearby permette di cercare libri pubblici vicini a una zona o a un libro specifico, usando solo coordinate pubbliche approssimate per proteggere la privacy degli utenti.
 
-Funzionalità previste:
+Funzionalità attuali:
 
-- ricerca disponibilità vicine;
-- mappa interattiva;
-- lista alternativa testuale;
-- marker per utenti, biblioteche, librerie, cartolerie;
-- distinzione tra disponibilità verificata e luoghi non verificati;
-- rispetto della privacy tramite coordinate approssimate.
+- route pubblica `/nearby` con form di ricerca per città o indirizzo;
+- geocoding della zona cercata tramite `@culturando/geo` e Nominatim/OpenStreetMap;
+- selezione raggio ricerca: 5 km, 10 km, 25 km, 50 km;
+- route `/books/[bookId]/nearby` per trovare libri vicini a un libro specifico;
+- lista testuale accessibile ordinata per distanza approssimata;
+- mappa interattiva MapLibre condivisa tra ricerca territoriale e dettaglio libro;
+- marker distinti per area cercata/libro di partenza e libri disponibili;
+- legenda, popup e controlli mappa;
+- rispetto della privacy tramite `publicLatitude` e `publicLongitude`.
 
-Route prevista:
+Route attuali:
 
 ```txt
-/books/[slug]/nearby
+/nearby
+/books/[bookId]/nearby
 ```
 
 ### 11.4 MapLibre e geolocalizzazione
 
-La mappa sarà basata su MapLibre GL JS.
+La mappa è basata su MapLibre GL JS e viene implementata nel componente `NearbyMap` dentro `features/books/components`, perché viene riutilizzata sia dalla feature books sia dalla feature nearby.
 
-Funzioni previste:
+Funzioni attuali:
 
 - rendering WebGL;
 - zoom e pan;
-- vista urbana;
-- possibile effetto 3D;
-- layer GeoJSON;
+- vista urbana 3D con pitch, bearing e zoom alto;
+- stile vettoriale OpenFreeMap Liberty;
+- edifici 3D tramite layer `fill-extrusion` quando lo stile espone layer building compatibili;
+- rotazione automatica della camera attorno al punto cercato o al libro di partenza;
+- stop della rotazione quando l'utente interagisce con la mappa;
+- controlli UI per pausa/riprendi rotazione, ripristino vista e toggle 2D/3D;
 - marker interattivi;
-- integrazione futura con OpenStreetMap/Overpass per biblioteche, librerie e cartolerie.
+- legenda integrata;
+- popup con titolo e distanza/contesto.
+
+Funzioni previste:
+
+- layer GeoJSON dedicati per aggregazioni o cluster;
+- integrazione futura con OpenStreetMap/Overpass per biblioteche, librerie e cartolerie;
+- eventuale ottimizzazione mobile della rotazione automatica.
 
 La disponibilità verificata sarà solo quella proveniente dagli utenti Culturando. I luoghi esterni saranno luoghi potenzialmente rilevanti, ma non garantiranno la disponibilità reale del libro.
 
 ### 11.5 Database
 
-Il database attuale è PostgreSQL gestito in locale tramite Docker Compose. Prisma è l'ORM usato dall'applicazione e lo schema vive in `packages/db/prisma/schema.prisma`.
-
-PostGIS resta previsto per le fasi geospaziali successive.
+Il database attuale è PostgreSQL con estensione PostGIS, gestito in locale tramite Docker Compose. Prisma è l'ORM usato dall'applicazione e lo schema vive in `packages/db/prisma/schema.prisma`.
 
 Motivazioni:
 
 - dominio relazionale: utenti, libri, richieste, posizioni, statistiche;
 - necessità di query consistenti;
-- supporto geospaziale futuro tramite PostGIS;
+- supporto geospaziale tramite PostGIS;
 - possibilità di usare JSONB per metadati AI o risposte da API esterne.
+
+La ricerca territoriale usa query SQL raw tramite Prisma con funzioni PostGIS come `ST_DWithin` e `ST_Distance`, perché Prisma non espone nativamente tutti i tipi e operatori geospaziali necessari. I mock demo restano supportati con calcolo distanza in TypeScript come fallback, ma i libri persistiti vengono filtrati e ordinati dal database.
 
 Entità attuali:
 
@@ -1000,15 +1019,17 @@ Stato dei primi step:
 14. eseguire `db:push` e generare Prisma Client — completato;
 15. migrare la persistenza mock JSON dei libri verso CRUD reale con Prisma — completato;
 16. collegare Auth.js a utenti reali tramite database — completato;
-17. introdurre geocoding indirizzo -> coordinate private/pubbliche approssimate — completato.
+17. introdurre geocoding indirizzo -> coordinate private/pubbliche approssimate — completato;
+18. introdurre feature nearby con lista disponibilità vicine — completato;
+19. introdurre MapLibre con mappa 3D, marker, controlli e rotazione camera — completato;
+20. introdurre query geospaziali con PostGIS e filtro raggio — completato.
 
 Ordine dei prossimi step:
 
-1. introdurre feature nearby con lista di disponibilità vicine basata sulle coordinate pubbliche;
-2. introdurre MapLibre per una prima mappa interattiva;
-3. introdurre query geospaziali più robuste con PostGIS;
-4. introdurre upload immagini/storage e fallback copertina da API esterna;
-5. introdurre AI catalogazione.
+1. introdurre upload immagini/storage e fallback copertina da API esterna;
+2. introdurre gestione avanzata disponibilità/richieste di contatto o prestito;
+3. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
+4. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
