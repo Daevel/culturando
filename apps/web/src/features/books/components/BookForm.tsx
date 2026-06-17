@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startTransition, useActionState, useEffect } from "react";
+import Image from "next/image";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
@@ -21,12 +22,20 @@ const initialState: BookFormState = {
   errors: {},
 };
 
+type CoverLookupStatus = "idle" | "loading" | "found" | "not-found" | "error" | "missing-isbn";
+
 export function BookForm() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const coverObjectUrlRef = useRef<string | null>(null);
+  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string>();
+  const [coverLookupStatus, setCoverLookupStatus] = useState<CoverLookupStatus>("idle");
   const [state, formAction, isPending] = useActionState(createBookAction, initialState);
   const {
     handleSubmit,
     register,
     reset,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<BookFormInput, unknown, BookFormValues>({
     resolver: zodResolver(bookSchema),
@@ -48,30 +57,18 @@ export function BookForm() {
       region: "",
       country: "Italia",
       imageUrls: "",
+      externalCoverUrl: "",
     },
   });
   const t = useTranslation();
+  const isbnValue = watch("isbn");
 
-  function onSubmit(values: BookFormValues) {
-    const formData = new FormData();
+  function onSubmit(_values: BookFormValues) {
+    if (!formRef.current) {
+      return;
+    }
 
-    formData.set("title", values.title);
-    formData.set("author", values.author);
-    formData.set("isbn", values.isbn ?? "");
-    formData.set("publisher", values.publisher ?? "");
-    formData.set("publishedYear", values.publishedYear?.toString() ?? "");
-    formData.set("language", values.language ?? "");
-    formData.set("category", values.category ?? "");
-    formData.set("description", values.description ?? "");
-    formData.set("availability", values.availability);
-    formData.set("visibility", values.visibility);
-    formData.set("physicalCondition", values.physicalCondition);
-    formData.set("addressLabel", values.addressLabel);
-    formData.set("city", values.city ?? "");
-    formData.set("province", values.province ?? "");
-    formData.set("region", values.region ?? "");
-    formData.set("country", values.country);
-    formData.set("imageUrls", values.imageUrls ?? "");
+    const formData = new FormData(formRef.current);
 
     startTransition(() => {
       formAction(formData);
@@ -81,8 +78,87 @@ export function BookForm() {
   useEffect(() => {
     if (state.success) {
       reset();
+      formRef.current?.reset();
+      if (coverObjectUrlRef.current) {
+        URL.revokeObjectURL(coverObjectUrlRef.current);
+        coverObjectUrlRef.current = null;
+      }
+      setCoverPreviewUrl(undefined);
+      setCoverLookupStatus("idle");
     }
   }, [reset, state.success]);
+
+  useEffect(() => {
+    return () => {
+      if (coverObjectUrlRef.current) {
+        URL.revokeObjectURL(coverObjectUrlRef.current);
+      }
+    };
+  }, []);
+
+  async function lookupCoverByIsbn() {
+    const normalizedIsbn = isbnValue?.replace(/[-\s]/g, "").trim();
+
+    if (!normalizedIsbn) {
+      setCoverLookupStatus("missing-isbn");
+      return;
+    }
+
+    setCoverLookupStatus("loading");
+
+    try {
+      const response = await fetch(
+        `https://openlibrary.org/isbn/${encodeURIComponent(normalizedIsbn)}.json`,
+      );
+
+      if (!response.ok) {
+        setCoverLookupStatus("not-found");
+        return;
+      }
+
+      const data = (await response.json()) as { covers?: number[] };
+      const coverId = data.covers?.[0];
+
+      if (!coverId) {
+        setCoverLookupStatus("not-found");
+        return;
+      }
+
+      const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`;
+
+      clearCoverObjectUrl();
+      setCoverPreviewUrl(coverUrl);
+      setValue("externalCoverUrl", coverUrl, { shouldDirty: true });
+      setCoverLookupStatus("found");
+    } catch {
+      setCoverLookupStatus("error");
+    }
+  }
+
+  function handleCoverImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+
+    setValue("externalCoverUrl", "", { shouldDirty: true });
+    setCoverLookupStatus("idle");
+    clearCoverObjectUrl();
+
+    if (!file) {
+      setCoverPreviewUrl(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+
+    coverObjectUrlRef.current = objectUrl;
+    setCoverPreviewUrl(objectUrl);
+  }
+
+  function clearCoverObjectUrl() {
+    if (coverObjectUrlRef.current) {
+      URL.revokeObjectURL(coverObjectUrlRef.current);
+      coverObjectUrlRef.current = null;
+    }
+  }
 
   const titleError = errors.title?.message ?? state.errors.title;
   const authorError = errors.author?.message ?? state.errors.author;
@@ -101,10 +177,12 @@ export function BookForm() {
   const provinceError = errors.province?.message ?? state.errors.province;
   const regionError = errors.region?.message ?? state.errors.region;
   const countryError = errors.country?.message ?? state.errors.country;
+  const coverImageError = state.errors.coverImage;
   const imageUrlsError = errors.imageUrls?.message ?? state.errors.imageUrls;
+  const coverLookupMessage = getCoverLookupMessage(coverLookupStatus, t);
 
   return (
-    <form className="space-y-5" noValidate onSubmit={handleSubmit(onSubmit)}>
+    <form className="space-y-5" noValidate onSubmit={handleSubmit(onSubmit)} ref={formRef}>
       <div className="space-y-2">
         <Label htmlFor="title">{t("books.new.fields.title.label")}</Label>
         <Input
@@ -387,7 +465,67 @@ export function BookForm() {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 rounded-lg border bg-muted/20 p-4">
+        <div>
+          <h2 className="text-sm font-semibold">{t("books.new.imagesTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("books.new.imagesDescription")}</p>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="coverImage">{t("books.new.fields.coverImage.label")}</Label>
+          <Input
+            accept="image/jpeg,image/png,image/webp"
+            aria-describedby={coverImageError ? "book-cover-image-error" : undefined}
+            aria-invalid={Boolean(coverImageError)}
+            id="coverImage"
+            name="coverImage"
+            onChange={handleCoverImageChange}
+            type="file"
+          />
+          {coverImageError ? (
+            <p className="text-sm text-destructive" id="book-cover-image-error">
+              {coverImageError}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-md border bg-background p-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <p className="text-sm font-medium">{t("books.new.coverLookupTitle")}</p>
+            <p className="text-sm text-muted-foreground">{t("books.new.coverLookupDescription")}</p>
+          </div>
+          <Button
+            disabled={coverLookupStatus === "loading"}
+            onClick={lookupCoverByIsbn}
+            type="button"
+            variant="outline"
+          >
+            {coverLookupStatus === "loading"
+              ? t("books.new.coverLookupPendingLabel")
+              : t("books.new.coverLookupLabel")}
+          </Button>
+        </div>
+
+        <input type="hidden" {...register("externalCoverUrl")} />
+
+        {coverLookupMessage ? (
+          <p className="text-sm text-muted-foreground" role="status">
+            {coverLookupMessage}
+          </p>
+        ) : null}
+
+        {coverPreviewUrl ? (
+          <div className="overflow-hidden rounded-lg border bg-background p-3">
+            <Image
+              alt={t("books.new.coverPreviewAlt")}
+              className="h-52 w-full rounded-md object-contain"
+              height={208}
+              src={coverPreviewUrl}
+              unoptimized
+              width={360}
+            />
+          </div>
+        ) : null}
+
         <Label htmlFor="imageUrls">{t("books.new.fields.imageUrls.label")}</Label>
         <textarea
           aria-describedby={imageUrlsError ? "book-images-error" : undefined}
@@ -404,7 +542,6 @@ export function BookForm() {
         ) : null}
       </div>
 
-      {/* Upload e ricerca copertina esterna arriveranno con storage e provider dedicati. */}
       <p className="text-sm text-muted-foreground">{t("books.new.imagesHelpText")}</p>
 
       {state.messageKey ? (
@@ -422,4 +559,17 @@ export function BookForm() {
 
 function cnMessageClass(success: boolean) {
   return success ? "text-sm text-muted-foreground" : "text-sm text-destructive";
+}
+
+function getCoverLookupMessage(status: CoverLookupStatus, t: ReturnType<typeof useTranslation>) {
+  const messages = {
+    idle: undefined,
+    loading: undefined,
+    found: t("books.new.coverLookupFoundMessage"),
+    "not-found": t("books.new.coverLookupNotFoundMessage"),
+    error: t("books.new.coverLookupErrorMessage"),
+    "missing-isbn": t("books.new.coverLookupMissingIsbnMessage"),
+  } satisfies Record<CoverLookupStatus, string | undefined>;
+
+  return messages[status];
 }

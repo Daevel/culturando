@@ -1,5 +1,5 @@
 import { prisma } from "@culturando/db";
-import type { Book } from "@culturando/types";
+import type { Book, BookImageSource } from "@culturando/types";
 
 import { booksMock } from "../mocks/books.mock";
 
@@ -45,7 +45,10 @@ export type CreateStoredBookInput = {
     publicLongitude?: number;
     accuracyRadiusMeters?: number;
   };
-  imageUrls: string[];
+  images: Array<{
+    url: string;
+    source: BookImageSource;
+  }>;
 };
 
 export async function getBooks(): Promise<Book[]> {
@@ -123,9 +126,9 @@ export async function createStoredBook(input: CreateStoredBookInput) {
         create: input.location,
       },
       images: {
-        create: input.imageUrls.map((url, index) => ({
-          url,
-          source: "user_upload",
+        create: input.images.map((image, index) => ({
+          url: image.url,
+          source: image.source,
           alt: `${input.book.title} - immagine ${index + 1}`,
           isPrimary: index === 0,
         })),

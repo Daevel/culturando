@@ -183,8 +183,20 @@ export const en = {
       locationTitle: "Book address",
       locationDescription:
         "Enter a readable address: later it will be geocoded automatically and shown only approximately.",
+      imagesTitle: "Cover and images",
+      imagesDescription:
+        "Upload a cover from your device, add external URLs or let Culturando search for one by ISBN.",
       imagesHelpText:
-        "For now you can enter image URLs, one per line. Photo upload and automatic cover lookup will arrive with storage and external APIs.",
+        "The uploaded cover becomes the main image. If you do not add images and provide an ISBN, the system tries Open Library as a fallback.",
+      coverLookupTitle: "Automatic lookup",
+      coverLookupDescription: "Use the entered ISBN to search for a cover on Open Library.",
+      coverLookupLabel: "Search cover",
+      coverLookupPendingLabel: "Searching...",
+      coverLookupFoundMessage: "Cover found and ready to be saved.",
+      coverLookupNotFoundMessage: "No cover found for this ISBN.",
+      coverLookupErrorMessage: "The cover lookup could not be completed.",
+      coverLookupMissingIsbnMessage: "Enter an ISBN before searching for a cover.",
+      coverPreviewAlt: "Book cover preview",
       submitLabel: "Save book",
       pendingLabel: "Saving...",
       successMessage: "Book saved successfully to the database.",
@@ -252,8 +264,11 @@ export const en = {
           label: "Country",
           placeholder: "Italy",
         },
+        coverImage: {
+          label: "Cover",
+        },
         imageUrls: {
-          label: "Images",
+          label: "Additional image URLs",
           placeholder: "https://example.com/cover.jpg",
         },
       },

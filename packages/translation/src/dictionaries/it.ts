@@ -184,8 +184,20 @@ export const it = {
       locationTitle: "Indirizzo del libro",
       locationDescription:
         "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",
+      imagesTitle: "Copertina e immagini",
+      imagesDescription:
+        "Carica una copertina dal tuo dispositivo, aggiungi URL esterni o lascia che Culturando cerchi una copertina tramite ISBN.",
       imagesHelpText:
-        "Per ora puoi indicare URL immagine, uno per riga. Upload foto e ricerca automatica copertina arriveranno con storage e API esterne.",
+        "La copertina caricata diventa l'immagine principale. Se non carichi immagini e inserisci un ISBN, il sistema prova a usare Open Library come fallback.",
+      coverLookupTitle: "Ricerca automatica",
+      coverLookupDescription: "Usa l'ISBN inserito per cercare una copertina su Open Library.",
+      coverLookupLabel: "Cerca copertina",
+      coverLookupPendingLabel: "Ricerca in corso...",
+      coverLookupFoundMessage: "Copertina trovata e pronta per il salvataggio.",
+      coverLookupNotFoundMessage: "Nessuna copertina trovata per questo ISBN.",
+      coverLookupErrorMessage: "Non è stato possibile cercare la copertina.",
+      coverLookupMissingIsbnMessage: "Inserisci un ISBN prima di cercare la copertina.",
+      coverPreviewAlt: "Anteprima copertina libro",
       submitLabel: "Salva libro",
       pendingLabel: "Salvataggio in corso...",
       successMessage: "Libro salvato correttamente nel database.",
@@ -253,8 +265,11 @@ export const it = {
           label: "Paese",
           placeholder: "Italia",
         },
+        coverImage: {
+          label: "Copertina",
+        },
         imageUrls: {
-          label: "Immagini",
+          label: "URL immagini aggiuntive",
           placeholder: "https://example.com/copertina.jpg",
         },
       },

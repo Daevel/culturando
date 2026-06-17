@@ -83,6 +83,12 @@ export const bookSchema = z.object({
     .max(1000, "Inserisci meno URL immagine.")
     .optional()
     .transform((value) => (value ? value : undefined)),
+  externalCoverUrl: z
+    .string()
+    .trim()
+    .max(300, "L'URL copertina esterna è troppo lungo.")
+    .optional()
+    .transform((value) => (value ? value : undefined)),
 });
 
 export function validateBookForm(values: unknown) {

@@ -17,7 +17,9 @@ export type BookFormField =
   | "province"
   | "region"
   | "country"
-  | "imageUrls";
+  | "coverImage"
+  | "imageUrls"
+  | "externalCoverUrl";
 
 export type BookFormState = {
   success: boolean;
