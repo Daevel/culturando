@@ -833,12 +833,15 @@ Funzionalità attuali:
 - route `/books` dinamica per leggere il catalogo aggiornato dal database;
 - testi UI centralizzati in `@culturando/translation`;
 - dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
-- l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde.
+- l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde;
+- upload copertina dal form nuovo libro con salvataggio locale in `apps/web/public/uploads/book-covers` e associazione come `BookImage` primaria;
+- supporto a URL immagini aggiuntive nel form libro;
+- ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e salvataggio della cover trovata come immagine `external_api`;
+- fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN.
 
 Funzionalità ancora previste:
 
-- upload copertine e storage immagini;
-- ricerca automatica copertina tramite API esterna;
+- storage immagini persistente/cloud per ambienti non locali;
 - gestione avanzata stato disponibilità;
 - integrazione con geolocalizzazione e disponibilità vicine.
 
@@ -1022,12 +1025,13 @@ Stato dei primi step:
 17. introdurre geocoding indirizzo -> coordinate private/pubbliche approssimate — completato;
 18. introdurre feature nearby con lista disponibilità vicine — completato;
 19. introdurre MapLibre con mappa 3D, marker, controlli e rotazione camera — completato;
-20. introdurre query geospaziali con PostGIS e filtro raggio — completato.
+20. introdurre query geospaziali con PostGIS e filtro raggio — completato;
+21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato.
 
 Ordine dei prossimi step:
 
-1. introdurre upload immagini/storage e fallback copertina da API esterna;
-2. introdurre gestione avanzata disponibilità/richieste di contatto o prestito;
+1. introdurre gestione avanzata disponibilità/richieste di contatto o prestito;
+2. sostituire lo storage locale delle copertine con storage persistente/cloud;
 3. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
 4. introdurre AI catalogazione.
 
