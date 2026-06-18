@@ -226,6 +226,19 @@ apps/web/src/features/books/
 apps/web/src/features/nearby/
 └── components/
     └── NearbySearchPage.tsx
+
+apps/web/src/features/requests/
+├── actions/
+│   ├── create-loan-request.action.ts
+│   ├── loan-requests.repository.ts
+│   └── update-loan-request-status.action.ts
+├── components/
+│   ├── LoanRequestForm.tsx
+│   └── ReceivedLoanRequests.tsx
+├── schemas/
+│   └── loan-request.schema.ts
+└── types/
+    └── loan-request-form.types.ts
 ```
 
 Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
@@ -774,7 +787,7 @@ Se serve solo alla web app, resta in `apps/web`.
 
 ### 11.1 Dashboard
 
-La dashboard è l’area privata dell’utente ed è stata introdotta come placeholder protetto.
+La dashboard è l’area privata dell’utente ed è protetta tramite sessione Auth.js.
 
 Struttura attuale:
 
@@ -790,14 +803,15 @@ Responsabilità attuali:
 - verificare il flusso `login -> sessione -> dashboard -> logout`;
 - mostrare i dati base della sessione Auth.js;
 - esporre una CTA verso la creazione libro;
-- esporre logout tramite `logoutAction`.
+- esporre logout tramite `logoutAction`;
+- mostrare le richieste ricevute sui libri dell'utente;
+- permettere al proprietario di accettare o rifiutare richieste ancora `pending`.
 
 Funzionalità previste:
 
 - visualizzazione libri pubblicati;
 - aggiunta nuovi libri;
 - gestione profilo;
-- gestione richieste ricevute;
 - statistiche base;
 - accesso rapido alle funzioni di catalogazione.
 
@@ -808,6 +822,31 @@ Route previste/attuali:
 /dashboard/books/new      # attuale, form libro protetto
 /dashboard/books          # previsto
 ```
+
+### 11.1.1 Requests / richieste contatto-prestito
+
+La feature requests completa il primo flusso interattivo dell'MVP: un utente autenticato può inviare una richiesta per un libro pubblico disponibile e il proprietario può gestirla dalla dashboard.
+
+Funzionalità attuali:
+
+- form `LoanRequestForm` nel dettaglio libro `/books/[bookId]`;
+- tipi richiesta `consultation`, `loan`, `info`;
+- messaggio opzionale fino a 800 caratteri;
+- server action `createLoanRequestAction` con controllo sessione;
+- blocco invio se l'utente non è autenticato, se il libro non è pubblico/richiedibile o se l'utente è proprietario del libro;
+- persistenza reale tramite modello Prisma `LoanRequest`;
+- lista `ReceivedLoanRequests` nella dashboard;
+- azioni proprietario `Accetta` e `Rifiuta` tramite `updateLoanRequestStatusAction`;
+- aggiornamento stato consentito solo al proprietario e solo per richieste `pending`;
+- testi UI centralizzati in `@culturando/translation`.
+
+Funzionalità ancora previste:
+
+- visualizzazione richieste inviate dal richiedente;
+- annullamento richiesta da parte del richiedente;
+- pagina dedicata `/dashboard/requests`;
+- notifiche/email;
+- messaggistica o scambio contatti dopo accettazione.
 
 ### 11.2 Books
 
@@ -934,12 +973,12 @@ Entità attuali:
 - User;
 - Book;
 - BookLocation;
-- BookImage.
+- BookImage;
+- LoanRequest.
 
 Entità previste:
 
 - Location geospaziale avanzata;
-- LoanRequest;
 - BookStats;
 - BookView;
 - UserProfile.
@@ -1026,11 +1065,12 @@ Stato dei primi step:
 18. introdurre feature nearby con lista disponibilità vicine — completato;
 19. introdurre MapLibre con mappa 3D, marker, controlli e rotazione camera — completato;
 20. introdurre query geospaziali con PostGIS e filtro raggio — completato;
-21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato.
+21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato;
+22. introdurre richieste di contatto/prestito con gestione accetta/rifiuta — completato.
 
 Ordine dei prossimi step:
 
-1. introdurre gestione avanzata disponibilità/richieste di contatto o prestito;
+1. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending`;
 2. sostituire lo storage locale delle copertine con storage persistente/cloud;
 3. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
 4. introdurre AI catalogazione.
