@@ -11,14 +11,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { routes } from "@/config/routes";
+import type { ReceivedLoanRequest } from "@/features/requests/actions/loan-requests.repository";
+import { ReceivedLoanRequests } from "@/features/requests/components/ReceivedLoanRequests";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type DashboardOverviewProps = {
   logoutAction: () => Promise<void>;
+  receivedLoanRequests: ReceivedLoanRequest[];
   user: NonNullable<Session["user"]>;
 };
 
-export function DashboardOverview({ logoutAction, user }: DashboardOverviewProps) {
+export function DashboardOverview({ logoutAction, receivedLoanRequests, user }: DashboardOverviewProps) {
   const t = useTranslation();
   const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
 
@@ -78,6 +81,8 @@ export function DashboardOverview({ logoutAction, user }: DashboardOverviewProps
             </CardFooter>
           </Card>
         </div>
+
+        <ReceivedLoanRequests requests={receivedLoanRequests} />
       </section>
     </main>
   );

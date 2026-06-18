@@ -36,16 +36,32 @@ enum BookImageSource {
   external_api
 }
 
+enum LoanRequestType {
+  consultation
+  loan
+  info
+}
+
+enum LoanRequestStatus {
+  pending
+  accepted
+  rejected
+  cancelled
+  completed
+}
+
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  name         String?
-  passwordHash String?
-  role         UserRole @default(user)
-  avatarUrl    String?
-  books        Book[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                    String        @id @default(cuid())
+  email                 String        @unique
+  name                  String?
+  passwordHash          String?
+  role                  UserRole      @default(user)
+  avatarUrl             String?
+  books                 Book[]
+  sentLoanRequests      LoanRequest[] @relation("LoanRequestRequester")
+  receivedLoanRequests  LoanRequest[] @relation("LoanRequestOwner")
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
 
   @@index([role])
 }
@@ -67,6 +83,7 @@ model Book {
   physicalCondition BookPhysicalCondition @default(good)
   location          BookLocation?
   images            BookImage[]
+  loanRequests      LoanRequest[]
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
 
@@ -114,4 +131,25 @@ model BookImage {
   @@index([bookId])
   @@index([source])
   @@index([isPrimary])
+}
+
+model LoanRequest {
+  id          String            @id @default(cuid())
+  bookId      String
+  book        Book              @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  requesterId String
+  requester   User              @relation("LoanRequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  ownerId     String
+  owner       User              @relation("LoanRequestOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  type        LoanRequestType   @default(consultation)
+  status      LoanRequestStatus @default(pending)
+  message     String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([bookId])
+  @@index([requesterId])
+  @@index([ownerId])
+  @@index([status])
+  @@index([type])
 }

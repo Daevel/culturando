@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { routes } from "@/config/routes";
+import { LoanRequestForm } from "@/features/requests/components/LoanRequestForm";
 import { useTranslation } from "@/hooks/useTranslation";
 
 type BookDetailProps = {
@@ -38,6 +39,7 @@ export function BookDetail({ book }: BookDetailProps) {
   } satisfies Record<BookPhysicalCondition, string>;
   const hasPublicLocation =
     book.location?.publicLatitude !== undefined && book.location.publicLongitude !== undefined;
+  const canReceiveRequests = book.visibility === "public" && book.availability !== "unavailable";
 
   return (
     <main className="min-h-screen bg-background px-6 py-10 text-foreground">
@@ -160,6 +162,8 @@ export function BookDetail({ book }: BookDetailProps) {
             </section>
           </CardContent>
         </Card>
+
+        {canReceiveRequests ? <LoanRequestForm bookId={book.id} /> : null}
       </section>
     </main>
   );

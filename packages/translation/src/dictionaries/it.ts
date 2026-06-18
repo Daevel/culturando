@@ -301,6 +301,44 @@ export const it = {
         "Non e stato possibile trovare questa zona. Prova con una citta o un indirizzo piu specifico.",
     },
   },
+  requests: {
+    type: {
+      consultation: "Consultazione",
+      loan: "Prestito",
+      info: "Informazioni",
+    },
+    status: {
+      pending: "In attesa",
+      accepted: "Accettata",
+      rejected: "Rifiutata",
+      cancelled: "Annullata",
+      completed: "Completata",
+    },
+    form: {
+      title: "Richiedi contatto",
+      description:
+        "Invia una richiesta al proprietario del libro. La posizione precisa resta privata.",
+      typeLabel: "Tipo richiesta",
+      messageLabel: "Messaggio",
+      messagePlaceholder: "Presentati e spiega brevemente cosa vorresti consultare o chiedere.",
+      submitLabel: "Invia richiesta",
+      pendingLabel: "Invio in corso...",
+      successMessage: "Richiesta inviata correttamente.",
+      unauthorizedMessage: "Devi accedere per inviare una richiesta.",
+      unavailableBookMessage: "Questo libro non può ricevere richieste.",
+      ownerMessage: "Non puoi inviare una richiesta per un tuo libro.",
+      genericErrorMessage: "Non è stato possibile inviare la richiesta.",
+    },
+    received: {
+      title: "Richieste ricevute",
+      description: "Richieste di consultazione, prestito o informazioni sui tuoi libri.",
+      emptyState: "Non hai ancora ricevuto richieste.",
+      requesterLabel: "Richiedente",
+      messageLabel: "Messaggio",
+      acceptLabel: "Accetta",
+      rejectLabel: "Rifiuta",
+    },
+  },
   maps: {
     controls: {
       pauseRotationLabel: "Pausa rotazione",

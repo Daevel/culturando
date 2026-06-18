@@ -299,6 +299,43 @@ export const en = {
       geocodingFailedMessage: "This area could not be found. Try a more specific city or address.",
     },
   },
+  requests: {
+    type: {
+      consultation: "Consultation",
+      loan: "Loan",
+      info: "Information",
+    },
+    status: {
+      pending: "Pending",
+      accepted: "Accepted",
+      rejected: "Rejected",
+      cancelled: "Cancelled",
+      completed: "Completed",
+    },
+    form: {
+      title: "Request contact",
+      description: "Send a request to the book owner. The precise location stays private.",
+      typeLabel: "Request type",
+      messageLabel: "Message",
+      messagePlaceholder: "Introduce yourself and briefly explain what you would like to ask.",
+      submitLabel: "Send request",
+      pendingLabel: "Sending...",
+      successMessage: "Request sent successfully.",
+      unauthorizedMessage: "You must sign in to send a request.",
+      unavailableBookMessage: "This book cannot receive requests.",
+      ownerMessage: "You cannot send a request for your own book.",
+      genericErrorMessage: "The request could not be sent.",
+    },
+    received: {
+      title: "Received requests",
+      description: "Consultation, loan or information requests for your books.",
+      emptyState: "You have not received any requests yet.",
+      requesterLabel: "Requester",
+      messageLabel: "Message",
+      acceptLabel: "Accept",
+      rejectLabel: "Reject",
+    },
+  },
   maps: {
     controls: {
       pauseRotationLabel: "Pause rotation",

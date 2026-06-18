@@ -79,6 +79,20 @@ export async function getBookById(bookId: string): Promise<Book | null> {
   return book ? toBook(book) : null;
 }
 
+export async function getStoredBookOwnerId(bookId: string): Promise<string | null> {
+  const book = await prisma.book.findFirst({
+    where: {
+      id: bookId,
+      visibility: "public",
+    },
+    select: {
+      ownerId: true,
+    },
+  });
+
+  return book?.ownerId ?? null;
+}
+
 export async function getNearbyBooks(bookId: string, limit = 6): Promise<NearbyBook[]> {
   const origin = await getBookById(bookId);
   const originLatitude = origin?.location?.publicLatitude;
