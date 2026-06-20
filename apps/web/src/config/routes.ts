@@ -4,6 +4,7 @@ export const routes = {
   login: "/auth/login",
   signup: "/auth/signup",
   dashboard: "/dashboard",
+  dashboardRequests: "/dashboard/requests",
   nearby: "/nearby",
   books: "/books",
   bookDetail: (bookId: string) => `/books/${bookId}`,

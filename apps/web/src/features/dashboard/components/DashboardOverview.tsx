@@ -21,7 +21,11 @@ type DashboardOverviewProps = {
   user: NonNullable<Session["user"]>;
 };
 
-export function DashboardOverview({ logoutAction, receivedLoanRequests, user }: DashboardOverviewProps) {
+export function DashboardOverview({
+  logoutAction,
+  receivedLoanRequests,
+  user,
+}: DashboardOverviewProps) {
   const t = useTranslation();
   const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
 
@@ -77,6 +81,11 @@ export function DashboardOverview({ logoutAction, receivedLoanRequests, user }: 
               </Button>
               <Button asChild variant="secondary">
                 <Link href={routes.books}>{t("dashboard.quickActions.booksLabel")}</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={routes.dashboardRequests}>
+                  {t("dashboard.quickActions.requestsLabel")}
+                </Link>
               </Button>
             </CardFooter>
           </Card>

@@ -100,6 +100,7 @@ export const it = {
       description: "I prossimi flussi partiranno da qui.",
       newBookLabel: "Aggiungi libro",
       booksLabel: "Esplora libri",
+      requestsLabel: "Le mie richieste",
     },
   },
   books: {
@@ -302,6 +303,13 @@ export const it = {
     },
   },
   requests: {
+    page: {
+      eyebrow: "Area personale",
+      title: "Le mie richieste",
+      description:
+        "Controlla le richieste inviate ai proprietari dei libri e annulla quelle ancora in attesa.",
+      backToDashboardLabel: "Torna alla dashboard",
+    },
     type: {
       consultation: "Consultazione",
       loan: "Prestito",
@@ -337,6 +345,15 @@ export const it = {
       messageLabel: "Messaggio",
       acceptLabel: "Accetta",
       rejectLabel: "Rifiuta",
+    },
+    sent: {
+      title: "Richieste inviate",
+      description:
+        "Richieste che hai inviato per consultare, prendere in prestito o ricevere informazioni.",
+      emptyState: "Non hai ancora inviato richieste.",
+      ownerLabel: "Proprietario",
+      messageLabel: "Messaggio inviato",
+      cancelLabel: "Annulla richiesta",
     },
   },
   maps: {

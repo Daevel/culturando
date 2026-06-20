@@ -13,7 +13,9 @@ export default async function DashboardPage() {
     redirect(routes.login);
   }
 
-  const receivedLoanRequests = session.user.id ? await getReceivedLoanRequests(session.user.id) : [];
+  const receivedLoanRequests = session.user.id
+    ? await getReceivedLoanRequests(session.user.id)
+    : [];
 
   return (
     <DashboardOverview

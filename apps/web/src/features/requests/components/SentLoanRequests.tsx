@@ -5,25 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
-import type { ReceivedLoanRequest } from "../actions/loan-requests.repository";
-import { updateLoanRequestStatusAction } from "../actions/update-loan-request-status.action";
+import { cancelLoanRequestAction } from "../actions/cancel-loan-request.action";
+import type { SentLoanRequest } from "../actions/loan-requests.repository";
 
-type ReceivedLoanRequestsProps = {
-  requests: ReceivedLoanRequest[];
+type SentLoanRequestsProps = {
+  requests: SentLoanRequest[];
 };
 
-export function ReceivedLoanRequests({ requests }: ReceivedLoanRequestsProps) {
+export function SentLoanRequests({ requests }: SentLoanRequestsProps) {
   const t = useTranslation();
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{t("requests.received.title")}</CardTitle>
-        <CardDescription>{t("requests.received.description")}</CardDescription>
+        <CardTitle>{t("requests.sent.title")}</CardTitle>
+        <CardDescription>{t("requests.sent.description")}</CardDescription>
       </CardHeader>
       <CardContent>
         {requests.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("requests.received.emptyState")}</p>
+          <p className="text-sm text-muted-foreground">{t("requests.sent.emptyState")}</p>
         ) : (
           <div className="space-y-4">
             {requests.map((request) => (
@@ -46,36 +46,27 @@ export function ReceivedLoanRequests({ requests }: ReceivedLoanRequestsProps) {
                 <dl className="mt-4 space-y-2 text-sm">
                   <div>
                     <dt className="font-medium text-muted-foreground">
-                      {t("requests.received.requesterLabel")}
+                      {t("requests.sent.ownerLabel")}
                     </dt>
                     <dd>
-                      {request.requester.name ??
-                        request.requester.email ??
-                        t("dashboard.userFallback")}
+                      {request.owner.name ?? request.owner.email ?? t("dashboard.userFallback")}
                     </dd>
                   </div>
                   {request.message ? (
                     <div>
                       <dt className="font-medium text-muted-foreground">
-                        {t("requests.received.messageLabel")}
+                        {t("requests.sent.messageLabel")}
                       </dt>
                       <dd className="leading-6">{request.message}</dd>
                     </div>
                   ) : null}
                 </dl>
                 {request.status === "pending" ? (
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    <form action={updateLoanRequestStatusAction.bind(null, request.id, "accepted")}>
-                      <Button size="sm" type="submit">
-                        {t("requests.received.acceptLabel")}
-                      </Button>
-                    </form>
-                    <form action={updateLoanRequestStatusAction.bind(null, request.id, "rejected")}>
-                      <Button size="sm" type="submit" variant="outline">
-                        {t("requests.received.rejectLabel")}
-                      </Button>
-                    </form>
-                  </div>
+                  <form className="mt-4" action={cancelLoanRequestAction.bind(null, request.id)}>
+                    <Button size="sm" type="submit" variant="outline">
+                      {t("requests.sent.cancelLabel")}
+                    </Button>
+                  </form>
                 ) : null}
               </article>
             ))}

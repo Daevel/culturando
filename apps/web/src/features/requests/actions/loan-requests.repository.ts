@@ -13,6 +13,18 @@ export type ReceivedLoanRequest = LoanRequest & {
   };
 };
 
+export type SentLoanRequest = LoanRequest & {
+  book: {
+    id: string;
+    title: string;
+    author: string;
+  };
+  owner: {
+    name?: string;
+    email?: string;
+  };
+};
+
 export type CreateLoanRequestInput = {
   bookId: string;
   requesterId: string;
@@ -44,6 +56,25 @@ export async function updatePendingLoanRequestStatus({
     },
     data: {
       status,
+    },
+  });
+}
+
+export async function cancelPendingLoanRequest({
+  requestId,
+  requesterId,
+}: {
+  requestId: string;
+  requesterId: string;
+}) {
+  return prisma.loanRequest.updateMany({
+    where: {
+      id: requestId,
+      requesterId,
+      status: "pending",
+    },
+    data: {
+      status: "cancelled",
     },
   });
 }
@@ -87,6 +118,49 @@ export async function getReceivedLoanRequests(ownerId: string): Promise<Received
     requester: {
       name: request.requester.name ?? undefined,
       email: request.requester.email ?? undefined,
+    },
+  }));
+}
+
+export async function getSentLoanRequests(requesterId: string): Promise<SentLoanRequest[]> {
+  const requests = await prisma.loanRequest.findMany({
+    where: {
+      requesterId,
+    },
+    include: {
+      book: {
+        select: {
+          id: true,
+          title: true,
+          author: true,
+        },
+      },
+      owner: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  return requests.map((request) => ({
+    id: request.id,
+    bookId: request.bookId,
+    requesterId: request.requesterId,
+    ownerId: request.ownerId,
+    type: request.type,
+    status: request.status,
+    message: request.message ?? undefined,
+    createdAt: request.createdAt.toISOString(),
+    updatedAt: request.updatedAt.toISOString(),
+    book: request.book,
+    owner: {
+      name: request.owner.name ?? undefined,
+      email: request.owner.email ?? undefined,
     },
   }));
 }

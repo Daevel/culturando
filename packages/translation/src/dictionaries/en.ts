@@ -100,6 +100,7 @@ export const en = {
       description: "The next flows will start from here.",
       newBookLabel: "Add book",
       booksLabel: "Explore books",
+      requestsLabel: "My requests",
     },
   },
   books: {
@@ -300,6 +301,13 @@ export const en = {
     },
   },
   requests: {
+    page: {
+      eyebrow: "Personal area",
+      title: "My requests",
+      description:
+        "Check the requests you sent to book owners and cancel the ones that are still pending.",
+      backToDashboardLabel: "Back to dashboard",
+    },
     type: {
       consultation: "Consultation",
       loan: "Loan",
@@ -334,6 +342,14 @@ export const en = {
       messageLabel: "Message",
       acceptLabel: "Accept",
       rejectLabel: "Reject",
+    },
+    sent: {
+      title: "Sent requests",
+      description: "Requests you sent to consult, borrow or receive information.",
+      emptyState: "You have not sent any requests yet.",
+      ownerLabel: "Owner",
+      messageLabel: "Sent message",
+      cancelLabel: "Cancel request",
     },
   },
   maps: {
