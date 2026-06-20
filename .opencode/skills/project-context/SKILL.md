@@ -46,6 +46,7 @@ Stack principale:
 - Prisma come ORM e schema database locale;
 - PostgreSQL con estensione PostGIS per persistenza e query geospaziali;
 - MapLibre GL JS per mappe interattive 2D/3D;
+- Cloudflare R2, tramite client S3 compatibile, per storage persistente delle copertine;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
 - Biome per linting e formatting;
 - package condivisi sotto `packages/*`.
@@ -230,11 +231,13 @@ apps/web/src/features/nearby/
 apps/web/src/features/requests/
 ├── actions/
 │   ├── create-loan-request.action.ts
+│   ├── cancel-loan-request.action.ts
 │   ├── loan-requests.repository.ts
 │   └── update-loan-request-status.action.ts
 ├── components/
 │   ├── LoanRequestForm.tsx
-│   └── ReceivedLoanRequests.tsx
+│   ├── ReceivedLoanRequests.tsx
+│   └── SentLoanRequests.tsx
 ├── schemas/
 │   └── loan-request.schema.ts
 └── types/
@@ -838,13 +841,13 @@ Funzionalità attuali:
 - lista `ReceivedLoanRequests` nella dashboard;
 - azioni proprietario `Accetta` e `Rifiuta` tramite `updateLoanRequestStatusAction`;
 - aggiornamento stato consentito solo al proprietario e solo per richieste `pending`;
+- pagina protetta `/dashboard/requests` per visualizzare le richieste inviate dal richiedente;
+- lista `SentLoanRequests` con libro, proprietario, stato, tipo richiesta e messaggio inviato;
+- annullamento delle richieste inviate ancora `pending` tramite `cancelLoanRequestAction`;
 - testi UI centralizzati in `@culturando/translation`.
 
 Funzionalità ancora previste:
 
-- visualizzazione richieste inviate dal richiedente;
-- annullamento richiesta da parte del richiedente;
-- pagina dedicata `/dashboard/requests`;
 - notifiche/email;
 - messaggistica o scambio contatti dopo accettazione.
 
@@ -873,14 +876,14 @@ Funzionalità attuali:
 - testi UI centralizzati in `@culturando/translation`;
 - dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
 - l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde;
-- upload copertina dal form nuovo libro con salvataggio locale in `apps/web/public/uploads/book-covers` e associazione come `BookImage` primaria;
+- upload copertina dal form nuovo libro tramite adapter `book-cover-storage`, con salvataggio su Cloudflare R2 quando le variabili `R2_*` sono configurate e fallback locale in `apps/web/public/uploads/book-covers`;
 - supporto a URL immagini aggiuntive nel form libro;
-- ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e salvataggio della cover trovata come immagine `external_api`;
-- fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN.
+- ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e copia della cover trovata nello storage configurato quando possibile;
+- fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN;
+- URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage.
 
 Funzionalità ancora previste:
 
-- storage immagini persistente/cloud per ambienti non locali;
 - gestione avanzata stato disponibilità;
 - integrazione con geolocalizzazione e disponibilità vicine.
 
@@ -889,6 +892,7 @@ Struttura attuale:
 ```txt
 features/books/
 ├── actions/
+│   ├── book-cover-storage.ts
 │   ├── books.repository.ts
 │   └── create-book.action.ts
 ├── components/
@@ -1066,14 +1070,14 @@ Stato dei primi step:
 19. introdurre MapLibre con mappa 3D, marker, controlli e rotazione camera — completato;
 20. introdurre query geospaziali con PostGIS e filtro raggio — completato;
 21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato;
-22. introdurre richieste di contatto/prestito con gestione accetta/rifiuta — completato.
+22. introdurre richieste di contatto/prestito con gestione accetta/rifiuta — completato;
+23. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending` — completato;
+24. sostituire lo storage locale delle copertine con storage persistente/cloud tramite Cloudflare R2 — completato.
 
 Ordine dei prossimi step:
 
-1. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending`;
-2. sostituire lo storage locale delle copertine con storage persistente/cloud;
-3. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
-4. introdurre AI catalogazione.
+1. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
+2. introdurre AI catalogazione.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
