@@ -1,8 +1,5 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
-import { join, sep } from "node:path";
 import { geocodeAddress } from "@culturando/geo";
 import { revalidatePath } from "next/cache";
 
@@ -10,15 +7,8 @@ import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { validateBookForm } from "../schemas/book.schema";
 import type { BookFormField, BookFormState } from "../types/book-form.types";
+import { saveCoverImage, saveRemoteCoverImage } from "./book-cover-storage";
 import { createStoredBook } from "./books.repository";
-
-const MAX_COVER_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
-
-const ALLOWED_COVER_IMAGE_TYPES = {
-  "image/jpeg": "jpg",
-  "image/png": "png",
-  "image/webp": "webp",
-} as const;
 
 const OPEN_LIBRARY_COVER_TIMEOUT_MS = 2500;
 
@@ -194,12 +184,20 @@ async function getBookImages({
   const openLibraryCoverUrl = normalizeOpenLibraryCoverUrl(externalCoverUrl);
 
   if (openLibraryCoverUrl) {
-    return [{ url: openLibraryCoverUrl, source: "external_api" as const }];
+    const storedCover = await saveRemoteCoverImage(openLibraryCoverUrl);
+
+    return [{ url: storedCover.url ?? openLibraryCoverUrl, source: "external_api" as const }];
   }
 
   const fallbackCoverUrl = await findOpenLibraryCoverUrl(isbn);
 
-  return fallbackCoverUrl ? [{ url: fallbackCoverUrl, source: "external_api" as const }] : [];
+  if (!fallbackCoverUrl) {
+    return [];
+  }
+
+  const storedCover = await saveRemoteCoverImage(fallbackCoverUrl);
+
+  return [{ url: storedCover.url ?? fallbackCoverUrl, source: "external_api" as const }];
 }
 
 function normalizeOpenLibraryCoverUrl(value: string | undefined) {
@@ -241,52 +239,6 @@ async function findOpenLibraryCoverUrl(isbn: string | undefined) {
   } finally {
     clearTimeout(timeoutId);
   }
-}
-
-async function saveCoverImage(value: FormDataEntryValue | null) {
-  if (!(value instanceof File) || value.size === 0) {
-    return {
-      url: undefined,
-      error: undefined,
-    };
-  }
-
-  const extension = ALLOWED_COVER_IMAGE_TYPES[value.type as keyof typeof ALLOWED_COVER_IMAGE_TYPES];
-
-  if (!extension) {
-    return {
-      url: undefined,
-      error: "Carica una copertina in formato JPG, PNG o WebP.",
-    };
-  }
-
-  if (value.size > MAX_COVER_IMAGE_SIZE_BYTES) {
-    return {
-      url: undefined,
-      error: "La copertina non può superare 5 MB.",
-    };
-  }
-
-  const uploadDirectory = getCoverUploadDirectory();
-  const fileName = `${randomUUID()}.${extension}`;
-
-  await mkdir(uploadDirectory, { recursive: true });
-  await writeFile(join(uploadDirectory, fileName), Buffer.from(await value.arrayBuffer()));
-
-  return {
-    url: `/uploads/book-covers/${fileName}`,
-    error: undefined,
-  };
-}
-
-function getCoverUploadDirectory() {
-  const appPublicPath = join("apps", "web", "public");
-
-  if (process.cwd().endsWith(`${sep}apps${sep}web`)) {
-    return join(process.cwd(), "public", "uploads", "book-covers");
-  }
-
-  return join(process.cwd(), appPublicPath, "uploads", "book-covers");
 }
 
 function parseImageUrls(value: string | undefined) {

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1072.0",
     "@culturando/config": "workspace:*",
     "@culturando/db": "workspace:*",
     "@culturando/geo": "workspace:*",
