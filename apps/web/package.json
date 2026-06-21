@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
+    "@culturando/ai": "workspace:*",
     "@culturando/config": "workspace:*",
     "@culturando/db": "workspace:*",
     "@culturando/geo": "workspace:*",

@@ -1,5 +1,6 @@
 "use client";
 
+import { extractIsbnFromText } from "@culturando/ai";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
@@ -9,6 +10,14 @@ import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  extractIsbnFromImageAction,
+  type ExtractIsbnFromImageResult,
+} from "@/features/cataloging/actions/extract-isbn-from-image.action";
+import {
+  lookupBookMetadataAction,
+  type LookupBookMetadataResult,
+} from "@/features/cataloging/actions/lookup-book-metadata.action";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createBookAction } from "../actions/create-book.action";
 import { bookSchema } from "../schemas/book.schema";
@@ -23,12 +32,28 @@ const initialState: BookFormState = {
 };
 
 type CoverLookupStatus = "idle" | "loading" | "found" | "not-found" | "error" | "missing-isbn";
+type IsbnExtractionStatus = "idle" | "found" | "not-found";
+type MetadataLookupStatus = CoverLookupStatus;
+type OcrLookupStatus =
+  | "idle"
+  | "loading"
+  | "found"
+  | Extract<ExtractIsbnFromImageResult, { success: false }>["reason"];
 
 export function BookForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const coverObjectUrlRef = useRef<string | null>(null);
+  const ocrImageInputRef = useRef<HTMLInputElement | null>(null);
   const [coverPreviewUrl, setCoverPreviewUrl] = useState<string>();
   const [coverLookupStatus, setCoverLookupStatus] = useState<CoverLookupStatus>("idle");
+  const [isbnExtractionStatus, setIsbnExtractionStatus] = useState<IsbnExtractionStatus>("idle");
+  const [isbnSourceText, setIsbnSourceText] = useState("");
+  const [metadataLookupStatus, setMetadataLookupStatus] = useState<MetadataLookupStatus>("idle");
+  const [metadataSuggestion, setMetadataSuggestion] = useState<
+    Extract<LookupBookMetadataResult, { success: true }>["metadata"] | undefined
+  >();
+  const [ocrLookupStatus, setOcrLookupStatus] = useState<OcrLookupStatus>("idle");
+  const [ocrTextPreview, setOcrTextPreview] = useState<string>();
   const [state, formAction, isPending] = useActionState(createBookAction, initialState);
   const {
     handleSubmit,
@@ -85,6 +110,12 @@ export function BookForm() {
       }
       setCoverPreviewUrl(undefined);
       setCoverLookupStatus("idle");
+      setIsbnExtractionStatus("idle");
+      setIsbnSourceText("");
+      setMetadataLookupStatus("idle");
+      setMetadataSuggestion(undefined);
+      setOcrLookupStatus("idle");
+      setOcrTextPreview(undefined);
     }
   }, [reset, state.success]);
 
@@ -135,6 +166,88 @@ export function BookForm() {
     }
   }
 
+  function extractIsbn() {
+    const isbn = extractIsbnFromText(isbnSourceText);
+
+    if (!isbn) {
+      setIsbnExtractionStatus("not-found");
+      return;
+    }
+
+    setValue("isbn", isbn, { shouldDirty: true, shouldValidate: true });
+    setIsbnExtractionStatus("found");
+  }
+
+  async function extractIsbnFromImage() {
+    const image = ocrImageInputRef.current?.files?.[0];
+
+    setOcrTextPreview(undefined);
+    setOcrLookupStatus("loading");
+
+    const formData = new FormData();
+    formData.set("image", image ?? "");
+
+    const result = await extractIsbnFromImageAction(formData);
+
+    if (!result.success) {
+      setOcrLookupStatus(result.reason);
+      setOcrTextPreview(result.text);
+      return;
+    }
+
+    setValue("isbn", result.isbn, { shouldDirty: true, shouldValidate: true });
+    setOcrLookupStatus("found");
+    setOcrTextPreview(result.text);
+  }
+
+  async function lookupMetadataByIsbn() {
+    const normalizedIsbn = isbnValue?.replace(/[-\s]/g, "").trim();
+
+    if (!normalizedIsbn) {
+      setMetadataSuggestion(undefined);
+      setMetadataLookupStatus("missing-isbn");
+      return;
+    }
+
+    setMetadataSuggestion(undefined);
+    setMetadataLookupStatus("loading");
+
+    const result = await lookupBookMetadataAction(normalizedIsbn);
+
+    if (!result.success) {
+      setMetadataLookupStatus(result.reason);
+      return;
+    }
+
+    setMetadataSuggestion(result.metadata);
+    setMetadataLookupStatus("found");
+  }
+
+  function applyMetadataSuggestion() {
+    if (!metadataSuggestion) {
+      return;
+    }
+
+    setValue("isbn", metadataSuggestion.isbn, { shouldDirty: true, shouldValidate: true });
+    setValue("title", metadataSuggestion.title ?? "", { shouldDirty: true, shouldValidate: true });
+    setValue("author", metadataSuggestion.authors.join(", "), {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+    setValue("publisher", metadataSuggestion.publisher ?? "", { shouldDirty: true });
+    setValue("publishedYear", metadataSuggestion.publishedYear ?? "", { shouldDirty: true });
+    setValue("language", metadataSuggestion.language ?? "", { shouldDirty: true });
+    setValue("category", metadataSuggestion.categories.join(", "), { shouldDirty: true });
+    setValue("description", metadataSuggestion.description ?? "", { shouldDirty: true });
+
+    if (metadataSuggestion.coverUrl) {
+      clearCoverObjectUrl();
+      setCoverPreviewUrl(metadataSuggestion.coverUrl);
+      setValue("externalCoverUrl", metadataSuggestion.coverUrl, { shouldDirty: true });
+      setCoverLookupStatus("found");
+    }
+  }
+
   function handleCoverImageChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
 
@@ -180,6 +293,9 @@ export function BookForm() {
   const coverImageError = state.errors.coverImage;
   const imageUrlsError = errors.imageUrls?.message ?? state.errors.imageUrls;
   const coverLookupMessage = getCoverLookupMessage(coverLookupStatus, t);
+  const isbnExtractionMessage = getIsbnExtractionMessage(isbnExtractionStatus, t);
+  const metadataLookupMessage = getMetadataLookupMessage(metadataLookupStatus, t);
+  const ocrLookupMessage = getOcrLookupMessage(ocrLookupStatus, t);
 
   return (
     <form className="space-y-5" noValidate onSubmit={handleSubmit(onSubmit)} ref={formRef}>
@@ -228,6 +344,126 @@ export function BookForm() {
           <p className="text-sm text-destructive" id="book-isbn-error">
             {isbnError}
           </p>
+        ) : null}
+      </div>
+
+      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold">{t("books.new.isbnExtractionTitle")}</h2>
+          <p className="text-sm text-muted-foreground">
+            {t("books.new.isbnExtractionDescription")}
+          </p>
+        </div>
+        <textarea
+          className="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          onChange={(event) => {
+            setIsbnSourceText(event.target.value);
+            setIsbnExtractionStatus("idle");
+          }}
+          placeholder={t("books.new.isbnExtractionPlaceholder")}
+          value={isbnSourceText}
+        />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <Button disabled={!isbnSourceText.trim()} onClick={extractIsbn} type="button" variant="outline">
+            {t("books.new.isbnExtractionLabel")}
+          </Button>
+          {isbnExtractionMessage ? (
+            <p className="text-sm text-muted-foreground" role="status">
+              {isbnExtractionMessage}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
+        <div className="space-y-1">
+          <h2 className="text-sm font-semibold">{t("books.new.ocrLookupTitle")}</h2>
+          <p className="text-sm text-muted-foreground">{t("books.new.ocrLookupDescription")}</p>
+        </div>
+        <Input
+          accept="image/jpeg,image/png,image/webp"
+          id="ocrImage"
+          onChange={() => {
+            setOcrLookupStatus("idle");
+            setOcrTextPreview(undefined);
+          }}
+          ref={ocrImageInputRef}
+          type="file"
+        />
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <Button
+            disabled={ocrLookupStatus === "loading"}
+            onClick={extractIsbnFromImage}
+            type="button"
+            variant="outline"
+          >
+            {ocrLookupStatus === "loading"
+              ? t("books.new.ocrLookupPendingLabel")
+              : t("books.new.ocrLookupLabel")}
+          </Button>
+          {ocrLookupMessage ? (
+            <p className="text-sm text-muted-foreground" role="status">
+              {ocrLookupMessage}
+            </p>
+          ) : null}
+        </div>
+        {ocrTextPreview ? (
+          <details className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
+            <summary className="cursor-pointer font-medium text-foreground">
+              {t("books.new.ocrTextPreviewLabel")}
+            </summary>
+            <p className="mt-2 whitespace-pre-wrap">{ocrTextPreview}</p>
+          </details>
+        ) : null}
+      </div>
+
+      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-1">
+            <h2 className="text-sm font-semibold">{t("books.new.metadataLookupTitle")}</h2>
+            <p className="text-sm text-muted-foreground">
+              {t("books.new.metadataLookupDescription")}
+            </p>
+          </div>
+          <Button
+            disabled={metadataLookupStatus === "loading"}
+            onClick={lookupMetadataByIsbn}
+            type="button"
+            variant="outline"
+          >
+            {metadataLookupStatus === "loading"
+              ? t("books.new.metadataLookupPendingLabel")
+              : t("books.new.metadataLookupLabel")}
+          </Button>
+        </div>
+
+        {metadataLookupMessage ? (
+          <p className="text-sm text-muted-foreground" role="status">
+            {metadataLookupMessage}
+          </p>
+        ) : null}
+
+        {metadataSuggestion ? (
+          <div className="space-y-3 rounded-md border bg-background p-3">
+            <div className="space-y-1 text-sm">
+              <p className="font-medium">{metadataSuggestion.title ?? metadataSuggestion.isbn}</p>
+              {metadataSuggestion.authors.length > 0 ? (
+                <p className="text-muted-foreground">{metadataSuggestion.authors.join(", ")}</p>
+              ) : null}
+              <p className="text-muted-foreground">
+                {[
+                  metadataSuggestion.publisher,
+                  metadataSuggestion.publishedYear,
+                  metadataSuggestion.language,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </p>
+            </div>
+            <Button onClick={applyMetadataSuggestion} type="button" variant="secondary">
+              {t("books.new.metadataApplyLabel")}
+            </Button>
+          </div>
         ) : null}
       </div>
 
@@ -570,6 +806,51 @@ function getCoverLookupMessage(status: CoverLookupStatus, t: ReturnType<typeof u
     error: t("books.new.coverLookupErrorMessage"),
     "missing-isbn": t("books.new.coverLookupMissingIsbnMessage"),
   } satisfies Record<CoverLookupStatus, string | undefined>;
+
+  return messages[status];
+}
+
+function getIsbnExtractionMessage(
+  status: IsbnExtractionStatus,
+  t: ReturnType<typeof useTranslation>,
+) {
+  const messages = {
+    idle: undefined,
+    found: t("books.new.isbnExtractionFoundMessage"),
+    "not-found": t("books.new.isbnExtractionNotFoundMessage"),
+  } satisfies Record<IsbnExtractionStatus, string | undefined>;
+
+  return messages[status];
+}
+
+function getMetadataLookupMessage(
+  status: MetadataLookupStatus,
+  t: ReturnType<typeof useTranslation>,
+) {
+  const messages = {
+    idle: undefined,
+    loading: undefined,
+    found: t("books.new.metadataLookupFoundMessage"),
+    "not-found": t("books.new.metadataLookupNotFoundMessage"),
+    error: t("books.new.metadataLookupErrorMessage"),
+    "missing-isbn": t("books.new.metadataLookupMissingIsbnMessage"),
+  } satisfies Record<MetadataLookupStatus, string | undefined>;
+
+  return messages[status];
+}
+
+function getOcrLookupMessage(status: OcrLookupStatus, t: ReturnType<typeof useTranslation>) {
+  const messages = {
+    idle: undefined,
+    loading: undefined,
+    found: t("books.new.ocrLookupFoundMessage"),
+    "invalid-file": t("books.new.ocrLookupErrorMessage"),
+    "missing-image": t("books.new.ocrLookupMissingImageMessage"),
+    "not-configured": t("books.new.ocrLookupNotConfiguredMessage"),
+    "not-found": t("books.new.ocrLookupNotFoundMessage"),
+    "too-large": t("books.new.ocrLookupTooLargeMessage"),
+    "unsupported-type": t("books.new.ocrLookupUnsupportedTypeMessage"),
+  } satisfies Record<OcrLookupStatus, string | undefined>;
 
   return messages[status];
 }

@@ -135,6 +135,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.1072.0
         version: 3.1072.0
+      '@culturando/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@culturando/config':
         specifier: workspace:*
         version: link:../../packages/config
