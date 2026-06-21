@@ -19,26 +19,27 @@ export function NearbyBooks({ originBook, books }: NearbyBooksProps) {
   const mapPoints = getMapPoints(originBook, books);
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-4xl flex-col gap-y-8">
+    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10">
+      <section className="mx-auto flex max-w-4xl flex-col gap-y-6 sm:gap-y-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div className="space-y-3">
             <p className="text-sm font-medium text-muted-foreground">{t("books.nearby.eyebrow")}</p>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
+            <h1 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               {t("books.nearby.title")}
             </h1>
-            <p className="max-w-2xl text-lg text-muted-foreground">
+            <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
               {t("books.nearby.description")}{" "}
               <span className="font-medium">{originBook.title}</span>
             </p>
           </div>
-          <Button asChild variant="outline">
+          <Button asChild className="w-full sm:w-auto" variant="outline">
             <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
           </Button>
         </div>
 
         <NearbyMap
           description={t("books.nearby.mapDescription")}
+          detailLabel={t("books.card.detailLabel")}
           emptyState={t("books.nearby.mapEmptyState")}
           legendNearbyLabel={t("maps.legend.nearbyLabel")}
           legendOriginLabel={t("maps.legend.originLabel")}
@@ -81,7 +82,7 @@ export function NearbyBooks({ originBook, books }: NearbyBooksProps) {
                         : t("books.detail.emptyValue")}
                     </p>
                   </div>
-                  <Button asChild variant="secondary">
+                  <Button asChild className="w-full sm:w-auto" variant="secondary">
                     <Link href={routes.bookDetail(book.id)}>{t("books.card.detailLabel")}</Link>
                   </Button>
                 </CardContent>
@@ -130,6 +131,7 @@ function getMapPoints(originBook: Book, books: NearbyBook[]): NearbyMapPoint[] {
           id: book.id,
           title: book.title,
           subtitle: `${book.author} · ${formatDistance(distanceKm)}`,
+          href: routes.bookDetail(book.id),
           latitude,
           longitude,
           variant: "nearby" as const,

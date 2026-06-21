@@ -36,21 +36,21 @@ export function NearbySearchPage({
   const hasSearched = query.length > 0;
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-5xl flex-col gap-y-8">
+    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10">
+      <section className="mx-auto flex max-w-5xl flex-col gap-y-6 sm:gap-y-8">
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
           <div className="space-y-3">
             <p className="text-sm font-medium text-muted-foreground">
               {t("nearby.search.eyebrow")}
             </p>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
+            <h1 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
               {t("nearby.search.title")}
             </h1>
-            <p className="max-w-2xl text-lg text-muted-foreground">
+            <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
               {t("nearby.search.description")}
             </p>
           </div>
-          <Button asChild variant="outline">
+          <Button asChild className="w-full sm:w-auto" variant="outline">
             <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
           </Button>
         </div>
@@ -104,6 +104,7 @@ export function NearbySearchPage({
         {origin ? (
           <NearbyMap
             description={t("nearby.search.mapDescription")}
+            detailLabel={t("books.card.detailLabel")}
             emptyState={t("nearby.search.mapEmptyState")}
             legendNearbyLabel={t("maps.legend.nearbyLabel")}
             legendOriginLabel={t("maps.legend.originLabel")}
@@ -119,7 +120,7 @@ export function NearbySearchPage({
 
         {hasSearched && !geocodingFailed ? (
           <section className="space-y-4">
-            <div className="flex items-center justify-between gap-4 text-sm text-muted-foreground">
+            <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
               <p>
                 {books.length} {t("nearby.search.resultsLabel")}
               </p>
@@ -150,7 +151,7 @@ export function NearbySearchPage({
                         <p>{book.description ?? t("books.card.emptyDescription")}</p>
                         <p>{formatArea(book) || t("books.detail.emptyValue")}</p>
                       </div>
-                      <Button asChild variant="secondary">
+                      <Button asChild className="w-full sm:w-auto" variant="secondary">
                         <Link href={routes.bookDetail(book.id)}>{t("books.card.detailLabel")}</Link>
                       </Button>
                     </CardContent>
@@ -198,6 +199,7 @@ function getMapPoints(
           id: book.id,
           title: book.title,
           subtitle: `${book.author} - ${formatDistance(distanceKm)}`,
+          href: routes.bookDetail(book.id),
           latitude,
           longitude,
           variant: "nearby" as const,

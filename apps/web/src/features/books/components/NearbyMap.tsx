@@ -10,12 +10,14 @@ const mapStyleUrl = "https://tiles.openfreemap.org/styles/liberty";
 const cinematicPitch = 62;
 const cinematicZoom = 16.4;
 const initialBearing = -28;
+const nearbySourceId = "culturando-nearby-books";
 const rotationSpeed = 140;
 
 export type NearbyMapPoint = {
   id: string;
   title: string;
   subtitle: string;
+  href?: string;
   latitude: number;
   longitude: number;
   variant: "origin" | "nearby";
@@ -24,6 +26,7 @@ export type NearbyMapPoint = {
 type NearbyMapProps = {
   title: string;
   description: string;
+  detailLabel: string;
   emptyState: string;
   legendNearbyLabel: string;
   legendOriginLabel: string;
@@ -38,6 +41,7 @@ type NearbyMapProps = {
 export function NearbyMap({
   title,
   description,
+  detailLabel,
   emptyState,
   legendNearbyLabel,
   legendOriginLabel,
@@ -64,41 +68,46 @@ export function NearbyMap({
     }
 
     const container = containerRef.current;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const isCompactViewport = window.matchMedia("(max-width: 767px)").matches;
+    const shouldStartIn3d = !prefersReducedMotion && !isCompactViewport;
     const origin = points.find((point) => point.variant === "origin") ?? points[0];
+    const nearbyPoints = points.filter((point) => point.variant === "nearby");
     originRef.current = origin;
-    rotationEnabledRef.current = true;
-    setIs3dMode(true);
-    setIsRotationActive(true);
+    rotationEnabledRef.current = shouldStartIn3d;
+    setIs3dMode(shouldStartIn3d);
+    setIsRotationActive(shouldStartIn3d);
 
     const map = new maplibregl.Map({
       container,
       style: mapStyleUrl,
       center: [origin.longitude, origin.latitude],
-      zoom: cinematicZoom,
-      pitch: cinematicPitch,
-      bearing: initialBearing,
+      zoom: shouldStartIn3d ? cinematicZoom : 13,
+      pitch: shouldStartIn3d ? cinematicPitch : 0,
+      bearing: shouldStartIn3d ? initialBearing : 0,
       attributionControl: false,
     });
+
+    if (isCompactViewport) {
+      map.dragRotate.disable();
+      map.touchZoomRotate.disableRotation();
+    }
 
     map.addControl(new maplibregl.NavigationControl({ showCompass: true }), "top-right");
     map.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 
-    for (const point of points) {
-      const markerElement = document.createElement("div");
-      markerElement.className =
-        point.variant === "origin"
-          ? "h-7 w-7 rounded-full border-[3px] border-background bg-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.22),0_12px_24px_hsl(0_0%_0%/0.28)]"
-          : "h-5 w-5 rounded-full border-[3px] border-background bg-foreground shadow-[0_0_0_6px_hsl(0_0%_0%/0.14),0_10px_20px_hsl(0_0%_0%/0.24)]";
+    const originMarkerElement = document.createElement("div");
+    originMarkerElement.className =
+      "h-7 w-7 rounded-full border-[3px] border-background bg-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.22),0_12px_24px_hsl(0_0%_0%/0.28)]";
 
-      new maplibregl.Marker({ element: markerElement })
-        .setLngLat([point.longitude, point.latitude])
-        .setPopup(
-          new maplibregl.Popup({ offset: 16 }).setHTML(
-            `<strong>${escapeHtml(point.title)}</strong><br /><span>${escapeHtml(point.subtitle)}</span>`,
-          ),
-        )
-        .addTo(map);
-    }
+    new maplibregl.Marker({ element: originMarkerElement })
+      .setLngLat([origin.longitude, origin.latitude])
+      .setPopup(
+        new maplibregl.Popup({ offset: 16 }).setHTML(
+          getPopupHtml(origin, detailLabel),
+        ),
+      )
+      .addTo(map);
 
     const stopRotation = () => {
       rotationEnabledRef.current = false;
@@ -123,14 +132,17 @@ export function NearbyMap({
 
     map.once("load", () => {
       add3dBuildingsLayer(map);
+      addNearbyClusterLayers(map, nearbyPoints, detailLabel);
       map.jumpTo({
-        bearing: initialBearing,
+        bearing: shouldStartIn3d ? initialBearing : 0,
         center: [origin.longitude, origin.latitude],
-        pitch: cinematicPitch,
-        zoom: cinematicZoom,
+        pitch: shouldStartIn3d ? cinematicPitch : 0,
+        zoom: shouldStartIn3d ? cinematicZoom : 13,
       });
 
-      animationFrameRef.current = requestAnimationFrame(rotateCamera);
+      if (shouldStartIn3d) {
+        animationFrameRef.current = requestAnimationFrame(rotateCamera);
+      }
     });
 
     container.addEventListener("pointerdown", stopRotation);
@@ -227,22 +239,22 @@ export function NearbyMap({
 
   return (
     <Card className="overflow-hidden">
-      <CardHeader>
+      <CardHeader className="px-4 sm:px-6">
         <CardTitle>{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{description}</p>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4 sm:px-6">
         {points.length > 0 ? (
           <div className="relative overflow-hidden rounded-lg border bg-muted">
             <div
               aria-label={title}
-              className="h-[420px] md:h-[520px]"
+              className="h-[360px] touch-pan-x touch-pan-y sm:h-[420px] md:h-[520px]"
               ref={containerRef}
               role="img"
             />
-            <div className="absolute left-3 top-3 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-2">
+            <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-2 md:inset-x-auto md:bottom-auto md:left-3 md:top-3 md:max-w-[calc(100%-1.5rem)]">
               <Button
-                className="bg-background/90 shadow-sm backdrop-blur"
+                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
                 onClick={() => {
                   if (isRotationActive) {
                     pauseRotation();
@@ -257,7 +269,7 @@ export function NearbyMap({
                 {isRotationActive ? pauseRotationLabel : resumeRotationLabel}
               </Button>
               <Button
-                className="bg-background/90 shadow-sm backdrop-blur"
+                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
                 onClick={resetCamera}
                 size="sm"
                 type="button"
@@ -266,7 +278,7 @@ export function NearbyMap({
                 {resetCameraLabel}
               </Button>
               <Button
-                className="bg-background/90 shadow-sm backdrop-blur"
+                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
                 onClick={toggleViewMode}
                 size="sm"
                 type="button"
@@ -275,7 +287,7 @@ export function NearbyMap({
                 {is3dMode ? switchTo2dLabel : switchTo3dLabel}
               </Button>
             </div>
-            <div className="absolute bottom-3 left-3 rounded-lg border bg-background/90 px-3 py-2 text-xs text-foreground shadow-sm backdrop-blur">
+            <div className="absolute left-3 top-3 rounded-lg border bg-background/90 px-3 py-2 text-xs text-foreground shadow-sm backdrop-blur md:bottom-3 md:top-auto">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-2">
                   <span className="h-3.5 w-3.5 rounded-full border-2 border-background bg-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.22)]" />
@@ -296,6 +308,173 @@ export function NearbyMap({
       </CardContent>
     </Card>
   );
+}
+
+function addNearbyClusterLayers(
+  map: maplibregl.Map,
+  nearbyPoints: NearbyMapPoint[],
+  detailLabel: string,
+) {
+  if (map.getSource(nearbySourceId)) {
+    return;
+  }
+
+  map.addSource(nearbySourceId, {
+    type: "geojson",
+    data: toNearbyFeatureCollection(nearbyPoints),
+    cluster: true,
+    clusterMaxZoom: 13,
+    clusterRadius: 48,
+  });
+
+  map.addLayer({
+    id: "culturando-nearby-clusters",
+    type: "circle",
+    source: nearbySourceId,
+    filter: ["has", "point_count"],
+    paint: {
+      "circle-color": [
+        "step",
+        ["get", "point_count"],
+        "#1f2937",
+        10,
+        "#7c2d12",
+        25,
+        "#581c87",
+      ],
+      "circle-radius": ["step", ["get", "point_count"], 18, 10, 23, 25, 29],
+      "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 3,
+    },
+  });
+
+  map.addLayer({
+    id: "culturando-nearby-cluster-count",
+    type: "symbol",
+    source: nearbySourceId,
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": ["get", "point_count_abbreviated"],
+      "text-font": ["Noto Sans Regular"],
+      "text-size": 12,
+    },
+    paint: {
+      "text-color": "#ffffff",
+    },
+  });
+
+  map.addLayer({
+    id: "culturando-nearby-unclustered",
+    type: "circle",
+    source: nearbySourceId,
+    filter: ["!", ["has", "point_count"]],
+    paint: {
+      "circle-color": "#111827",
+      "circle-radius": 8,
+      "circle-stroke-color": "#ffffff",
+      "circle-stroke-width": 3,
+    },
+  });
+
+  map.on("click", "culturando-nearby-clusters", async (event) => {
+    const feature = map.queryRenderedFeatures(event.point, {
+      layers: ["culturando-nearby-clusters"],
+    })[0];
+    const clusterId = feature?.properties?.cluster_id;
+    const coordinates = getFeatureCoordinates(feature);
+    const source = map.getSource(nearbySourceId);
+
+    if (clusterId === undefined || !coordinates || !isGeoJsonSource(source)) {
+      return;
+    }
+
+    try {
+      const zoom = await source.getClusterExpansionZoom(Number(clusterId));
+      map.easeTo({
+        center: coordinates,
+        duration: 700,
+        zoom,
+      });
+    } catch {
+      return;
+    }
+  });
+
+  map.on("click", "culturando-nearby-unclustered", (event) => {
+    const feature = event.features?.[0];
+    const coordinates = getFeatureCoordinates(feature);
+    const href = feature?.properties?.href;
+    const title = feature?.properties?.title;
+    const subtitle = feature?.properties?.subtitle;
+
+    if (!coordinates || typeof title !== "string" || typeof subtitle !== "string") {
+      return;
+    }
+
+    new maplibregl.Popup({ offset: 16 })
+      .setLngLat(coordinates)
+      .setHTML(
+        getPopupHtml(
+          {
+            href: typeof href === "string" ? href : undefined,
+            id: String(feature?.properties?.id ?? "nearby-book"),
+            latitude: coordinates[1],
+            longitude: coordinates[0],
+            subtitle,
+            title,
+            variant: "nearby",
+          },
+          detailLabel,
+        ),
+      )
+      .addTo(map);
+  });
+
+  for (const layerId of ["culturando-nearby-clusters", "culturando-nearby-unclustered"]) {
+    map.on("mouseenter", layerId, () => {
+      map.getCanvas().style.cursor = "pointer";
+    });
+    map.on("mouseleave", layerId, () => {
+      map.getCanvas().style.cursor = "";
+    });
+  }
+}
+
+function toNearbyFeatureCollection(points: NearbyMapPoint[]) {
+  return {
+    type: "FeatureCollection" as const,
+    features: points.map((point) => ({
+      type: "Feature" as const,
+      geometry: {
+        type: "Point" as const,
+        coordinates: [point.longitude, point.latitude],
+      },
+      properties: {
+        href: point.href,
+        id: point.id,
+        title: point.title,
+        subtitle: point.subtitle,
+      },
+    })),
+  };
+}
+
+function getFeatureCoordinates(feature: maplibregl.MapGeoJSONFeature | undefined) {
+  if (feature?.geometry.type !== "Point") {
+    return null;
+  }
+
+  const [longitude, latitude] = feature.geometry.coordinates;
+
+  if (typeof longitude !== "number" || typeof latitude !== "number") {
+    return null;
+  }
+
+  return [longitude, latitude] as [number, number];
+}
+
+function isGeoJsonSource(source: maplibregl.Source | undefined): source is maplibregl.GeoJSONSource {
+  return Boolean(source && "getClusterExpansionZoom" in source);
 }
 
 function add3dBuildingsLayer(map: maplibregl.Map) {
@@ -328,6 +507,14 @@ function add3dBuildingsLayer(map: maplibregl.Map) {
       "fill-extrusion-opacity": 0.62,
     },
   });
+}
+
+function getPopupHtml(point: NearbyMapPoint, detailLabel: string) {
+  const detailLink = point.href
+    ? `<a href="${escapeHtml(point.href)}" style="display:inline-flex;margin-top:8px;font-weight:600;color:#111827;text-decoration:underline;">${escapeHtml(detailLabel)}</a>`
+    : "";
+
+  return `<strong>${escapeHtml(point.title)}</strong><br /><span>${escapeHtml(point.subtitle)}</span>${detailLink}`;
 }
 
 function escapeHtml(value: string) {
