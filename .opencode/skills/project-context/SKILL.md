@@ -467,21 +467,29 @@ Nominatim è una scelta temporanea e pragmatica per l'MVP: il codice deve restar
 
 ### 6.5 `packages/ai`
 
-Package previsto per catalogazione assistita e funzioni AI.
+Package condiviso per catalogazione assistita e funzioni AI.
+
+Responsabilità attuali:
+
+- lookup metadati libro da ISBN tramite adapter Open Library;
+- estrazione ISBN da testo con validazione ISBN-10/ISBN-13 tramite check digit;
+- adapter OCR provider-agnostic `extractTextFromImage` per inviare immagini a un endpoint esterno;
+- supporto al flusso OCR Cloudflare tramite Worker configurabile dalla web app.
 
 Responsabilità future:
 
-- estrazione ISBN da testo;
-- OCR su immagini copertina/retro;
-- normalizzazione metadati libro;
-- lookup su fonti bibliografiche esterne;
+- normalizzazione avanzata metadati libro;
 - suggerimento categorie e tag;
-- ranking risultati.
+- ranking risultati;
+- eventuale supporto a provider OCR alternativi o OCR locale.
 
-Esempi futuri:
+Esempi attuali/futuri:
 
 ```ts
 extractIsbnFromText()
+extractIsbnsFromText()
+lookupBookMetadataByIsbn()
+extractTextFromImage()
 normalizeBookMetadata()
 rankBookResults()
 suggestBookTags()
@@ -880,7 +888,10 @@ Funzionalità attuali:
 - supporto a URL immagini aggiuntive nel form libro;
 - ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e copia della cover trovata nello storage configurato quando possibile;
 - fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN;
-- URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage.
+- URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage;
+- catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN, con proposta dati e applicazione esplicita al form;
+- estrazione ISBN da testo incollato o testo OCR, tramite `@culturando/ai`;
+- upload immagine per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale.
 
 Funzionalità ancora previste:
 
@@ -923,7 +934,10 @@ Funzionalità attuali:
 - lista testuale accessibile ordinata per distanza approssimata;
 - mappa interattiva MapLibre condivisa tra ricerca territoriale e dettaglio libro;
 - marker distinti per area cercata/libro di partenza e libri disponibili;
-- legenda, popup e controlli mappa;
+- libri vicini renderizzati come source GeoJSON clusterizzata;
+- cluster cliccabili con zoom di espansione;
+- popup dei libri vicini con CTA verso il dettaglio;
+- legenda, popup e controlli mappa ottimizzati anche per mobile;
 - rispetto della privacy tramite `publicLatitude` e `publicLongitude`.
 
 Route attuali:
@@ -949,13 +963,14 @@ Funzioni attuali:
 - controlli UI per pausa/riprendi rotazione, ripristino vista e toggle 2D/3D;
 - marker interattivi;
 - legenda integrata;
-- popup con titolo e distanza/contesto.
+- popup con titolo, distanza/contesto e link al dettaglio libro;
+- source GeoJSON clusterizzata per i libri vicini;
+- comportamento mobile più leggero: partenza in 2D, rotazione automatica disabilitata su viewport compatti e rispetto di `prefers-reduced-motion`.
 
 Funzioni previste:
 
-- layer GeoJSON dedicati per aggregazioni o cluster;
 - integrazione futura con OpenStreetMap/Overpass per biblioteche, librerie e cartolerie;
-- eventuale ottimizzazione mobile della rotazione automatica.
+- eventuali ottimizzazioni ulteriori per clustering e performance su dataset più grandi.
 
 La disponibilità verificata sarà solo quella proveniente dagli utenti Culturando. I luoghi esterni saranno luoghi potenzialmente rilevanti, ma non garantiranno la disponibilità reale del libro.
 
@@ -989,7 +1004,17 @@ Entità previste:
 
 ### 11.6 AI catalogazione
 
-Funzione futura per aiutare l’utente a compilare una scheda libro.
+La catalogazione assistita aiuta l’utente a compilare una scheda libro senza salvare automaticamente dati non confermati.
+
+Funzionalità attuali:
+
+- lookup metadati da ISBN tramite server action `lookupBookMetadataAction` e `@culturando/ai`;
+- proposta di titolo, autori, editore, anno, lingua, categorie, descrizione e copertina;
+- applicazione al form solo dopo conferma esplicita dell’utente;
+- estrazione ISBN da testo incollato o testo OCR tramite funzione pura `extractIsbnFromText`;
+- upload immagine retro/copertina per OCR tramite `extractIsbnFromImageAction`;
+- integrazione opzionale con Worker Cloudflare OCR usando `CLOUDFLARE_OCR_ENDPOINT` e `CLOUDFLARE_OCR_TOKEN`;
+- supporto a `CLOUDFLARE_OCR_MOCK_TEXT` per test locali senza Worker reale.
 
 Pipeline prevista:
 
@@ -1006,9 +1031,10 @@ upload immagine copertina/retro
 
 Fonti possibili:
 
+- Cloudflare Workers AI tramite Worker OCR;
 - Google Books API;
 - Open Library API;
-- OCR locale o servizio esterno.
+- OCR locale o altri servizi esterni alternativi.
 
 Principio importante:
 
@@ -1072,12 +1098,14 @@ Stato dei primi step:
 21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato;
 22. introdurre richieste di contatto/prestito con gestione accetta/rifiuta — completato;
 23. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending` — completato;
-24. sostituire lo storage locale delle copertine con storage persistente/cloud tramite Cloudflare R2 — completato.
+24. sostituire lo storage locale delle copertine con storage persistente/cloud tramite Cloudflare R2 — completato;
+25. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile — completato;
+26. introdurre catalogazione assistita da ISBN, estrazione ISBN da testo e OCR immagine provider-agnostic — completato.
 
 Ordine dei prossimi step:
 
-1. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile;
-2. introdurre AI catalogazione.
+1. consolidare endpoint OCR Cloudflare e monitorare accuratezza su immagini reali;
+2. valutare miglioramenti UI/UX per il flusso di catalogazione assistita.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
