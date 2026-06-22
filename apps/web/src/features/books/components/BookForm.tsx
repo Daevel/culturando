@@ -347,66 +347,139 @@ export function BookForm() {
         ) : null}
       </div>
 
-      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
+      <div className="space-y-4 rounded-xl border bg-muted/20 p-4">
         <div className="space-y-1">
-          <h2 className="text-sm font-semibold">{t("books.new.isbnExtractionTitle")}</h2>
+          <h2 className="text-base font-semibold">{t("books.new.catalogingPanelTitle")}</h2>
           <p className="text-sm text-muted-foreground">
-            {t("books.new.isbnExtractionDescription")}
+            {t("books.new.catalogingPanelDescription")}
           </p>
         </div>
-        <textarea
-          className="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-          onChange={(event) => {
-            setIsbnSourceText(event.target.value);
-            setIsbnExtractionStatus("idle");
-          }}
-          placeholder={t("books.new.isbnExtractionPlaceholder")}
-          value={isbnSourceText}
-        />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <Button disabled={!isbnSourceText.trim()} onClick={extractIsbn} type="button" variant="outline">
-            {t("books.new.isbnExtractionLabel")}
-          </Button>
-          {isbnExtractionMessage ? (
-            <p className="text-sm text-muted-foreground" role="status">
-              {isbnExtractionMessage}
-            </p>
-          ) : null}
-        </div>
-      </div>
 
-      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
-        <div className="space-y-1">
-          <h2 className="text-sm font-semibold">{t("books.new.ocrLookupTitle")}</h2>
-          <p className="text-sm text-muted-foreground">{t("books.new.ocrLookupDescription")}</p>
+        <div className="grid gap-3 lg:grid-cols-3">
+          <section className="space-y-3 rounded-lg border bg-background p-3">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("books.new.catalogingStepImageLabel")}
+              </p>
+              <h3 className="text-sm font-semibold">{t("books.new.ocrLookupTitle")}</h3>
+              <p className="text-sm text-muted-foreground">{t("books.new.ocrLookupDescription")}</p>
+            </div>
+            <Input
+              accept="image/jpeg,image/png,image/webp"
+              id="ocrImage"
+              onChange={() => {
+                setOcrLookupStatus("idle");
+                setOcrTextPreview(undefined);
+              }}
+              ref={ocrImageInputRef}
+              type="file"
+            />
+            <Button
+              className="w-full"
+              disabled={ocrLookupStatus === "loading"}
+              onClick={extractIsbnFromImage}
+              type="button"
+              variant="outline"
+            >
+              {ocrLookupStatus === "loading"
+                ? t("books.new.ocrLookupPendingLabel")
+                : t("books.new.ocrLookupLabel")}
+            </Button>
+            {ocrLookupMessage ? (
+              <p className="text-sm text-muted-foreground" role="status">
+                {ocrLookupMessage}
+              </p>
+            ) : null}
+          </section>
+
+          <section className="space-y-3 rounded-lg border bg-background p-3">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("books.new.catalogingStepTextLabel")}
+              </p>
+              <h3 className="text-sm font-semibold">{t("books.new.isbnExtractionTitle")}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t("books.new.isbnExtractionDescription")}
+              </p>
+            </div>
+            <textarea
+              className="flex min-h-24 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              onChange={(event) => {
+                setIsbnSourceText(event.target.value);
+                setIsbnExtractionStatus("idle");
+              }}
+              placeholder={t("books.new.isbnExtractionPlaceholder")}
+              value={isbnSourceText}
+            />
+            <Button
+              className="w-full"
+              disabled={!isbnSourceText.trim()}
+              onClick={extractIsbn}
+              type="button"
+              variant="outline"
+            >
+              {t("books.new.isbnExtractionLabel")}
+            </Button>
+            {isbnExtractionMessage ? (
+              <p className="text-sm text-muted-foreground" role="status">
+                {isbnExtractionMessage}
+              </p>
+            ) : null}
+          </section>
+
+          <section className="space-y-3 rounded-lg border bg-background p-3">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("books.new.catalogingStepMetadataLabel")}
+              </p>
+              <h3 className="text-sm font-semibold">{t("books.new.metadataLookupTitle")}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t("books.new.metadataLookupDescription")}
+              </p>
+            </div>
+            <Button
+              className="w-full"
+              disabled={metadataLookupStatus === "loading"}
+              onClick={lookupMetadataByIsbn}
+              type="button"
+              variant="outline"
+            >
+              {metadataLookupStatus === "loading"
+                ? t("books.new.metadataLookupPendingLabel")
+                : t("books.new.metadataLookupLabel")}
+            </Button>
+
+            {metadataLookupMessage ? (
+              <p className="text-sm text-muted-foreground" role="status">
+                {metadataLookupMessage}
+              </p>
+            ) : null}
+
+            {metadataSuggestion ? (
+              <div className="space-y-3 rounded-md border bg-muted/20 p-3">
+                <div className="space-y-1 text-sm">
+                  <p className="font-medium">{metadataSuggestion.title ?? metadataSuggestion.isbn}</p>
+                  {metadataSuggestion.authors.length > 0 ? (
+                    <p className="text-muted-foreground">{metadataSuggestion.authors.join(", ")}</p>
+                  ) : null}
+                  <p className="text-muted-foreground">
+                    {[
+                      metadataSuggestion.publisher,
+                      metadataSuggestion.publishedYear,
+                      metadataSuggestion.language,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </p>
+                </div>
+                <Button className="w-full" onClick={applyMetadataSuggestion} type="button" variant="secondary">
+                  {t("books.new.metadataApplyLabel")}
+                </Button>
+              </div>
+            ) : null}
+          </section>
         </div>
-        <Input
-          accept="image/jpeg,image/png,image/webp"
-          id="ocrImage"
-          onChange={() => {
-            setOcrLookupStatus("idle");
-            setOcrTextPreview(undefined);
-          }}
-          ref={ocrImageInputRef}
-          type="file"
-        />
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <Button
-            disabled={ocrLookupStatus === "loading"}
-            onClick={extractIsbnFromImage}
-            type="button"
-            variant="outline"
-          >
-            {ocrLookupStatus === "loading"
-              ? t("books.new.ocrLookupPendingLabel")
-              : t("books.new.ocrLookupLabel")}
-          </Button>
-          {ocrLookupMessage ? (
-            <p className="text-sm text-muted-foreground" role="status">
-              {ocrLookupMessage}
-            </p>
-          ) : null}
-        </div>
+
         {ocrTextPreview ? (
           <details className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
             <summary className="cursor-pointer font-medium text-foreground">
@@ -414,56 +487,6 @@ export function BookForm() {
             </summary>
             <p className="mt-2 whitespace-pre-wrap">{ocrTextPreview}</p>
           </details>
-        ) : null}
-      </div>
-
-      <div className="space-y-3 rounded-lg border bg-muted/20 p-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
-            <h2 className="text-sm font-semibold">{t("books.new.metadataLookupTitle")}</h2>
-            <p className="text-sm text-muted-foreground">
-              {t("books.new.metadataLookupDescription")}
-            </p>
-          </div>
-          <Button
-            disabled={metadataLookupStatus === "loading"}
-            onClick={lookupMetadataByIsbn}
-            type="button"
-            variant="outline"
-          >
-            {metadataLookupStatus === "loading"
-              ? t("books.new.metadataLookupPendingLabel")
-              : t("books.new.metadataLookupLabel")}
-          </Button>
-        </div>
-
-        {metadataLookupMessage ? (
-          <p className="text-sm text-muted-foreground" role="status">
-            {metadataLookupMessage}
-          </p>
-        ) : null}
-
-        {metadataSuggestion ? (
-          <div className="space-y-3 rounded-md border bg-background p-3">
-            <div className="space-y-1 text-sm">
-              <p className="font-medium">{metadataSuggestion.title ?? metadataSuggestion.isbn}</p>
-              {metadataSuggestion.authors.length > 0 ? (
-                <p className="text-muted-foreground">{metadataSuggestion.authors.join(", ")}</p>
-              ) : null}
-              <p className="text-muted-foreground">
-                {[
-                  metadataSuggestion.publisher,
-                  metadataSuggestion.publishedYear,
-                  metadataSuggestion.language,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </p>
-            </div>
-            <Button onClick={applyMetadataSuggestion} type="button" variant="secondary">
-              {t("books.new.metadataApplyLabel")}
-            </Button>
-          </div>
         ) : null}
       </div>
 

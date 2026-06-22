@@ -190,6 +190,12 @@ export const it = {
         "Carica una copertina dal tuo dispositivo, aggiungi URL esterni o lascia che Culturando cerchi una copertina tramite ISBN.",
       imagesHelpText:
         "La copertina caricata diventa l'immagine principale. Se non carichi immagini e inserisci un ISBN, il sistema prova a usare Open Library come fallback.",
+      catalogingPanelTitle: "Catalogazione guidata",
+      catalogingPanelDescription:
+        "Parti da una foto, da testo letto o da un ISBN: Culturando ti aiuta a riconoscere il libro e propone dati da applicare solo dopo conferma.",
+      catalogingStepImageLabel: "1. Immagine",
+      catalogingStepTextLabel: "2. Testo o ISBN",
+      catalogingStepMetadataLabel: "3. Dati libro",
       isbnExtractionTitle: "Estrazione ISBN da testo",
       isbnExtractionDescription:
         "Incolla testo letto dal retro o da un futuro OCR: Culturando prova a riconoscere un ISBN valido e lo inserisce nel campo ISBN.",

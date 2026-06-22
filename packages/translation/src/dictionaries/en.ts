@@ -189,6 +189,12 @@ export const en = {
         "Upload a cover from your device, add external URLs or let Culturando search for one by ISBN.",
       imagesHelpText:
         "The uploaded cover becomes the main image. If you do not add images and provide an ISBN, the system tries Open Library as a fallback.",
+      catalogingPanelTitle: "Guided cataloging",
+      catalogingPanelDescription:
+        "Start from a photo, extracted text or an ISBN: Culturando helps recognize the book and suggests data to apply only after confirmation.",
+      catalogingStepImageLabel: "1. Image",
+      catalogingStepTextLabel: "2. Text or ISBN",
+      catalogingStepMetadataLabel: "3. Book data",
       isbnExtractionTitle: "ISBN extraction from text",
       isbnExtractionDescription:
         "Paste text read from the back cover or from future OCR: Culturando tries to recognize a valid ISBN and inserts it into the ISBN field.",
