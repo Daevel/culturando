@@ -1010,9 +1010,11 @@ Funzionalità attuali:
 
 - lookup metadati da ISBN tramite server action `lookupBookMetadataAction` e `@culturando/ai`;
 - proposta di titolo, autori, editore, anno, lingua, categorie, descrizione e copertina;
-- applicazione al form solo dopo conferma esplicita dell’utente;
+- applicazione selettiva al form tramite checkbox, con campi vuoti preselezionati e campi già compilati non selezionati di default;
 - estrazione ISBN da testo incollato o testo OCR tramite funzione pura `extractIsbnFromText`;
 - upload immagine retro/copertina per OCR tramite `extractIsbnFromImageAction`;
+- fallback metadati da OCR: se la Worker restituisce `metadata` o JSON incorporato nel testo OCR, il form può proporre titolo/autori/categorie anche quando Open Library non trova l'ISBN;
+- diagnostica OCR più specifica per timeout, errore HTTP Worker, rete, risposta vuota e formato non valido;
 - integrazione opzionale con Worker Cloudflare OCR usando `CLOUDFLARE_OCR_ENDPOINT` e `CLOUDFLARE_OCR_TOKEN`;
 - supporto a `CLOUDFLARE_OCR_MOCK_TEXT` per test locali senza Worker reale.
 
