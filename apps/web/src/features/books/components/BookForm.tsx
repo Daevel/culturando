@@ -8,15 +8,16 @@ import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  extractIsbnFromImageAction,
   type ExtractIsbnFromImageResult,
+  extractIsbnFromImageAction,
 } from "@/features/cataloging/actions/extract-isbn-from-image.action";
 import {
-  lookupBookMetadataAction,
   type LookupBookMetadataResult,
+  lookupBookMetadataAction,
 } from "@/features/cataloging/actions/lookup-book-metadata.action";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createBookAction } from "../actions/create-book.action";
@@ -34,6 +35,17 @@ const initialState: BookFormState = {
 type CoverLookupStatus = "idle" | "loading" | "found" | "not-found" | "error" | "missing-isbn";
 type IsbnExtractionStatus = "idle" | "found" | "not-found";
 type MetadataLookupStatus = CoverLookupStatus;
+type MetadataApplyField =
+  | "author"
+  | "category"
+  | "coverUrl"
+  | "description"
+  | "isbn"
+  | "language"
+  | "publishedYear"
+  | "publisher"
+  | "title";
+type MetadataSuggestionSource = "ocr" | "open-library";
 type OcrLookupStatus =
   | "idle"
   | "loading"
@@ -52,11 +64,15 @@ export function BookForm() {
   const [metadataSuggestion, setMetadataSuggestion] = useState<
     Extract<LookupBookMetadataResult, { success: true }>["metadata"] | undefined
   >();
+  const [metadataSuggestionSource, setMetadataSuggestionSource] =
+    useState<MetadataSuggestionSource>("open-library");
+  const [selectedMetadataFields, setSelectedMetadataFields] = useState<MetadataApplyField[]>([]);
   const [ocrLookupStatus, setOcrLookupStatus] = useState<OcrLookupStatus>("idle");
   const [ocrTextPreview, setOcrTextPreview] = useState<string>();
   const [state, formAction, isPending] = useActionState(createBookAction, initialState);
   const {
     handleSubmit,
+    getValues,
     register,
     reset,
     setValue,
@@ -114,6 +130,8 @@ export function BookForm() {
       setIsbnSourceText("");
       setMetadataLookupStatus("idle");
       setMetadataSuggestion(undefined);
+      setMetadataSuggestionSource("open-library");
+      setSelectedMetadataFields([]);
       setOcrLookupStatus("idle");
       setOcrTextPreview(undefined);
     }
@@ -196,6 +214,16 @@ export function BookForm() {
     }
 
     setValue("isbn", result.isbn, { shouldDirty: true, shouldValidate: true });
+
+    if (result.metadata) {
+      setMetadataSuggestion(result.metadata);
+      setMetadataSuggestionSource("ocr");
+      setSelectedMetadataFields(
+        getDefaultSelectedMetadataFields(result.metadata, getValues(), coverPreviewUrl),
+      );
+      setMetadataLookupStatus("found");
+    }
+
     setOcrLookupStatus("found");
     setOcrTextPreview(result.text);
   }
@@ -216,10 +244,15 @@ export function BookForm() {
 
     if (!result.success) {
       setMetadataLookupStatus(result.reason);
+      setSelectedMetadataFields([]);
       return;
     }
 
     setMetadataSuggestion(result.metadata);
+    setMetadataSuggestionSource("open-library");
+    setSelectedMetadataFields(
+      getDefaultSelectedMetadataFields(result.metadata, getValues(), coverPreviewUrl),
+    );
     setMetadataLookupStatus("found");
   }
 
@@ -228,24 +261,58 @@ export function BookForm() {
       return;
     }
 
-    setValue("isbn", metadataSuggestion.isbn, { shouldDirty: true, shouldValidate: true });
-    setValue("title", metadataSuggestion.title ?? "", { shouldDirty: true, shouldValidate: true });
-    setValue("author", metadataSuggestion.authors.join(", "), {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-    setValue("publisher", metadataSuggestion.publisher ?? "", { shouldDirty: true });
-    setValue("publishedYear", metadataSuggestion.publishedYear ?? "", { shouldDirty: true });
-    setValue("language", metadataSuggestion.language ?? "", { shouldDirty: true });
-    setValue("category", metadataSuggestion.categories.join(", "), { shouldDirty: true });
-    setValue("description", metadataSuggestion.description ?? "", { shouldDirty: true });
+    const metadataValues = getMetadataFieldValues(metadataSuggestion);
+    const shouldApply = (field: MetadataApplyField) => selectedMetadataFields.includes(field);
 
-    if (metadataSuggestion.coverUrl) {
+    if (shouldApply("isbn")) {
+      setValue("isbn", metadataValues.isbn ?? "", { shouldDirty: true, shouldValidate: true });
+    }
+
+    if (shouldApply("title")) {
+      setValue("title", metadataValues.title ?? "", { shouldDirty: true, shouldValidate: true });
+    }
+
+    if (shouldApply("author")) {
+      setValue("author", metadataValues.author ?? "", {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+
+    if (shouldApply("publisher")) {
+      setValue("publisher", metadataValues.publisher ?? "", { shouldDirty: true });
+    }
+
+    if (shouldApply("publishedYear")) {
+      setValue("publishedYear", metadataValues.publishedYear ?? "", { shouldDirty: true });
+    }
+
+    if (shouldApply("language")) {
+      setValue("language", metadataValues.language ?? "", { shouldDirty: true });
+    }
+
+    if (shouldApply("category")) {
+      setValue("category", metadataValues.category ?? "", { shouldDirty: true });
+    }
+
+    if (shouldApply("description")) {
+      setValue("description", metadataValues.description ?? "", { shouldDirty: true });
+    }
+
+    if (shouldApply("coverUrl") && metadataSuggestion.coverUrl) {
       clearCoverObjectUrl();
       setCoverPreviewUrl(metadataSuggestion.coverUrl);
       setValue("externalCoverUrl", metadataSuggestion.coverUrl, { shouldDirty: true });
       setCoverLookupStatus("found");
     }
+  }
+
+  function toggleMetadataField(field: MetadataApplyField) {
+    setSelectedMetadataFields((currentFields) =>
+      currentFields.includes(field)
+        ? currentFields.filter((currentField) => currentField !== field)
+        : [...currentFields, field],
+    );
   }
 
   function handleCoverImageChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -295,6 +362,9 @@ export function BookForm() {
   const coverLookupMessage = getCoverLookupMessage(coverLookupStatus, t);
   const isbnExtractionMessage = getIsbnExtractionMessage(isbnExtractionStatus, t);
   const metadataLookupMessage = getMetadataLookupMessage(metadataLookupStatus, t);
+  const metadataPreviewRows = metadataSuggestion
+    ? getMetadataPreviewRows(metadataSuggestion, getValues(), coverPreviewUrl, t)
+    : [];
   const ocrLookupMessage = getOcrLookupMessage(ocrLookupStatus, t);
 
   return (
@@ -457,22 +527,52 @@ export function BookForm() {
 
             {metadataSuggestion ? (
               <div className="space-y-3 rounded-md border bg-muted/20 p-3">
-                <div className="space-y-1 text-sm">
-                  <p className="font-medium">{metadataSuggestion.title ?? metadataSuggestion.isbn}</p>
-                  {metadataSuggestion.authors.length > 0 ? (
-                    <p className="text-muted-foreground">{metadataSuggestion.authors.join(", ")}</p>
-                  ) : null}
-                  <p className="text-muted-foreground">
-                    {[
-                      metadataSuggestion.publisher,
-                      metadataSuggestion.publishedYear,
-                      metadataSuggestion.language,
-                    ]
-                      .filter(Boolean)
-                      .join(" · ")}
+                <div className="space-y-1">
+                  <p className="text-sm font-medium">{t("books.new.metadataPreviewTitle")}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {t("books.new.metadataSourceLabel")} {getMetadataSourceLabel(metadataSuggestionSource, t)}
                   </p>
                 </div>
-                <Button className="w-full" onClick={applyMetadataSuggestion} type="button" variant="secondary">
+                <div className="grid gap-2 text-sm">
+                  {metadataPreviewRows.map((row) => {
+                    const checkboxId = `metadata-field-${row.field}`;
+
+                    return (
+                      <label
+                        className="flex gap-3 rounded-md border bg-background px-3 py-2"
+                        htmlFor={checkboxId}
+                        key={row.field}
+                      >
+                        <Checkbox
+                          checked={selectedMetadataFields.includes(row.field)}
+                          className="mt-1"
+                          id={checkboxId}
+                          onChange={() => toggleMetadataField(row.field)}
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                            {row.label}
+                          </span>
+                          <span className="mt-1 block break-words text-foreground">
+                            {row.value}
+                          </span>
+                          {row.willOverwrite ? (
+                            <span className="mt-1 block text-xs text-amber-700">
+                              {t("books.new.metadataOverwriteWarningLabel")}: {row.currentValue}
+                            </span>
+                          ) : null}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <Button
+                  className="w-full"
+                  disabled={selectedMetadataFields.length === 0}
+                  onClick={applyMetadataSuggestion}
+                  type="button"
+                  variant="secondary"
+                >
                   {t("books.new.metadataApplyLabel")}
                 </Button>
               </div>
@@ -820,6 +920,144 @@ function cnMessageClass(success: boolean) {
   return success ? "text-sm text-muted-foreground" : "text-sm text-destructive";
 }
 
+function getMetadataSourceLabel(
+  source: MetadataSuggestionSource,
+  t: ReturnType<typeof useTranslation>,
+) {
+  const labels = {
+    ocr: t("books.new.metadataSourceOcr"),
+    "open-library": t("books.new.metadataSourceOpenLibrary"),
+  } satisfies Record<MetadataSuggestionSource, string>;
+
+  return labels[source];
+}
+
+function getMetadataPreviewRows(
+  metadata: Extract<LookupBookMetadataResult, { success: true }>["metadata"],
+  currentValues: BookFormInput,
+  coverPreviewUrl: string | undefined,
+  t: ReturnType<typeof useTranslation>,
+) {
+  const metadataValues = getMetadataFieldValues(metadata);
+  const rows: { field: MetadataApplyField; label: string; value: string | undefined }[] = [
+    {
+      field: "isbn",
+      label: t("books.new.fields.isbn.label"),
+      value: metadataValues.isbn,
+    },
+    {
+      field: "title",
+      label: t("books.new.fields.title.label"),
+      value: metadataValues.title,
+    },
+    {
+      field: "author",
+      label: t("books.new.fields.author.label"),
+      value: metadataValues.author,
+    },
+    {
+      field: "publisher",
+      label: t("books.new.fields.publisher.label"),
+      value: metadataValues.publisher,
+    },
+    {
+      field: "publishedYear",
+      label: t("books.new.fields.publishedYear.label"),
+      value: metadataValues.publishedYear,
+    },
+    {
+      field: "language",
+      label: t("books.new.fields.language.label"),
+      value: metadataValues.language,
+    },
+    {
+      field: "category",
+      label: t("books.new.fields.category.label"),
+      value: metadataValues.category,
+    },
+    {
+      field: "description",
+      label: t("books.new.fields.description.label"),
+      value: metadataValues.description,
+    },
+    {
+      field: "coverUrl",
+      label: t("books.new.fields.coverImage.label"),
+      value: metadataValues.coverUrl ? t("books.new.metadataCoverAvailableLabel") : undefined,
+    },
+  ];
+
+  return rows
+    .map((row) => {
+      const currentValue = getCurrentMetadataFieldValue(row.field, currentValues, coverPreviewUrl);
+
+      return {
+        ...row,
+        currentValue,
+        willOverwrite: Boolean(currentValue),
+      };
+    })
+    .filter(
+      (
+        row,
+      ): row is {
+        currentValue: string | undefined;
+        field: MetadataApplyField;
+        label: string;
+        value: string;
+        willOverwrite: boolean;
+      } => Boolean(row.value),
+    );
+}
+
+function getDefaultSelectedMetadataFields(
+  metadata: Extract<LookupBookMetadataResult, { success: true }>["metadata"],
+  currentValues: BookFormInput,
+  coverPreviewUrl: string | undefined,
+) {
+  return Object.entries(getMetadataFieldValues(metadata)).flatMap(([field, value]) => {
+    const metadataField = field as MetadataApplyField;
+
+    if (!value || getCurrentMetadataFieldValue(metadataField, currentValues, coverPreviewUrl)) {
+      return [];
+    }
+
+    return [metadataField];
+  });
+}
+
+function getMetadataFieldValues(
+  metadata: Extract<LookupBookMetadataResult, { success: true }>["metadata"],
+): Record<MetadataApplyField, string | undefined> {
+  return {
+    author: metadata.authors.join(", ") || undefined,
+    category: metadata.categories.join(", ") || undefined,
+    coverUrl: metadata.coverUrl,
+    description: metadata.description,
+    isbn: metadata.isbn,
+    language: metadata.language,
+    publishedYear: metadata.publishedYear,
+    publisher: metadata.publisher,
+    title: metadata.title,
+  };
+}
+
+function getCurrentMetadataFieldValue(
+  field: MetadataApplyField,
+  currentValues: BookFormInput,
+  coverPreviewUrl: string | undefined,
+) {
+  if (field === "coverUrl") {
+    return cleanMetadataValue(currentValues.externalCoverUrl) || coverPreviewUrl;
+  }
+
+  return cleanMetadataValue(currentValues[field]);
+}
+
+function cleanMetadataValue(value: unknown) {
+  return typeof value === "string" ? value.trim() || undefined : undefined;
+}
+
 function getCoverLookupMessage(status: CoverLookupStatus, t: ReturnType<typeof useTranslation>) {
   const messages = {
     idle: undefined,
@@ -866,11 +1104,15 @@ function getOcrLookupMessage(status: OcrLookupStatus, t: ReturnType<typeof useTr
   const messages = {
     idle: undefined,
     loading: undefined,
+    "empty-response": t("books.new.ocrLookupEmptyResponseMessage"),
     found: t("books.new.ocrLookupFoundMessage"),
+    "http-error": t("books.new.ocrLookupHttpErrorMessage"),
     "invalid-file": t("books.new.ocrLookupErrorMessage"),
     "missing-image": t("books.new.ocrLookupMissingImageMessage"),
+    "network-error": t("books.new.ocrLookupNetworkErrorMessage"),
     "not-configured": t("books.new.ocrLookupNotConfiguredMessage"),
     "not-found": t("books.new.ocrLookupNotFoundMessage"),
+    timeout: t("books.new.ocrLookupTimeoutMessage"),
     "too-large": t("books.new.ocrLookupTooLargeMessage"),
     "unsupported-type": t("books.new.ocrLookupUnsupportedTypeMessage"),
   } satisfies Record<OcrLookupStatus, string | undefined>;

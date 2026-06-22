@@ -5,13 +5,40 @@ export type ImageOcrInput = {
   token?: string;
 };
 
+export type ImageOcrMetadata = {
+  authors?: string[];
+  categories?: string[];
+  description?: string;
+  isbn?: string;
+  language?: string;
+  publishedYear?: string;
+  publisher?: string;
+  title?: string;
+};
+
 type ImageOcrResponse = {
+  error?: string;
+  metadata?: ImageOcrMetadata;
+  message?: string;
   text?: string;
 };
 
-const IMAGE_OCR_TIMEOUT_MS = 10_000;
+export type ImageOcrResult =
+  | {
+      success: true;
+      metadata?: ImageOcrMetadata;
+      text: string;
+    }
+  | {
+      success: false;
+      reason: "empty-response" | "http-error" | "invalid-json" | "network-error" | "timeout";
+      message?: string;
+      status?: number;
+    };
 
-export async function extractTextFromImage(input: ImageOcrInput) {
+const IMAGE_OCR_TIMEOUT_MS = 30_000;
+
+export async function extractTextFromImage(input: ImageOcrInput): Promise<ImageOcrResult> {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), IMAGE_OCR_TIMEOUT_MS);
 
@@ -24,17 +51,64 @@ export async function extractTextFromImage(input: ImageOcrInput) {
     });
 
     if (!response.ok) {
-      return undefined;
+      return {
+        success: false,
+        reason: "http-error",
+        message: await getResponseErrorMessage(response),
+        status: response.status,
+      };
     }
 
-    const data = (await response.json()) as ImageOcrResponse;
+    const data = await parseOcrResponse(response);
+
+    if (!data) {
+      return {
+        success: false,
+        reason: "invalid-json",
+      };
+    }
+
     const text = data.text?.trim();
 
-    return text || undefined;
-  } catch {
-    return undefined;
+    if (!text) {
+      return {
+        success: false,
+        reason: "empty-response",
+        message: data.message ?? data.error,
+      };
+    }
+
+    return {
+      success: true,
+      metadata: data.metadata,
+      text,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      reason: error instanceof DOMException && error.name === "AbortError" ? "timeout" : "network-error",
+      message: error instanceof Error ? error.message : undefined,
+    };
   } finally {
     clearTimeout(timeoutId);
+  }
+}
+
+async function parseOcrResponse(response: Response) {
+  try {
+    return (await response.json()) as ImageOcrResponse;
+  } catch {
+    return undefined;
+  }
+}
+
+async function getResponseErrorMessage(response: Response) {
+  try {
+    const data = (await response.json()) as ImageOcrResponse;
+
+    return data.message ?? data.error;
+  } catch {
+    return undefined;
   }
 }
 
