@@ -204,13 +204,13 @@ export const en = {
       isbnExtractionNotFoundMessage: "No valid ISBN was recognized in the text.",
       ocrLookupTitle: "OCR from image",
       ocrLookupDescription:
-        "Upload a photo of the back cover or cover: if Cloudflare OCR is configured, Culturando tries to read the text and recognize the ISBN.",
+        "Upload a photo of the back cover or cover: Culturando tries to read the title, ISBN and other useful data to fill in the form.",
       ocrLookupLabel: "Read image",
       ocrLookupPendingLabel: "Reading image...",
-      ocrLookupFoundMessage: "ISBN recognized from the image and inserted into the form.",
+      ocrLookupFoundMessage: "Data recognized from the image and inserted into the form.",
       ocrLookupEmptyResponseMessage: "OCR responded, but did not return readable text.",
       ocrLookupHttpErrorMessage: "The OCR Worker returned an error. Try again shortly.",
-      ocrLookupNotFoundMessage: "Text was read, but no valid ISBN was recognized.",
+      ocrLookupNotFoundMessage: "Text was read, but no useful title or ISBN was recognized.",
       ocrLookupMissingImageMessage: "Upload an image before starting OCR.",
       ocrLookupNetworkErrorMessage: "The OCR Worker could not be reached.",
       ocrLookupNotConfiguredMessage:

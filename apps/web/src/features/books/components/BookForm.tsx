@@ -213,15 +213,22 @@ export function BookForm() {
       return;
     }
 
-    setValue("isbn", result.isbn, { shouldDirty: true, shouldValidate: true });
+    if (result.isbn) {
+      setValue("isbn", result.isbn, { shouldDirty: true, shouldValidate: true });
+    }
 
     if (result.metadata) {
+      const selectedFields = getDefaultSelectedMetadataFields(
+        result.metadata,
+        getValues(),
+        coverPreviewUrl,
+      );
+
       setMetadataSuggestion(result.metadata);
       setMetadataSuggestionSource("ocr");
-      setSelectedMetadataFields(
-        getDefaultSelectedMetadataFields(result.metadata, getValues(), coverPreviewUrl),
-      );
+      setSelectedMetadataFields(selectedFields);
       setMetadataLookupStatus("found");
+      applyMetadataFields(result.metadata, selectedFields);
     }
 
     setOcrLookupStatus("found");
@@ -261,8 +268,15 @@ export function BookForm() {
       return;
     }
 
-    const metadataValues = getMetadataFieldValues(metadataSuggestion);
-    const shouldApply = (field: MetadataApplyField) => selectedMetadataFields.includes(field);
+    applyMetadataFields(metadataSuggestion, selectedMetadataFields);
+  }
+
+  function applyMetadataFields(
+    metadata: Extract<LookupBookMetadataResult, { success: true }>["metadata"],
+    fields: MetadataApplyField[],
+  ) {
+    const metadataValues = getMetadataFieldValues(metadata);
+    const shouldApply = (field: MetadataApplyField) => fields.includes(field);
 
     if (shouldApply("isbn")) {
       setValue("isbn", metadataValues.isbn ?? "", { shouldDirty: true, shouldValidate: true });
@@ -299,10 +313,10 @@ export function BookForm() {
       setValue("description", metadataValues.description ?? "", { shouldDirty: true });
     }
 
-    if (shouldApply("coverUrl") && metadataSuggestion.coverUrl) {
+    if (shouldApply("coverUrl") && metadata.coverUrl) {
       clearCoverObjectUrl();
-      setCoverPreviewUrl(metadataSuggestion.coverUrl);
-      setValue("externalCoverUrl", metadataSuggestion.coverUrl, { shouldDirty: true });
+      setCoverPreviewUrl(metadata.coverUrl);
+      setValue("externalCoverUrl", metadata.coverUrl, { shouldDirty: true });
       setCoverLookupStatus("found");
     }
   }

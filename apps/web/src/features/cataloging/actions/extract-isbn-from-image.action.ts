@@ -6,6 +6,8 @@ import {
   extractTextFromImage,
   type ImageOcrResult,
   type ImageOcrMetadata,
+  lookupBookMetadataByIsbn,
+  lookupBookMetadataByTitle,
 } from "@culturando/ai";
 
 const MAX_OCR_IMAGE_SIZE_BYTES = 6 * 1024 * 1024;
@@ -14,7 +16,7 @@ const supportedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 export type ExtractIsbnFromImageResult =
   | {
     success: true;
-    isbn: string;
+    isbn?: string;
     metadata?: BookMetadataSuggestion;
     text: string;
   }
@@ -90,8 +92,14 @@ export async function extractIsbnFromImageAction(
 
   const { text } = ocrResult;
   const isbn = extractIsbnFromText(text);
+  const ocrMetadata = ocrResult.metadata ?? extractOcrMetadataFromText(text);
+  const normalizedOcrMetadata = normalizeOcrMetadata(ocrMetadata, isbn, text);
+  const lookupMetadata = isbn
+    ? await lookupBookMetadataByIsbn(isbn)
+    : await lookupBookMetadataByTitle(normalizedOcrMetadata?.title ?? inferTitleFromOcrText(text) ?? "");
+  const metadata = mergeMetadataSuggestions(normalizedOcrMetadata, lookupMetadata, isbn);
 
-  if (!isbn) {
+  if (!isbn && !metadata) {
     return {
       success: false,
       reason: "not-found",
@@ -102,7 +110,7 @@ export async function extractIsbnFromImageAction(
   return {
     success: true,
     isbn,
-    metadata: normalizeOcrMetadata(ocrResult.metadata ?? extractOcrMetadataFromText(text), isbn, text),
+    metadata,
     text,
   };
 }
@@ -148,22 +156,20 @@ function extractJsonObject(text: string) {
 
 function normalizeOcrMetadata(
   metadata: ImageOcrMetadata | undefined,
-  isbn: string,
+  isbn: string | undefined,
   text: string,
 ): BookMetadataSuggestion | undefined {
-  if (!metadata) {
-    return undefined;
-  }
+  const fallbackTitle = inferTitleFromOcrText(text);
 
   const suggestion: BookMetadataSuggestion = {
-    authors: normalizeStringArray(metadata.authors),
-    categories: normalizeStringArray(metadata.categories),
-    description: cleanText(metadata.description),
-    isbn: cleanText(metadata.isbn) ?? isbn,
-    language: cleanText(metadata.language),
-    publishedYear: cleanText(metadata.publishedYear),
-    publisher: cleanText(metadata.publisher),
-    title: cleanText(metadata.title),
+    authors: normalizeStringArray(metadata?.authors),
+    categories: normalizeStringArray(metadata?.categories),
+    description: cleanText(metadata?.description),
+    isbn: cleanText(metadata?.isbn) ?? isbn,
+    language: cleanText(metadata?.language),
+    publishedYear: cleanText(metadata?.publishedYear),
+    publisher: cleanText(metadata?.publisher),
+    title: cleanText(metadata?.title) ?? fallbackTitle,
   };
 
   const hasMetadata = Boolean(
@@ -180,16 +186,31 @@ function normalizeOcrMetadata(
     return suggestion;
   }
 
-  const fallbackTitle = inferTitleFromOcrText(text);
+  return undefined;
+}
 
-  return fallbackTitle
-    ? {
-        authors: [],
-        categories: [],
-        isbn,
-        title: fallbackTitle,
-      }
-    : undefined;
+function mergeMetadataSuggestions(
+  ocrMetadata: BookMetadataSuggestion | undefined,
+  lookupMetadata: BookMetadataSuggestion | undefined,
+  isbn: string | undefined,
+): BookMetadataSuggestion | undefined {
+  if (!ocrMetadata && !lookupMetadata && !isbn) {
+    return undefined;
+  }
+
+  return {
+    authors: ocrMetadata?.authors.length ? ocrMetadata.authors : lookupMetadata?.authors ?? [],
+    categories: ocrMetadata?.categories.length
+      ? ocrMetadata.categories
+      : lookupMetadata?.categories ?? [],
+    coverUrl: lookupMetadata?.coverUrl ?? ocrMetadata?.coverUrl,
+    description: ocrMetadata?.description ?? lookupMetadata?.description,
+    isbn: isbn ?? ocrMetadata?.isbn ?? lookupMetadata?.isbn,
+    language: ocrMetadata?.language ?? lookupMetadata?.language,
+    publishedYear: ocrMetadata?.publishedYear ?? lookupMetadata?.publishedYear,
+    publisher: ocrMetadata?.publisher ?? lookupMetadata?.publisher,
+    title: ocrMetadata?.title ?? lookupMetadata?.title,
+  };
 }
 
 function normalizeStringArray(value: string[] | undefined) {

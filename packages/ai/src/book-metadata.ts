@@ -1,5 +1,5 @@
 export type BookMetadataSuggestion = {
-  isbn: string;
+  isbn?: string;
   title?: string;
   authors: string[];
   publisher?: string;
@@ -23,6 +23,21 @@ type OpenLibraryBook = {
 
 type OpenLibraryAuthor = {
   name?: string;
+};
+
+type OpenLibrarySearchResponse = {
+  docs?: OpenLibrarySearchBook[];
+};
+
+type OpenLibrarySearchBook = {
+  author_name?: string[];
+  cover_i?: number;
+  first_publish_year?: number;
+  isbn?: string[];
+  language?: string[];
+  publisher?: string[];
+  subject?: string[];
+  title?: string;
 };
 
 const OPEN_LIBRARY_TIMEOUT_MS = 3500;
@@ -69,8 +84,52 @@ export async function lookupBookMetadataByIsbn(
   };
 }
 
+export async function lookupBookMetadataByTitle(
+  title: string,
+): Promise<BookMetadataSuggestion | undefined> {
+  const normalizedTitle = cleanText(title);
+
+  if (!normalizedTitle) {
+    return undefined;
+  }
+
+  const result = await fetchOpenLibraryJson<OpenLibrarySearchResponse>(
+    `https://openlibrary.org/search.json?title=${encodeURIComponent(normalizedTitle)}&limit=5`,
+  );
+  const book = result?.docs?.find((doc) => cleanText(doc.title));
+
+  if (!book) {
+    return undefined;
+  }
+
+  const coverId = book.cover_i;
+
+  return {
+    authors: normalizeStringArray(book.author_name).slice(0, 4),
+    categories: normalizeStringArray(book.subject).slice(0, 3),
+    coverUrl: coverId
+      ? `https://covers.openlibrary.org/b/id/${encodeURIComponent(coverId)}-L.jpg`
+      : undefined,
+    isbn: getPreferredIsbn(book.isbn),
+    language: getLanguageLabel(book.language?.[0]),
+    publishedYear: book.first_publish_year ? String(book.first_publish_year) : undefined,
+    publisher: cleanText(book.publisher?.[0]),
+    title: cleanText(book.title),
+  };
+}
+
 function normalizeIsbn(value: string) {
   return value.replace(/[-\s]/g, "").trim();
+}
+
+function getPreferredIsbn(isbns: string[] | undefined) {
+  const normalizedIsbns = normalizeStringArray(isbns).map(normalizeIsbn).filter(Boolean);
+
+  return normalizedIsbns.find((isbn) => isbn.length === 13) ?? normalizedIsbns[0];
+}
+
+function normalizeStringArray(value: string[] | undefined) {
+  return (value ?? []).map((item) => item.trim()).filter(Boolean);
 }
 
 async function getAuthorNames(authors: OpenLibraryBook["authors"]) {
