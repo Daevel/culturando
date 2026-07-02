@@ -471,7 +471,7 @@ Package condiviso per catalogazione assistita e funzioni AI.
 
 Responsabilità attuali:
 
-- lookup metadati libro da ISBN tramite adapter Open Library;
+- lookup metadati libro da ISBN o titolo tramite adapter Open Library;
 - estrazione ISBN da testo con validazione ISBN-10/ISBN-13 tramite check digit;
 - adapter OCR provider-agnostic `extractTextFromImage` per inviare immagini a un endpoint esterno;
 - supporto al flusso OCR Cloudflare tramite Worker configurabile dalla web app.
@@ -489,6 +489,7 @@ Esempi attuali/futuri:
 extractIsbnFromText()
 extractIsbnsFromText()
 lookupBookMetadataByIsbn()
+lookupBookMetadataByTitle()
 extractTextFromImage()
 normalizeBookMetadata()
 rankBookResults()
@@ -889,7 +890,7 @@ Funzionalità attuali:
 - ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e copia della cover trovata nello storage configurato quando possibile;
 - fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN;
 - URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage;
-- catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN, con proposta dati e applicazione esplicita al form;
+- catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN o titolo OCR, con proposta dati e applicazione esplicita/manuale quando richiesta;
 - estrazione ISBN da testo incollato o testo OCR, tramite `@culturando/ai`;
 - upload immagine per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale.
 
@@ -1009,8 +1010,9 @@ La catalogazione assistita aiuta l’utente a compilare una scheda libro senza s
 Funzionalità attuali:
 
 - lookup metadati da ISBN tramite server action `lookupBookMetadataAction` e `@culturando/ai`;
+- lookup metadati da titolo OCR quando l'immagine non contiene un ISBN riconoscibile ma permette di inferire un titolo utile;
 - proposta di titolo, autori, editore, anno, lingua, categorie, descrizione e copertina;
-- applicazione selettiva al form tramite checkbox, con campi vuoti preselezionati e campi già compilati non selezionati di default;
+- applicazione selettiva al form tramite checkbox, con campi vuoti preselezionati e campi già compilati non selezionati di default; i dati recuperati dal flusso OCR vengono applicati automaticamente solo sui campi vuoti;
 - estrazione ISBN da testo incollato o testo OCR tramite funzione pura `extractIsbnFromText`;
 - upload immagine retro/copertina per OCR tramite `extractIsbnFromImageAction`;
 - fallback metadati da OCR: se la Worker restituisce `metadata` o JSON incorporato nel testo OCR, il form può proporre titolo/autori/categorie anche quando Open Library non trova l'ISBN;
@@ -1024,8 +1026,8 @@ Pipeline prevista:
 upload immagine copertina/retro
 → OCR
 → estrazione testo
-→ estrazione ISBN
-→ lookup metadati libro
+→ estrazione ISBN o inferenza titolo
+→ lookup metadati libro da ISBN o titolo
 → ranking risultati
 → precompilazione form
 → conferma utente
