@@ -805,7 +805,10 @@ Struttura attuale:
 
 ```txt
 apps/web/src/app/dashboard/page.tsx
+apps/web/src/app/dashboard/admin/page.tsx
+apps/web/src/app/dashboard/profile/page.tsx
 apps/web/src/features/dashboard/components/DashboardOverview.tsx
+apps/web/src/features/dashboard/actions/dashboard-stats.repository.ts
 ```
 
 La route `/dashboard` usa `auth()` lato server. Se non esiste una sessione valida, reindirizza a `/auth/login`.
@@ -817,14 +820,15 @@ Responsabilità attuali:
 - esporre una CTA verso la creazione libro;
 - esporre logout tramite `logoutAction`;
 - mostrare le richieste ricevute sui libri dell'utente;
-- permettere al proprietario di accettare o rifiutare richieste ancora `pending`.
+- permettere al proprietario di accettare o rifiutare richieste ancora `pending`;
+- mostrare statistiche d'uso personali sui libri dell'utente, incluse visualizzazioni, richieste ricevute, richieste in attesa e libri più visualizzati;
+- esporre accesso alla modifica del profilo;
+- esporre accesso alla dashboard amministrativa solo quando `session.user.role` è `admin`.
 
 Funzionalità previste:
 
 - visualizzazione libri pubblicati;
 - aggiunta nuovi libri;
-- gestione profilo;
-- statistiche base;
 - accesso rapido alle funzioni di catalogazione.
 
 Route previste/attuali:
@@ -832,10 +836,68 @@ Route previste/attuali:
 ```txt
 /dashboard                # attuale, placeholder protetto
 /dashboard/books/new      # attuale, form libro protetto
+/dashboard/profile        # attuale, profilo utente MVP
+/dashboard/admin          # attuale, dashboard amministrativa protetta per admin
 /dashboard/books          # previsto
 ```
 
-### 11.1.1 Requests / richieste contatto-prestito
+### 11.1.1 Profilo utente
+
+La feature profile permette all'utente autenticato di gestire i dati descrittivi del proprio profilo senza esporre informazioni sensibili o coordinate precise.
+
+Struttura attuale:
+
+```txt
+apps/web/src/app/dashboard/profile/page.tsx
+apps/web/src/features/profile/
+├── actions/
+│   ├── profile.repository.ts
+│   └── update-profile.action.ts
+├── components/
+│   └── ProfileForm.tsx
+├── schemas/
+│   └── profile.schema.ts
+└── types/
+    └── profile-form.types.ts
+```
+
+Funzionalità attuali:
+
+- route protetta `/dashboard/profile`;
+- lettura profilo tramite `getUserProfile`;
+- aggiornamento tramite server action `updateProfileAction`;
+- validazione Zod di nome, URL avatar, biografia, città, provincia, regione e visibilità profilo;
+- campi profilo salvati direttamente sul modello `User`: `avatarUrl`, `bio`, `city`, `province`, `region`, `isProfilePublic`;
+- email mostrata come dato account non modificabile dal form profilo;
+- testi UI centralizzati in `@culturando/translation`.
+
+### 11.1.2 Dashboard amministrativa
+
+La dashboard amministrativa copre il requisito della traccia relativo a dashboard e metriche aggregate del prototipo.
+
+Struttura attuale:
+
+```txt
+apps/web/src/app/dashboard/admin/page.tsx
+apps/web/src/features/admin/
+├── actions/
+│   └── admin-stats.repository.ts
+└── components/
+    └── AdminDashboard.tsx
+```
+
+Funzionalità attuali:
+
+- route protetta `/dashboard/admin`;
+- accesso consentito solo a utenti con ruolo `admin` nella sessione Auth.js;
+- `session.user.role` viene popolato tramite JWT callback in `apps/web/src/config/auth.ts`;
+- statistiche globali su utenti, libri, richieste e visualizzazioni;
+- conteggio libri pubblici e privati;
+- conteggio richieste `pending`, `accepted`, `rejected` e `cancelled`;
+- lista ultimi utenti registrati;
+- lista ultimi libri pubblicati con link al dettaglio.
+
+### 11.1.3 Requests / richieste contatto-prestito
 
 La feature requests completa il primo flusso interattivo dell'MVP: un utente autenticato può inviare una richiesta per un libro pubblico disponibile e il proprietario può gestirla dalla dashboard.
 
@@ -893,6 +955,8 @@ Funzionalità attuali:
 - catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN o titolo OCR, con proposta dati e applicazione esplicita/manuale quando richiesta;
 - estrazione ISBN da testo incollato o testo OCR, tramite `@culturando/ai`;
 - upload immagine per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale.
+- conteggio visualizzazioni tramite `BookStats` quando viene aperta la pagina dettaglio `/books/[bookId]`;
+- visualizzazione del numero di viste nella scheda dettaglio libro.
 
 Funzionalità ancora previste:
 
@@ -992,6 +1056,7 @@ Entità attuali:
 
 - User;
 - Book;
+- BookStats;
 - BookLocation;
 - BookImage;
 - LoanRequest.
@@ -999,9 +1064,16 @@ Entità attuali:
 Entità previste:
 
 - Location geospaziale avanzata;
-- BookStats;
 - BookView;
 - UserProfile.
+
+Seed demo:
+
+- script `pnpm db:seed`, definito nel `package.json` root;
+- file seed in `packages/db/prisma/seed.mjs`;
+- crea 1 utente admin, 3 utenti normali, libri demo con coordinate private/pubbliche approssimate, immagini, statistiche e richieste in stati diversi;
+- credenziali demo: `admin@culturando.local` / `Culturando123!`;
+- gli utenti demo condividono la password `Culturando123!`.
 
 ### 11.6 AI catalogazione
 
@@ -1104,12 +1176,17 @@ Stato dei primi step:
 23. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending` — completato;
 24. sostituire lo storage locale delle copertine con storage persistente/cloud tramite Cloudflare R2 — completato;
 25. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile — completato;
-26. introdurre catalogazione assistita da ISBN, estrazione ISBN da testo e OCR immagine provider-agnostic — completato.
+26. introdurre catalogazione assistita da ISBN, estrazione ISBN da testo e OCR immagine provider-agnostic — completato;
+27. introdurre statistiche d'uso con `BookStats`, visualizzazioni libro e riepilogo dashboard — completato;
+28. introdurre profilo utente MVP modificabile da dashboard — completato;
+29. introdurre dashboard amministrativa protetta per utenti `admin` — completato;
+30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato.
 
 Ordine dei prossimi step:
 
-1. consolidare endpoint OCR Cloudflare e monitorare accuratezza su immagini reali;
-2. valutare miglioramenti UI/UX per il flusso di catalogazione assistita.
+1. iniziare la stesura della relazione tecnica della tesi;
+2. documentare requisiti funzionali/non funzionali, modello dati, UX/accessibilità, privacy e architettura;
+3. valutare pagina profilo pubblico e miniature reali come rifiniture post-MVP.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
