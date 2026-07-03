@@ -99,8 +99,113 @@ export const it = {
       title: "Azioni rapide",
       description: "I prossimi flussi partiranno da qui.",
       newBookLabel: "Aggiungi libro",
+      profileLabel: "Modifica profilo",
       booksLabel: "Esplora libri",
       requestsLabel: "Le mie richieste",
+      adminLabel: "Dashboard admin",
+    },
+    stats: {
+      title: "Statistiche d'uso",
+      description:
+        "Metriche semplici sui tuoi libri pubblicati, sulle visualizzazioni e sulle richieste ricevute.",
+      booksLabel: "Libri pubblicati",
+      viewsLabel: "Visualizzazioni",
+      requestsLabel: "Richieste ricevute",
+      pendingRequestsLabel: "Richieste in attesa",
+      visibilityTitle: "Riepilogo pubblicazione",
+      publicBooksLabel: "Libri pubblici",
+      privateBooksLabel: "Libri privati",
+      acceptedRequestsLabel: "Richieste accettate",
+      topBooksTitle: "Libri più visualizzati",
+      emptyTopBooks: "Non ci sono ancora libri con statistiche da mostrare.",
+    },
+  },
+  admin: {
+    eyebrow: "Amministrazione",
+    title: "Dashboard amministrativa",
+    description:
+      "Panoramica aggregata del prototipo Culturando: utenti, pubblicazioni, richieste e visualizzazioni.",
+    backToDashboardLabel: "Dashboard",
+    emptyName: "Nome non disponibile",
+    stats: {
+      usersLabel: "Utenti",
+      booksLabel: "Libri",
+      requestsLabel: "Richieste",
+      viewsLabel: "Visualizzazioni",
+    },
+    publication: {
+      title: "Pubblicazioni",
+      description: "Distribuzione dei libri in base alla visibilità.",
+      publicBooksLabel: "Libri pubblici",
+      privateBooksLabel: "Libri privati",
+    },
+    requests: {
+      title: "Richieste prestito/consultazione",
+      description: "Stato globale delle richieste gestite dalla piattaforma.",
+      pendingLabel: "In attesa",
+      acceptedLabel: "Accettate",
+      rejectedLabel: "Rifiutate",
+      cancelledLabel: "Annullate",
+    },
+    latestUsers: {
+      title: "Ultimi utenti registrati",
+      description: "Account creati più di recente nel sistema.",
+    },
+    latestBooks: {
+      title: "Ultimi libri pubblicati",
+      description: "Schede libro aggiunte più di recente.",
+      ownerLabel: "Proprietario:",
+    },
+  },
+  profile: {
+    eyebrow: "Profilo personale",
+    title: "Gestisci il tuo profilo",
+    description:
+      "Aggiorna le informazioni che descrivono la tua biblioteca personale e scegli se rendere visibile il profilo.",
+    backToDashboardLabel: "Dashboard",
+    form: {
+      title: "Informazioni profilo",
+      description:
+        "Questi dati aiutano gli altri utenti a capire il contesto culturale della tua raccolta, senza mostrare indirizzi precisi.",
+      submitLabel: "Salva profilo",
+      pendingLabel: "Salvataggio...",
+      successMessage: "Profilo aggiornato correttamente.",
+      unauthorizedMessage: "Devi accedere per modificare il profilo.",
+      genericErrorMessage: "Non è stato possibile aggiornare il profilo.",
+      fields: {
+        name: {
+          label: "Nome",
+          placeholder: "Luigi Avitabile",
+        },
+        email: {
+          label: "Email account",
+        },
+        avatarUrl: {
+          label: "URL avatar",
+          placeholder: "https://example.com/avatar.jpg",
+        },
+        bio: {
+          label: "Biografia",
+          placeholder: "Descrivi brevemente la tua biblioteca, i tuoi interessi o la tua raccolta.",
+        },
+        city: {
+          label: "Città",
+          placeholder: "Napoli",
+        },
+        province: {
+          label: "Provincia",
+          placeholder: "NA",
+        },
+        region: {
+          label: "Regione",
+          placeholder: "Campania",
+        },
+        isProfilePublic: {
+          label: "Rendi visibile il profilo",
+          description:
+            "Il profilo pubblico mostra solo dati descrittivi e area generale, mai indirizzi o coordinate precise.",
+        },
+      },
     },
   },
   books: {
@@ -142,6 +247,7 @@ export const it = {
       locationLabel: "Area pubblica",
       areaLabel: "Zona",
       imagesLabel: "Immagini",
+      viewsLabel: "Visualizzazioni",
       approximateLocationValue: "Posizione approssimata disponibile",
       emptyValue: "Non disponibile",
     },

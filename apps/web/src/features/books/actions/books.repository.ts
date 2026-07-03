@@ -73,10 +73,34 @@ export async function getBookById(bookId: string): Promise<Book | null> {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      stats: true,
     },
   });
 
   return book ? toBook(book) : null;
+}
+
+export async function recordBookView(bookId: string): Promise<void> {
+  const mockBook = booksMock.find((book) => book.id === bookId);
+
+  if (mockBook) {
+    return;
+  }
+
+  await prisma.bookStats.upsert({
+    where: {
+      bookId,
+    },
+    create: {
+      bookId,
+      viewCount: 1,
+    },
+    update: {
+      viewCount: {
+        increment: 1,
+      },
+    },
+  });
 }
 
 export async function getStoredBookOwnerId(bookId: string): Promise<string | null> {
@@ -265,6 +289,7 @@ function findStoredBooks() {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      stats: true,
     },
     orderBy: {
       createdAt: "desc",
@@ -284,6 +309,7 @@ function findStoredBooksByIds(bookIds: string[]) {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      stats: true,
     },
   });
 }
@@ -327,6 +353,9 @@ function toBook(book: StoredBook): Book {
       isPrimary: image.isPrimary,
       createdAt: image.createdAt.toISOString(),
     })),
+    stats: {
+      viewCount: book.stats?.viewCount ?? 0,
+    },
     createdAt: book.createdAt.toISOString(),
     updatedAt: book.updatedAt.toISOString(),
   };

@@ -57,6 +57,11 @@ model User {
   passwordHash          String?
   role                  UserRole      @default(user)
   avatarUrl             String?
+  bio                   String?
+  city                  String?
+  province              String?
+  region                String?
+  isProfilePublic       Boolean       @default(true)
   books                 Book[]
   sentLoanRequests      LoanRequest[] @relation("LoanRequestRequester")
   receivedLoanRequests  LoanRequest[] @relation("LoanRequestOwner")
@@ -83,6 +88,7 @@ model Book {
   physicalCondition BookPhysicalCondition @default(good)
   location          BookLocation?
   images            BookImage[]
+  stats             BookStats?
   loanRequests      LoanRequest[]
   createdAt         DateTime              @default(now())
   updatedAt         DateTime              @updatedAt
@@ -93,6 +99,17 @@ model Book {
   @@index([author])
   @@index([availability])
   @@index([visibility])
+}
+
+model BookStats {
+  id        String   @id @default(cuid())
+  bookId    String   @unique
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  viewCount Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([viewCount])
 }
 
 model BookLocation {

@@ -30,6 +30,10 @@ export type BookImage = {
   createdAt: string;
 };
 
+export type BookStats = {
+  viewCount: number;
+};
+
 export type Book = {
   id: string;
   ownerId: string;
@@ -46,6 +50,7 @@ export type Book = {
   physicalCondition: BookPhysicalCondition;
   location?: BookLocation;
   images: BookImage[];
+  stats?: BookStats;
   createdAt: string;
   updatedAt: string;
 };

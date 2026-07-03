@@ -4,6 +4,8 @@ export const routes = {
   login: "/auth/login",
   signup: "/auth/signup",
   dashboard: "/dashboard",
+  dashboardAdmin: "/dashboard/admin",
+  dashboardProfile: "/dashboard/profile",
   dashboardRequests: "/dashboard/requests",
   nearby: "/nearby",
   books: "/books",

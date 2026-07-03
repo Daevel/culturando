@@ -4,6 +4,10 @@ import Credentials from "next-auth/providers/credentials";
 
 import { verifyPassword } from "@/lib/password";
 
+function isUserRole(value: unknown): value is "admin" | "user" {
+  return value === "admin" || value === "user";
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
   trustHost: true,
@@ -17,6 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
 
       return token;
@@ -24,6 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     session({ session, token }) {
       if (session.user) {
         session.user.id = String(token.id ?? token.sub ?? "");
+        session.user.role = isUserRole(token.role) ? token.role : "user";
       }
 
       return session;
@@ -64,6 +70,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
         };
       },
     }),

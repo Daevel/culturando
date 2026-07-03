@@ -99,8 +99,112 @@ export const en = {
       title: "Quick actions",
       description: "The next flows will start from here.",
       newBookLabel: "Add book",
+      profileLabel: "Edit profile",
       booksLabel: "Explore books",
       requestsLabel: "My requests",
+      adminLabel: "Admin dashboard",
+    },
+    stats: {
+      title: "Usage statistics",
+      description: "Simple metrics about your published books, views and received requests.",
+      booksLabel: "Published books",
+      viewsLabel: "Views",
+      requestsLabel: "Received requests",
+      pendingRequestsLabel: "Pending requests",
+      visibilityTitle: "Publishing summary",
+      publicBooksLabel: "Public books",
+      privateBooksLabel: "Private books",
+      acceptedRequestsLabel: "Accepted requests",
+      topBooksTitle: "Most viewed books",
+      emptyTopBooks: "There are no books with statistics to show yet.",
+    },
+  },
+  admin: {
+    eyebrow: "Administration",
+    title: "Admin dashboard",
+    description:
+      "Aggregate overview of the Culturando prototype: users, publications, requests and views.",
+    backToDashboardLabel: "Dashboard",
+    emptyName: "Name not available",
+    stats: {
+      usersLabel: "Users",
+      booksLabel: "Books",
+      requestsLabel: "Requests",
+      viewsLabel: "Views",
+    },
+    publication: {
+      title: "Publications",
+      description: "Distribution of books by visibility.",
+      publicBooksLabel: "Public books",
+      privateBooksLabel: "Private books",
+    },
+    requests: {
+      title: "Loan/consultation requests",
+      description: "Global status of requests handled by the platform.",
+      pendingLabel: "Pending",
+      acceptedLabel: "Accepted",
+      rejectedLabel: "Rejected",
+      cancelledLabel: "Cancelled",
+    },
+    latestUsers: {
+      title: "Latest registered users",
+      description: "Most recently created accounts in the system.",
+    },
+    latestBooks: {
+      title: "Latest published books",
+      description: "Most recently added book records.",
+      ownerLabel: "Owner:",
+    },
+  },
+  profile: {
+    eyebrow: "Personal profile",
+    title: "Manage your profile",
+    description:
+      "Update the information that describes your personal library and choose whether to make the profile visible.",
+    backToDashboardLabel: "Dashboard",
+    form: {
+      title: "Profile information",
+      description:
+        "This data helps other users understand the cultural context of your collection, without showing precise addresses.",
+      submitLabel: "Save profile",
+      pendingLabel: "Saving...",
+      successMessage: "Profile updated successfully.",
+      unauthorizedMessage: "You must sign in to edit your profile.",
+      genericErrorMessage: "The profile could not be updated.",
+      fields: {
+        name: {
+          label: "Name",
+          placeholder: "Luigi Avitabile",
+        },
+        email: {
+          label: "Account email",
+        },
+        avatarUrl: {
+          label: "Avatar URL",
+          placeholder: "https://example.com/avatar.jpg",
+        },
+        bio: {
+          label: "Bio",
+          placeholder: "Briefly describe your library, interests or collection.",
+        },
+        city: {
+          label: "City",
+          placeholder: "Naples",
+        },
+        province: {
+          label: "Province",
+          placeholder: "NA",
+        },
+        region: {
+          label: "Region",
+          placeholder: "Campania",
+        },
+        isProfilePublic: {
+          label: "Make profile visible",
+          description:
+            "The public profile shows only descriptive data and a general area, never precise addresses or coordinates.",
+        },
+      },
     },
   },
   books: {
@@ -142,6 +246,7 @@ export const en = {
       locationLabel: "Public area",
       areaLabel: "Area",
       imagesLabel: "Images",
+      viewsLabel: "Views",
       approximateLocationValue: "Approximate location available",
       emptyValue: "Not available",
     },
@@ -226,7 +331,8 @@ export const en = {
         "Use the ISBN to search for title, author and other metadata before filling in the record.",
       metadataLookupLabel: "Search book data",
       metadataLookupPendingLabel: "Searching data...",
-      metadataLookupFoundMessage: "Data found. Review it and apply it to the form if it is correct.",
+      metadataLookupFoundMessage:
+        "Data found. Review it and apply it to the form if it is correct.",
       metadataLookupNotFoundMessage: "No data found for this ISBN.",
       metadataLookupErrorMessage: "The book data lookup could not be completed.",
       metadataLookupMissingIsbnMessage: "Enter an ISBN before searching for book data.",

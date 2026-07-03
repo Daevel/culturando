@@ -159,6 +159,12 @@ export function BookDetail({ book }: BookDetailProps) {
                 </p>
                 <p className="mt-1 font-medium">{book.images.length}</p>
               </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  {t("books.detail.viewsLabel")}
+                </p>
+                <p className="mt-1 font-medium">{book.stats?.viewCount ?? 0}</p>
+              </div>
             </section>
           </CardContent>
         </Card>
