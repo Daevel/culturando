@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <title>Punto 2 - Applicazione web prototipo</title>
+    <style>
+      @page {
+        margin: 24mm 22mm;
+      }
+
+      body {
+        color: #1f2933;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-size: 12.5pt;
+        line-height: 1.55;
+      }
+
+      h1 {
+        border-bottom: 2px solid #1f2933;
+        font-size: 22pt;
+        margin: 0 0 20px;
+        padding-bottom: 8px;
+      }
+
+      h2 {
+        color: #243b53;
+        font-size: 15pt;
+        margin: 24px 0 8px;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      ul {
+        margin: 6px 0 12px 22px;
+        padding: 0;
+      }
+
+      code,
+      pre {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      pre {
+        background: #f4f6f8;
+        border: 1px solid #d9e2ec;
+        border-radius: 6px;
+        color: #102a43;
+        font-size: 10.5pt;
+        margin: 8px 0 14px;
+        padding: 10px 12px;
+        white-space: pre-wrap;
+      }
+
+      .repo {
+        font-size: 11pt;
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Punto 2 - Applicazione web prototipo</h1>
+
+    <h2>Repository pubblico</h2>
+    <p>Il codice sorgente dell'applicazione web prototipo e' disponibile nel repository GitHub pubblico:</p>
+    <pre class="repo">https://github.com/daevel/culturando</pre>
+    <p>
+      Il repository contiene il progetto Culturando, una web app geolocalizzata per la pubblicazione,
+      consultazione e ricerca di patrimoni librari privati. Il prototipo include registrazione e login
+      utente, gestione profilo, inserimento libri con metadati bibliografici, upload copertina, ricerca
+      testuale, ricerca per distanza, visualizzazione su mappa, pagine dettaglio libro, richieste di
+      consultazione/prestito simulate, statistiche utente e dashboard amministrativa.
+    </p>
+
+    <h2>Requisiti locali</h2>
+    <p>Per eseguire il progetto in locale sono necessari:</p>
+    <ul>
+      <li>Node.js v24 LTS;</li>
+      <li>pnpm;</li>
+      <li>Docker e Docker Compose;</li>
+      <li>Git.</li>
+    </ul>
+    <p>Il database locale viene avviato tramite Docker Compose usando PostgreSQL con estensione PostGIS.</p>
+
+    <h2>Avvio in locale</h2>
+    <p>Clonare il repository:</p>
+    <pre>git clone https://github.com/daevel/culturando.git
+cd culturando</pre>
+
+    <p>Installare le dipendenze:</p>
+    <pre>pnpm install</pre>
+
+    <p>Creare il file di configurazione ambiente:</p>
+    <pre>cp .env.example .env</pre>
+
+    <p>
+      Il file <code>.env.example</code> contiene gia' valori locali utilizzabili per database, Auth.js e URL
+      applicazione. Le variabili Cloudflare R2 sono opzionali: se non configurate, l'upload delle copertine
+      usa lo storage locale in <code>apps/web/public/uploads/book-covers</code>.
+    </p>
+
+    <p>Avviare il database e creare lo schema:</p>
+    <pre>pnpm db:up
+pnpm db:postgis
+pnpm db:push
+pnpm db:seed</pre>
+
+    <p>Avviare l'applicazione web:</p>
+    <pre>pnpm dev</pre>
+
+    <p>L'applicazione sara' disponibile all'indirizzo:</p>
+    <pre>http://localhost:3000</pre>
+
+    <h2>Credenziali demo</h2>
+    <p>Dopo l'esecuzione del seed, e' disponibile un account amministratore demo:</p>
+    <pre>Email: admin@culturando.local
+Password: Culturando123!</pre>
+    <p>Gli altri utenti demo creati dal seed usano la stessa password <code>Culturando123!</code>.</p>
+
+    <h2>Script utili</h2>
+    <pre>pnpm lint
+pnpm build
+pnpm db:studio</pre>
+    <p>
+      <code>pnpm lint</code> verifica la qualita' del codice della web app, <code>pnpm build</code> compila
+      il prototipo in modalita' produzione e <code>pnpm db:studio</code> apre Prisma Studio per ispezionare
+      i dati del database.
+    </p>
+  </body>
+</html>
