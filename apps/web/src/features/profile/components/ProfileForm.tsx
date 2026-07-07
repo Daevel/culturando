@@ -138,7 +138,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                 </p>
               ) : null}
 
-              <Button disabled={isPending} type="submit">
+              <Button isLoading={isPending} type="submit">
                 {isPending ? t("profile.form.pendingLabel") : t("profile.form.submitLabel")}
               </Button>
             </form>

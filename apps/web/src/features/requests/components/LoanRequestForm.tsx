@@ -73,7 +73,7 @@ export function LoanRequestForm({ bookId }: LoanRequestFormProps) {
         </p>
       ) : null}
 
-      <Button disabled={isPending} type="submit">
+      <Button isLoading={isPending} type="submit">
         {isPending ? t("requests.form.pendingLabel") : t("requests.form.submitLabel")}
       </Button>
     </form>

@@ -120,7 +120,7 @@ export function LoginForm() {
             ) : null}
 
             <div className="flex flex-col gap-y-3">
-              <Button disabled={isPending} type="submit">
+              <Button isLoading={isPending} type="submit">
                 {isPending ? t("auth.login.pendingLabel") : t("auth.login.submitLabel")}
               </Button>
 

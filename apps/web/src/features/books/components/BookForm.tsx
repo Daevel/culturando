@@ -923,7 +923,7 @@ export function BookForm() {
         </p>
       ) : null}
 
-      <Button disabled={isPending} type="submit" className="w-full">
+      <Button isLoading={isPending} type="submit" className="w-full">
         {isPending ? t("books.new.pendingLabel") : t("books.new.submitLabel")}
       </Button>
     </form>
