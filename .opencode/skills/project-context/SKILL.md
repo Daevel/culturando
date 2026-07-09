@@ -47,6 +47,8 @@ Stack principale:
 - PostgreSQL con estensione PostGIS per persistenza e query geospaziali;
 - MapLibre GL JS per mappe interattive 2D/3D;
 - Cloudflare R2, tramite client S3 compatibile, per storage persistente delle copertine;
+- Resend per invio email transazionali di conferma account, con fallback console in sviluppo;
+- `@culturando/assets` per centralizzare i path degli asset pubblici condivisi;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
 - Biome per linting e formatting;
 - package condivisi sotto `packages/*`.
@@ -74,6 +76,7 @@ culturando/
 │   ├── db/
 │   ├── geo/
 │   ├── ai/
+│   ├── assets/
 │   └── translation/
 │
 ├── package.json
@@ -159,6 +162,10 @@ apps/web/src/components/ui/
 ├── card.tsx
 ├── checkbox.tsx
 ├── input.tsx
+├── page.tsx
+├── progress.tsx
+├── theme-toggle.tsx
+├── wizard.tsx
 └── label.tsx
 ```
 
@@ -172,6 +179,10 @@ Corretto:
 - `Card`;
 - `Badge`;
 - `Checkbox`;
+- `PageShell`, `PageContainer`, `PageHeader`, `PageTitle` e primitive pagina responsive;
+- `Progress`;
+- `ThemeToggle`;
+- `Wizard` per flussi guidati con stepper e progress bar;
 - futuro `Textarea`;
 - futuro `Dialog`.
 
@@ -433,7 +444,7 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `Book`, `BookLocation` e `BookImage`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
+Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
 
 ### 6.4 `packages/geo`
 
@@ -496,7 +507,28 @@ rankBookResults()
 suggestBookTags()
 ```
 
-### 6.6 `packages/translation`
+### 6.6 `packages/assets`
+
+Package condiviso per centralizzare i path pubblici degli asset statici e degli upload serviti dalla web app.
+
+Struttura attuale:
+
+```txt
+packages/assets/
+├── package.json
+└── src/
+    └── index.ts
+```
+
+Responsabilità attuali:
+
+- esporre `assets.favicon`;
+- esporre immagini statiche, come `assets.images.loginPage`;
+- esporre builder URL per upload pubblici locali, come `assets.uploads.bookCover(fileName)`.
+
+Il package non contiene i file binari: gli asset statici continuano a vivere sotto `apps/web/public`, mentre il package centralizza solo riferimenti e path riusabili.
+
+### 6.7 `packages/translation`
 
 Package condiviso per la gestione i18n.
 
@@ -578,6 +610,7 @@ Le route sono:
 ```txt
 /api/auth/[...nextauth]
 /auth
+/auth/confirm-email
 /auth/login
 /auth/signup
 ```
@@ -602,6 +635,7 @@ Configurazione attuale:
 - session strategy JWT;
 - pagina custom di login su `/auth/login`;
 - Credentials provider collegato agli utenti reali nel database PostgreSQL tramite Prisma;
+- login consentito solo agli utenti con `emailVerifiedAt` valorizzato;
 - sessione arricchita con `session.user.id`, corrispondente all'id reale della tabella `User`;
 - password salvate come hash `scrypt` con salt, tramite utility server-side in `apps/web/src/lib/password.ts`.
 
@@ -646,11 +680,29 @@ apps/web/src/features/auth/actions/signup.action.ts
 Responsabilità:
 
 - mostrare form nome/email/password/conferma password;
+- guidare l’utente tramite `Wizard` con step dati account, sicurezza e riepilogo;
+- controllare disponibilità email mentre l’utente digita e bloccare il proseguimento se già usata;
 - validare input con Zod;
 - verificare corrispondenza password;
-- creare o completare un utente reale in PostgreSQL tramite Prisma;
+- creare un utente reale non ancora verificato in PostgreSQL tramite Prisma;
+- generare un token di conferma email salvato come hash in `EmailVerificationToken`;
+- inviare email di conferma tramite provider configurabile (`console`, `http` o `resend`);
+- mostrare toast primary di conferma invio email;
 - salvare la password come hash, mai in chiaro;
 - linkare alla login.
+
+La route `/auth/confirm-email?token=...` conferma il token, valorizza `User.emailVerifiedAt`, elimina i token residui dell’utente e mostra una pagina di ringraziamento con CTA verso la login. Senza token valido mostra uno stato non valido, quindi la pagina di successo è raggiungibile solo passando dal link email.
+
+Variabili email supportate:
+
+```txt
+EMAIL_PROVIDER=console|http|resend
+RESEND_API_KEY=
+EMAIL_FROM="Culturando <onboarding@resend.dev>"
+EMAIL_PROVIDER_ENDPOINT=
+EMAIL_PROVIDER_TOKEN=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
 ### 7.4 Validazione Zod
 
@@ -729,12 +781,15 @@ Contiene:
 - variabili CSS del tema;
 - supporto dark mode;
 - colori generati da tweakcn;
-- font variables;
+- font variables, con Poppins come sans-serif e Lora come serif;
+- token responsive globali `--page-padding-x`, `--page-padding-y` e `--section-gap`;
 - radius;
 - shadow tokens;
 - layer base.
 
-Il tema usa variabili HSL compatibili con Tailwind v3 e shadcn-like components.
+Il tema usa variabili HSL compatibili con Tailwind v3 e shadcn-like components. La homepage espone un `ThemeToggle` che applica/rimuove la classe `.dark` su `document.documentElement`, persiste la scelta in `localStorage` e usa la preferenza di sistema quando non esiste una scelta salvata.
+
+I layout pagina devono preferire le primitive responsive in `components/ui/page.tsx` (`PageShell`, `PageContainer`, `PageHeader`, `PageTitle`, `ResponsiveActions`) invece di duplicare padding, max-width e heading nelle singole feature.
 
 La configurazione Tailwind è:
 
@@ -1055,6 +1110,7 @@ La ricerca territoriale usa query SQL raw tramite Prisma con funzioni PostGIS co
 Entità attuali:
 
 - User;
+- EmailVerificationToken;
 - Book;
 - BookStats;
 - BookLocation;
@@ -1071,7 +1127,7 @@ Seed demo:
 
 - script `pnpm db:seed`, definito nel `package.json` root;
 - file seed in `packages/db/prisma/seed.mjs`;
-- crea 1 utente admin, 3 utenti normali, libri demo con coordinate private/pubbliche approssimate, immagini, statistiche e richieste in stati diversi;
+- crea 1 utente admin, 3 utenti normali già verificati, libri demo con coordinate private/pubbliche approssimate, immagini, statistiche e richieste in stati diversi;
 - credenziali demo: `admin@culturando.local` / `Culturando123!`;
 - gli utenti demo condividono la password `Culturando123!`.
 
@@ -1180,7 +1236,10 @@ Stato dei primi step:
 27. introdurre statistiche d'uso con `BookStats`, visualizzazioni libro e riepilogo dashboard — completato;
 28. introdurre profilo utente MVP modificabile da dashboard — completato;
 29. introdurre dashboard amministrativa protetta per utenti `admin` — completato;
-30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato.
+30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato;
+31. introdurre design system responsive con primitive pagina, Wizard, Poppins/Lora e dark mode toggle — completato;
+32. introdurre package `@culturando/assets` per centralizzare i path degli asset pubblici — completato;
+33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato.
 
 Ordine dei prossimi step:
 
