@@ -10,6 +10,16 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+  ResponsiveActions,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import { LoanRequestForm } from "@/features/requests/components/LoanRequestForm";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -42,17 +52,15 @@ export function BookDetail({ book }: BookDetailProps) {
   const canReceiveRequests = book.visibility === "public" && book.availability !== "unavailable";
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-4xl flex-col gap-y-8">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">{t("books.detail.eyebrow")}</p>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
-              {book.title}
-            </h1>
-            <p className="text-lg text-muted-foreground">{book.author}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+    <PageShell>
+      <PageContainer size="md">
+        <PageHeader>
+          <PageHeaderContent>
+            <PageEyebrow>{t("books.detail.eyebrow")}</PageEyebrow>
+            <PageTitle>{book.title}</PageTitle>
+            <PageDescription>{book.author}</PageDescription>
+          </PageHeaderContent>
+          <ResponsiveActions>
             {hasPublicLocation ? (
               <Button asChild>
                 <Link href={routes.nearbyBooks(book.id)}>{t("books.detail.nearbyLabel")}</Link>
@@ -61,8 +69,8 @@ export function BookDetail({ book }: BookDetailProps) {
             <Button asChild variant="outline">
               <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
             </Button>
-          </div>
-        </div>
+          </ResponsiveActions>
+        </PageHeader>
 
         <Card>
           {primaryImage ? (
@@ -170,7 +178,7 @@ export function BookDetail({ book }: BookDetailProps) {
         </Card>
 
         {canReceiveRequests ? <LoanRequestForm bookId={book.id} /> : null}
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }

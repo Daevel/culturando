@@ -5,6 +5,11 @@ import { prisma } from "@culturando/db";
 import { hashPassword } from "@/lib/password";
 import { validateSignupForm } from "../schemas/signup.schema";
 import type { AuthFormState } from "../types/auth-form.types";
+import {
+  buildEmailVerificationUrl,
+  createEmailVerificationToken,
+  sendVerificationEmail,
+} from "./email-verification";
 
 type SignupField = "name" | "email" | "password" | "confirmPassword";
 
@@ -54,37 +59,32 @@ export async function signupAction(
     },
   });
 
-  if (existingUser?.passwordHash) {
+  if (existingUser) {
     return {
       success: false,
       errors: {
-        email: "Esiste già un account con questa email.",
+        email: "Questo indirizzo email è stato già usato",
       },
       messageKey: "auth.signup.emailAlreadyExistsMessage",
     };
   }
 
   const passwordHash = await hashPassword(validation.data.password);
+  const user = await prisma.user.create({
+    data: {
+      email,
+      name: validation.data.name,
+      passwordHash,
+    },
+  });
+  const verificationToken = await createEmailVerificationToken(user.id);
+  const verificationUrl = buildEmailVerificationUrl(verificationToken);
 
-  if (existingUser) {
-    await prisma.user.update({
-      where: {
-        id: existingUser.id,
-      },
-      data: {
-        name: validation.data.name,
-        passwordHash,
-      },
-    });
-  } else {
-    await prisma.user.create({
-      data: {
-        email,
-        name: validation.data.name,
-        passwordHash,
-      },
-    });
-  }
+  await sendVerificationEmail({
+    email,
+    name: validation.data.name,
+    verificationUrl,
+  });
 
   return {
     success: true,

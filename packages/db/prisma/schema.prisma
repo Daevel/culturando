@@ -51,24 +51,39 @@ enum LoanRequestStatus {
 }
 
 model User {
-  id                    String        @id @default(cuid())
-  email                 String        @unique
-  name                  String?
-  passwordHash          String?
-  role                  UserRole      @default(user)
-  avatarUrl             String?
-  bio                   String?
-  city                  String?
-  province              String?
-  region                String?
-  isProfilePublic       Boolean       @default(true)
-  books                 Book[]
-  sentLoanRequests      LoanRequest[] @relation("LoanRequestRequester")
-  receivedLoanRequests  LoanRequest[] @relation("LoanRequestOwner")
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  emailVerifiedAt         DateTime?
+  name                    String?
+  passwordHash            String?
+  role                    UserRole                 @default(user)
+  avatarUrl               String?
+  bio                     String?
+  city                    String?
+  province                String?
+  region                  String?
+  isProfilePublic         Boolean                  @default(true)
+  books                   Book[]
+  emailVerificationTokens EmailVerificationToken[]
+  sentLoanRequests        LoanRequest[]            @relation("LoanRequestRequester")
+  receivedLoanRequests    LoanRequest[]            @relation("LoanRequestOwner")
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
 
   @@index([role])
+  @@index([emailVerifiedAt])
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 model Book {
@@ -113,19 +128,19 @@ model BookStats {
 }
 
 model BookLocation {
-  id                   String  @id @default(cuid())
-  bookId               String  @unique
-  book                 Book    @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  id                   String   @id @default(cuid())
+  bookId               String   @unique
+  book                 Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
   addressLabel         String
   city                 String?
   province             String?
   region               String?
-  country              String  @default("Italia")
+  country              String   @default("Italia")
   latitude             Float?
   longitude            Float?
   publicLatitude       Float?
   publicLongitude      Float?
-  accuracyRadiusMeters Int     @default(750)
+  accuracyRadiusMeters Int      @default(750)
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 

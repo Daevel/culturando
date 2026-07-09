@@ -7,6 +7,16 @@ import { useDeferredValue, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+  ResponsiveActions,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { booksMock } from "../mocks/books.mock";
@@ -47,19 +57,15 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
   });
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-6xl flex-col gap-y-8">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">
-              {t("books.catalog.eyebrow")}
-            </p>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight md:text-5xl">
-              {t("books.catalog.title")}
-            </h1>
-            <p className="max-w-2xl text-muted-foreground">{t("books.catalog.description")}</p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
+    <PageShell>
+      <PageContainer size="xl">
+        <PageHeader className="md:items-end">
+          <PageHeaderContent>
+            <PageEyebrow>{t("books.catalog.eyebrow")}</PageEyebrow>
+            <PageTitle>{t("books.catalog.title")}</PageTitle>
+            <PageDescription>{t("books.catalog.description")}</PageDescription>
+          </PageHeaderContent>
+          <ResponsiveActions>
             <Button asChild variant="secondary">
               <Link href={routes.nearby}>{t("books.catalog.nearbyLabel")}</Link>
             </Button>
@@ -69,8 +75,8 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
             <Button asChild>
               <Link href={routes.newBook}>{t("books.catalog.newBookLabel")}</Link>
             </Button>
-          </div>
-        </div>
+          </ResponsiveActions>
+        </PageHeader>
 
         <section className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[1fr_180px_180px] md:items-end">
           <div className="space-y-2">
@@ -137,7 +143,7 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
         </div>
 
         <BookGrid books={filteredBooks} />
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }

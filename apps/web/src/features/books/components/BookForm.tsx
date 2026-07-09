@@ -544,7 +544,8 @@ export function BookForm() {
                 <div className="space-y-1">
                   <p className="text-sm font-medium">{t("books.new.metadataPreviewTitle")}</p>
                   <p className="text-xs text-muted-foreground">
-                    {t("books.new.metadataSourceLabel")} {getMetadataSourceLabel(metadataSuggestionSource, t)}
+                    {t("books.new.metadataSourceLabel")}{" "}
+                    {getMetadataSourceLabel(metadataSuggestionSource, t)}
                   </p>
                 </div>
                 <div className="grid gap-2 text-sm">
@@ -561,7 +562,7 @@ export function BookForm() {
                           checked={selectedMetadataFields.includes(row.field)}
                           className="mt-1"
                           id={checkboxId}
-                          onChange={() => toggleMetadataField(row.field)}
+                          onCheckedChange={() => toggleMetadataField(row.field)}
                         />
                         <span className="min-w-0 flex-1">
                           <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">

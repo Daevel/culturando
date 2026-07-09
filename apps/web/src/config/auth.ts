@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           },
         });
 
-        if (!user?.passwordHash) {
+        if (!user?.passwordHash || !user.emailVerifiedAt) {
           return null;
         }
 

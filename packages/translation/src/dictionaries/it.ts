@@ -9,6 +9,10 @@ export const it = {
       nearbyActionLabel: "Cerca vicino a te",
       secondaryActionLabel: "Pubblica un libro",
     },
+    theme: {
+      darkLabel: "Tema scuro",
+      lightLabel: "Tema chiaro",
+    },
     highlights: {
       map: {
         title: "Mappa 3D",
@@ -58,9 +62,42 @@ export const it = {
       pendingLabel: "Registrazione in corso...",
       alternativeLabel: "Hai già un account?",
       secondaryActionLabel: "Accedi",
-      successMessage: "Account creato correttamente. Ora puoi accedere.",
-      emailAlreadyExistsMessage: "Esiste già un account con questa email.",
+      successMessage:
+        "Ti abbiamo inviato una mail di conferma. Aprila e conferma il tuo indirizzo per attivare l'account.",
+      emailAlreadyExistsMessage: "Questo indirizzo email è stato già usato",
       genericErrorMessage: "Non è stato possibile creare l'account.",
+      toast: {
+        title: "Controlla la tua email",
+      },
+      wizard: {
+        progressLabel: "Avanzamento registrazione",
+        stepLabel: "Step",
+        ofLabel: "di",
+        previousLabel: "Indietro",
+        nextLabel: "Continua",
+        checkingEmailLabel: "Verifica della mail in corso...",
+        emailAvailableMessage: "Email disponibile",
+        steps: {
+          account: {
+            title: "Dati account",
+            description: "Inserisci nome ed email per identificare il tuo profilo.",
+          },
+          security: {
+            title: "Sicurezza",
+            description: "Scegli una password sicura e confermala.",
+          },
+          confirm: {
+            title: "Conferma",
+            description: "Controlla i dati principali prima di creare l'account.",
+          },
+        },
+        review: {
+          nameLabel: "Nome",
+          emailLabel: "Email",
+          emptyValue: "Non compilato",
+          notice: "La password non viene mostrata per motivi di sicurezza.",
+        },
+      },
       fields: {
         name: {
           label: "Nome",
@@ -78,6 +115,25 @@ export const it = {
           label: "Conferma password",
           placeholder: "••••••••",
         },
+      },
+    },
+    confirmEmail: {
+      loginLabel: "Vai al login",
+      success: {
+        title: "Account attivato correttamente",
+        description:
+          "Grazie per aver confermato il tuo indirizzo email. Ora puoi accedere a Culturando.",
+        cardTitle: "Registrazione completata",
+        cardDescription:
+          "Il tuo account è stato verificato ed è pronto per essere utilizzato sul portale.",
+      },
+      invalid: {
+        title: "Link di conferma non valido",
+        description:
+          "Il link potrebbe essere scaduto, già utilizzato o copiato in modo incompleto.",
+        cardTitle: "Verifica non completata",
+        cardDescription:
+          "Per accedere devi usare il link di conferma ricevuto via email dopo la registrazione.",
       },
     },
   },

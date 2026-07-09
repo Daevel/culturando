@@ -1,6 +1,6 @@
 "use server";
 
-import { lookupBookMetadataByIsbn, type BookMetadataSuggestion } from "@culturando/ai";
+import { type BookMetadataSuggestion, lookupBookMetadataByIsbn } from "@culturando/ai";
 
 export type LookupBookMetadataResult =
   | {

@@ -9,6 +9,10 @@ export const en = {
       nearbyActionLabel: "Search nearby",
       secondaryActionLabel: "Publish a book",
     },
+    theme: {
+      darkLabel: "Dark theme",
+      lightLabel: "Light theme",
+    },
     highlights: {
       map: {
         title: "3D map",
@@ -58,9 +62,42 @@ export const en = {
       pendingLabel: "Signing up...",
       alternativeLabel: "Already have an account?",
       secondaryActionLabel: "Sign in",
-      successMessage: "Account created successfully. You can now sign in.",
-      emailAlreadyExistsMessage: "An account with this email already exists.",
+      successMessage:
+        "We sent you a confirmation email. Open it and confirm your address to activate your account.",
+      emailAlreadyExistsMessage: "This email address has already been used",
       genericErrorMessage: "The account could not be created.",
+      toast: {
+        title: "Check your email",
+      },
+      wizard: {
+        progressLabel: "Signup progress",
+        stepLabel: "Step",
+        ofLabel: "of",
+        previousLabel: "Back",
+        nextLabel: "Continue",
+        checkingEmailLabel: "Checking email...",
+        emailAvailableMessage: "Email available",
+        steps: {
+          account: {
+            title: "Account details",
+            description: "Enter your name and email to identify your profile.",
+          },
+          security: {
+            title: "Security",
+            description: "Choose a secure password and confirm it.",
+          },
+          confirm: {
+            title: "Confirm",
+            description: "Review the main details before creating your account.",
+          },
+        },
+        review: {
+          nameLabel: "Name",
+          emailLabel: "Email",
+          emptyValue: "Not filled in",
+          notice: "The password is not shown for security reasons.",
+        },
+      },
       fields: {
         name: {
           label: "Name",
@@ -78,6 +115,23 @@ export const en = {
           label: "Confirm password",
           placeholder: "••••••••",
         },
+      },
+    },
+    confirmEmail: {
+      loginLabel: "Go to login",
+      success: {
+        title: "Account activated successfully",
+        description:
+          "Thank you for confirming your email address. You can now sign in to Culturando.",
+        cardTitle: "Registration completed",
+        cardDescription: "Your account has been verified and is ready to be used on the portal.",
+      },
+      invalid: {
+        title: "Invalid confirmation link",
+        description: "The link may have expired, already been used, or been copied incorrectly.",
+        cardTitle: "Verification not completed",
+        cardDescription:
+          "To sign in, you must use the confirmation link received by email after signup.",
       },
     },
   },

@@ -5,6 +5,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1072.0",
     "@culturando/ai": "workspace:*",
+    "@culturando/assets": "workspace:*",
     "@culturando/config": "workspace:*",
     "@culturando/db": "workspace:*",
     "@culturando/geo": "workspace:*",
@@ -17,6 +18,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.78.0",
+    "resend": "^6.17.1",
     "zod": "^4.4.3"
   }
 }

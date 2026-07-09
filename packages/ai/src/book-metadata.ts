@@ -207,5 +207,8 @@ function getLanguageLabel(languageKey: string | undefined) {
 }
 
 function getCategories(subjects: string[] | undefined) {
-  return (subjects ?? []).map((subject) => subject.trim()).filter(Boolean).slice(0, 3);
+  return (subjects ?? [])
+    .map((subject) => subject.trim())
+    .filter(Boolean)
+    .slice(0, 3);
 }

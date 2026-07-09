@@ -64,8 +64,8 @@
     --sidebar-ring: 345 50% 24%;
 
     /* Typography */
-    --font-sans: Inter, sans-serif;
-    --font-serif: Source Serif 4, serif;
+    --font-sans: Poppins, sans-serif;
+    --font-serif: Lora, serif;
     --font-mono: JetBrains Mono, monospace;
 
     /* Shape */
@@ -90,6 +90,11 @@
 
     --tracking-normal: 0em;
     --spacing: 0.25rem;
+
+    /* Responsive layout scale */
+    --page-padding-x: clamp(1rem, 4vw, 2rem);
+    --page-padding-y: clamp(2rem, 5vw, 4rem);
+    --section-gap: clamp(1.5rem, 3vw, 2.5rem);
   }
 
   .dark {
@@ -168,6 +173,6 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply overflow-x-hidden bg-background text-foreground;
   }
 }

@@ -10,6 +10,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { updateProfileAction } from "../actions/update-profile.action";
@@ -29,19 +38,19 @@ export function ProfileForm({ profile }: ProfileFormProps) {
   const [state, formAction, isPending] = useActionState(updateProfileAction, initialState);
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-3xl flex-col gap-y-8">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("profile.eyebrow")}</p>
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("profile.title")}</h1>
-            <p className="max-w-2xl text-muted-foreground">{t("profile.description")}</p>
-          </div>
+    <PageShell>
+      <PageContainer size="sm">
+        <PageHeader>
+          <PageHeaderContent>
+            <PageEyebrow>{t("profile.eyebrow")}</PageEyebrow>
+            <PageTitle className="lg:text-4xl">{t("profile.title")}</PageTitle>
+            <PageDescription>{t("profile.description")}</PageDescription>
+          </PageHeaderContent>
 
-          <Button asChild variant="outline">
+          <Button asChild className="w-full sm:w-auto" variant="outline">
             <Link href={routes.dashboard}>{t("profile.backToDashboardLabel")}</Link>
           </Button>
-        </div>
+        </PageHeader>
 
         <Card>
           <CardHeader>
@@ -119,6 +128,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                   defaultChecked={profile.isProfilePublic}
                   id="isProfilePublic"
                   name="isProfilePublic"
+                  value="on"
                 />
                 <div className="space-y-1">
                   <Label className="block text-sm font-medium" htmlFor="isProfilePublic">
@@ -144,8 +154,8 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             </form>
           </CardContent>
         </Card>
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }
 

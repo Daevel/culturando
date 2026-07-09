@@ -20,6 +20,7 @@ async function hashPassword(password) {
 
 async function main() {
   const passwordHash = await hashPassword("Culturando123!");
+  const emailVerifiedAt = new Date();
 
   await prisma.user.deleteMany({
     where: {
@@ -32,6 +33,7 @@ async function main() {
   const admin = await prisma.user.create({
     data: {
       email: "admin@culturando.local",
+      emailVerifiedAt,
       name: "Admin Culturando",
       passwordHash,
       role: "admin",
@@ -46,6 +48,7 @@ async function main() {
   const maria = await prisma.user.create({
     data: {
       email: "maria.rossi@example.com",
+      emailVerifiedAt,
       name: "Maria Rossi",
       passwordHash,
       bio: "Docente e lettrice di narrativa contemporanea, con una piccola biblioteca domestica aperta alla consultazione.",
@@ -60,6 +63,7 @@ async function main() {
   const antonio = await prisma.user.create({
     data: {
       email: "antonio.bianchi@example.com",
+      emailVerifiedAt,
       name: "Antonio Bianchi",
       passwordHash,
       bio: "Appassionato di storia locale, saggistica e libri su Napoli e il Mediterraneo.",
@@ -74,6 +78,7 @@ async function main() {
   const giulia = await prisma.user.create({
     data: {
       email: "giulia.verdi@example.com",
+      emailVerifiedAt,
       name: "Giulia Verdi",
       passwordHash,
       bio: "Studentessa e collezionista di classici, teatro e libri illustrati.",

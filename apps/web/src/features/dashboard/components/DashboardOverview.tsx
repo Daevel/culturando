@@ -10,6 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import type { DashboardStats } from "@/features/dashboard/actions/dashboard-stats.repository";
 import type { ReceivedLoanRequest } from "@/features/requests/actions/loan-requests.repository";
@@ -33,23 +42,21 @@ export function DashboardOverview({
   const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-5xl flex-col gap-y-8">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("dashboard.eyebrow")}</p>
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-              {t("dashboard.title")}
-            </h1>
-            <p className="max-w-2xl text-muted-foreground">{t("dashboard.description")}</p>
-          </div>
+    <PageShell>
+      <PageContainer size="lg">
+        <PageHeader className="sm:flex-row sm:items-center">
+          <PageHeaderContent>
+            <PageEyebrow>{t("dashboard.eyebrow")}</PageEyebrow>
+            <PageTitle className="lg:text-4xl">{t("dashboard.title")}</PageTitle>
+            <PageDescription>{t("dashboard.description")}</PageDescription>
+          </PageHeaderContent>
 
-          <form action={logoutAction}>
-            <Button type="submit" variant="outline">
+          <form action={logoutAction} className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto" type="submit" variant="outline">
               {t("dashboard.logoutLabel")}
             </Button>
           </form>
-        </div>
+        </PageHeader>
 
         {stats ? (
           <Card>
@@ -177,8 +184,8 @@ export function DashboardOverview({
         </div>
 
         <ReceivedLoanRequests requests={receivedLoanRequests} />
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }
 

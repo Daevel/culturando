@@ -102,11 +102,7 @@ export function NearbyMap({
 
     new maplibregl.Marker({ element: originMarkerElement })
       .setLngLat([origin.longitude, origin.latitude])
-      .setPopup(
-        new maplibregl.Popup({ offset: 16 }).setHTML(
-          getPopupHtml(origin, detailLabel),
-        ),
-      )
+      .setPopup(new maplibregl.Popup({ offset: 16 }).setHTML(getPopupHtml(origin, detailLabel)))
       .addTo(map);
 
     const stopRotation = () => {
@@ -161,7 +157,7 @@ export function NearbyMap({
       originRef.current = null;
       rotateCameraRef.current = null;
     };
-  }, [points]);
+  }, [detailLabel, points]);
 
   const pauseRotation = () => {
     rotationEnabledRef.current = false;
@@ -333,15 +329,7 @@ function addNearbyClusterLayers(
     source: nearbySourceId,
     filter: ["has", "point_count"],
     paint: {
-      "circle-color": [
-        "step",
-        ["get", "point_count"],
-        "#1f2937",
-        10,
-        "#7c2d12",
-        25,
-        "#581c87",
-      ],
+      "circle-color": ["step", ["get", "point_count"], "#1f2937", 10, "#7c2d12", 25, "#581c87"],
       "circle-radius": ["step", ["get", "point_count"], 18, 10, 23, 25, 29],
       "circle-stroke-color": "#ffffff",
       "circle-stroke-width": 3,
@@ -473,7 +461,9 @@ function getFeatureCoordinates(feature: maplibregl.MapGeoJSONFeature | undefined
   return [longitude, latitude] as [number, number];
 }
 
-function isGeoJsonSource(source: maplibregl.Source | undefined): source is maplibregl.GeoJSONSource {
+function isGeoJsonSource(
+  source: maplibregl.Source | undefined,
+): source is maplibregl.GeoJSONSource {
   return Boolean(source && "getClusterExpansionZoom" in source);
 }
 

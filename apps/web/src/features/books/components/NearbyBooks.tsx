@@ -4,6 +4,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import type { NearbyBook } from "@/features/books/actions/books.repository";
 import { NearbyMap, type NearbyMapPoint } from "@/features/books/components/NearbyMap";
@@ -19,23 +28,21 @@ export function NearbyBooks({ originBook, books }: NearbyBooksProps) {
   const mapPoints = getMapPoints(originBook, books);
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8 text-foreground sm:px-6 sm:py-10">
-      <section className="mx-auto flex max-w-4xl flex-col gap-y-6 sm:gap-y-8">
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-start">
-          <div className="space-y-3">
-            <p className="text-sm font-medium text-muted-foreground">{t("books.nearby.eyebrow")}</p>
-            <h1 className="max-w-3xl text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-              {t("books.nearby.title")}
-            </h1>
-            <p className="max-w-2xl text-base text-muted-foreground sm:text-lg">
+    <PageShell>
+      <PageContainer size="md">
+        <PageHeader>
+          <PageHeaderContent>
+            <PageEyebrow>{t("books.nearby.eyebrow")}</PageEyebrow>
+            <PageTitle>{t("books.nearby.title")}</PageTitle>
+            <PageDescription>
               {t("books.nearby.description")}{" "}
               <span className="font-medium">{originBook.title}</span>
-            </p>
-          </div>
+            </PageDescription>
+          </PageHeaderContent>
           <Button asChild className="w-full sm:w-auto" variant="outline">
             <Link href={routes.books}>{t("books.detail.backToCatalogLabel")}</Link>
           </Button>
-        </div>
+        </PageHeader>
 
         <NearbyMap
           description={t("books.nearby.mapDescription")}
@@ -96,8 +103,8 @@ export function NearbyBooks({ originBook, books }: NearbyBooksProps) {
             </CardContent>
           </Card>
         )}
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }
 

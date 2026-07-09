@@ -86,7 +86,8 @@ export async function extractTextFromImage(input: ImageOcrInput): Promise<ImageO
   } catch (error) {
     return {
       success: false,
-      reason: error instanceof DOMException && error.name === "AbortError" ? "timeout" : "network-error",
+      reason:
+        error instanceof DOMException && error.name === "AbortError" ? "timeout" : "network-error",
       message: error instanceof Error ? error.message : undefined,
     };
   } finally {

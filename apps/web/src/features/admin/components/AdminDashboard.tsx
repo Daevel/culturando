@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  PageContainer,
+  PageDescription,
+  PageEyebrow,
+  PageHeader,
+  PageHeaderContent,
+  PageShell,
+  PageTitle,
+} from "@/components/ui/page";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { AdminStats } from "../actions/admin-stats.repository";
@@ -13,19 +22,19 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
   const t = useTranslation();
 
   return (
-    <main className="min-h-screen bg-background px-6 py-10 text-foreground">
-      <section className="mx-auto flex max-w-6xl flex-col gap-y-8">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{t("admin.eyebrow")}</p>
-            <h1 className="text-3xl font-bold tracking-tight md:text-4xl">{t("admin.title")}</h1>
-            <p className="max-w-3xl text-muted-foreground">{t("admin.description")}</p>
-          </div>
+    <PageShell>
+      <PageContainer size="xl">
+        <PageHeader>
+          <PageHeaderContent>
+            <PageEyebrow>{t("admin.eyebrow")}</PageEyebrow>
+            <PageTitle className="lg:text-4xl">{t("admin.title")}</PageTitle>
+            <PageDescription className="max-w-3xl">{t("admin.description")}</PageDescription>
+          </PageHeaderContent>
 
-          <Button asChild variant="outline">
+          <Button asChild className="w-full sm:w-auto" variant="outline">
             <Link href={routes.dashboard}>{t("admin.backToDashboardLabel")}</Link>
           </Button>
-        </div>
+        </PageHeader>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile label={t("admin.stats.usersLabel")} value={stats.usersCount} />
@@ -114,8 +123,8 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
             </CardContent>
           </Card>
         </div>
-      </section>
-    </main>
+      </PageContainer>
+    </PageShell>
   );
 }
 

@@ -4,8 +4,8 @@ import {
   type BookMetadataSuggestion,
   extractIsbnFromText,
   extractTextFromImage,
-  type ImageOcrResult,
   type ImageOcrMetadata,
+  type ImageOcrResult,
   lookupBookMetadataByIsbn,
   lookupBookMetadataByTitle,
 } from "@culturando/ai";
@@ -15,11 +15,11 @@ const supportedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 export type ExtractIsbnFromImageResult =
   | {
-    success: true;
-    isbn?: string;
-    metadata?: BookMetadataSuggestion;
-    text: string;
-  }
+      success: true;
+      isbn?: string;
+      metadata?: BookMetadataSuggestion;
+      text: string;
+    }
   | {
       success: false;
       reason:
@@ -96,7 +96,9 @@ export async function extractIsbnFromImageAction(
   const normalizedOcrMetadata = normalizeOcrMetadata(ocrMetadata, isbn, text);
   const lookupMetadata = isbn
     ? await lookupBookMetadataByIsbn(isbn)
-    : await lookupBookMetadataByTitle(normalizedOcrMetadata?.title ?? inferTitleFromOcrText(text) ?? "");
+    : await lookupBookMetadataByTitle(
+        normalizedOcrMetadata?.title ?? inferTitleFromOcrText(text) ?? "",
+      );
   const metadata = mergeMetadataSuggestions(normalizedOcrMetadata, lookupMetadata, isbn);
 
   if (!isbn && !metadata) {
@@ -199,10 +201,10 @@ function mergeMetadataSuggestions(
   }
 
   return {
-    authors: ocrMetadata?.authors.length ? ocrMetadata.authors : lookupMetadata?.authors ?? [],
+    authors: ocrMetadata?.authors.length ? ocrMetadata.authors : (lookupMetadata?.authors ?? []),
     categories: ocrMetadata?.categories.length
       ? ocrMetadata.categories
-      : lookupMetadata?.categories ?? [],
+      : (lookupMetadata?.categories ?? []),
     coverUrl: lookupMetadata?.coverUrl ?? ocrMetadata?.coverUrl,
     description: ocrMetadata?.description ?? lookupMetadata?.description,
     isbn: isbn ?? ocrMetadata?.isbn ?? lookupMetadata?.isbn,
@@ -243,7 +245,9 @@ async function extractTextWithCloudflare(image: File) {
   });
 }
 
-function mapOcrFailureReason(reason: Exclude<Awaited<ReturnType<typeof extractTextFromImage>>, { success: true }>["reason"]) {
+function mapOcrFailureReason(
+  reason: Exclude<Awaited<ReturnType<typeof extractTextFromImage>>, { success: true }>["reason"],
+) {
   const reasons = {
     "empty-response": "empty-response",
     "http-error": "http-error",

@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, sep } from "node:path";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { assets } from "@culturando/assets";
 
 const MAX_COVER_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
 
@@ -173,7 +174,7 @@ async function saveCoverImageLocally({
   await writeFile(join(uploadDirectory, fileName), fileBuffer);
 
   return {
-    url: `/uploads/book-covers/${fileName}`,
+    url: assets.uploads.bookCover(fileName),
     error: undefined,
   };
 }

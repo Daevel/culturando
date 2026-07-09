@@ -2,7 +2,7 @@ import { appConfig } from "@culturando/config";
 import type { Metadata } from "next";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./global.css";
-import { Inter, JetBrains_Mono, Source_Serif_4 } from "next/font/google";
+import { JetBrains_Mono, Lora, Poppins } from "next/font/google";
 
 export const metadata: Metadata = {
   title: {
@@ -14,13 +14,15 @@ export const metadata: Metadata = {
   publisher: appConfig.publisher,
 };
 
-const fontSans = Inter({
+const fontSans = Poppins({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
 });
 
-const fontSerif = Source_Serif_4({
+const fontSerif = Lora({
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-serif",
 });
 

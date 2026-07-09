@@ -3,6 +3,8 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PageDescription, PageShell, PageTitle, ResponsiveActions } from "@/components/ui/page";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -10,19 +12,24 @@ export function HomePageContent() {
   const t = useTranslation();
 
   return (
-    <main className="min-h-screen bg-background text-foreground">
-      <section className="mx-auto flex min-h-screen max-w-6xl flex-col items-center justify-center px-6 py-20 text-center">
+    <PageShell className="flex items-center">
+      <div className="fixed right-4 top-4 z-20 sm:right-6 sm:top-6">
+        <ThemeToggle
+          darkLabel={t("home.theme.darkLabel")}
+          lightLabel={t("home.theme.lightLabel")}
+        />
+      </div>
+
+      <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center py-8 text-center sm:py-12 lg:min-h-[calc(100vh-8rem)]">
         <Badge variant="secondary">{t("home.hero.eyebrow")}</Badge>
 
-        <h1 className="mt-6 max-w-4xl text-4xl font-bold tracking-tight md:text-6xl">
+        <PageTitle className="mt-6 max-w-4xl text-4xl sm:text-5xl lg:text-6xl">
           {t("home.hero.title")}
-        </h1>
+        </PageTitle>
 
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
-          {t("home.hero.description")}
-        </p>
+        <PageDescription className="mt-6">{t("home.hero.description")}</PageDescription>
 
-        <div className="mt-10 flex flex-col gap-4 sm:flex-row">
+        <ResponsiveActions className="mt-10 justify-center">
           <Button asChild size="lg">
             <Link href={routes.books}>{t("home.hero.primaryActionLabel")}</Link>
           </Button>
@@ -34,7 +41,7 @@ export function HomePageContent() {
           <Button asChild size="lg" variant="outline">
             <Link href={routes.newBook}>{t("home.hero.secondaryActionLabel")}</Link>
           </Button>
-        </div>
+        </ResponsiveActions>
 
         <div className="mt-16 grid w-full gap-4 md:grid-cols-3">
           <Card>
@@ -65,6 +72,6 @@ export function HomePageContent() {
           </Card>
         </div>
       </section>
-    </main>
+    </PageShell>
   );
 }
