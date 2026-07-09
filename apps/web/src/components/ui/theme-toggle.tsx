@@ -4,6 +4,8 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
 type Theme = "light" | "dark";
 
@@ -22,11 +24,20 @@ function applyTheme(theme: Theme) {
 }
 
 type ThemeToggleProps = {
+  className?: string;
   darkLabel: string;
+  iconOnly?: boolean;
   lightLabel: string;
+  tooltipLabel?: string;
 };
 
-export function ThemeToggle({ darkLabel, lightLabel }: ThemeToggleProps) {
+export function ThemeToggle({
+  className,
+  darkLabel,
+  iconOnly = false,
+  lightLabel,
+  tooltipLabel,
+}: ThemeToggleProps) {
   const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
@@ -48,13 +59,13 @@ export function ThemeToggle({ darkLabel, lightLabel }: ThemeToggleProps) {
 
   const label = theme === "dark" ? lightLabel : darkLabel;
 
-  return (
+  const button = (
     <Button
       aria-label={label}
       aria-pressed={theme === "dark"}
-      className="rounded-full bg-background/85 shadow-sm backdrop-blur"
+      className={cn("rounded-full bg-background/85 shadow-sm backdrop-blur", className)}
       onClick={toggleTheme}
-      size="sm"
+      size={iconOnly ? "icon" : "sm"}
       type="button"
       variant="outline"
     >
@@ -63,7 +74,20 @@ export function ThemeToggle({ darkLabel, lightLabel }: ThemeToggleProps) {
       ) : (
         <Moon aria-hidden="true" size={16} />
       )}
-      <span>{label}</span>
+      {iconOnly ? null : <span>{label}</span>}
     </Button>
+  );
+
+  if (!iconOnly) {
+    return button;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent side="bottom" sideOffset={8}>
+        {tooltipLabel ?? label}
+      </TooltipContent>
+    </Tooltip>
   );
 }

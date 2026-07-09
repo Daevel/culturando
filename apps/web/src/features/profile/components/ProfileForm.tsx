@@ -1,7 +1,6 @@
 "use client";
 
 import type { UserProfile } from "@culturando/types";
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { useActionState } from "react";
 
@@ -19,7 +18,6 @@ import {
   PageShell,
   PageTitle,
 } from "@/components/ui/page";
-import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { updateProfileAction } from "../actions/update-profile.action";
 import type { ProfileFormState } from "../types/profile-form.types";
@@ -46,10 +44,6 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             <PageTitle className="lg:text-4xl">{t("profile.title")}</PageTitle>
             <PageDescription>{t("profile.description")}</PageDescription>
           </PageHeaderContent>
-
-          <Button asChild className="w-full sm:w-auto" variant="outline">
-            <Link href={routes.dashboard}>{t("profile.backToDashboardLabel")}</Link>
-          </Button>
         </PageHeader>
 
         <Card>

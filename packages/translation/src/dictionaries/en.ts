@@ -94,6 +94,7 @@ export const en = {
         review: {
           nameLabel: "Name",
           emailLabel: "Email",
+          salutationPreferenceLabel: "Greeting",
           emptyValue: "Not filled in",
           notice: "The password is not shown for security reasons.",
         },
@@ -102,6 +103,14 @@ export const en = {
         name: {
           label: "Name",
           placeholder: "Luigi Avitabile",
+        },
+        salutationPreference: {
+          label: "How would you like to be greeted?",
+          options: {
+            masculine: "Welcome",
+            feminine: "Welcome",
+            neutral: "Welcome",
+          },
         },
         email: {
           label: "Email",
@@ -138,10 +147,28 @@ export const en = {
   dashboard: {
     eyebrow: "Personal area",
     title: "Dashboard",
+    welcomeTitle: {
+      masculine: "Welcome",
+      feminine: "Welcome",
+      neutral: "Welcome",
+    },
     description:
       "Manage your profile, prepare your book listings and check the current session status.",
     logoutLabel: "Sign out",
     userFallback: "Culturando user",
+    nav: {
+      logoLabel: "Go to the Culturando dashboard",
+      primaryLabel: "Dashboard navigation",
+      dashboardLabel: "Dashboard",
+      booksLabel: "Book list",
+      newBookLabel: "Publish a book",
+      profileLabel: "Profile",
+      openMobileMenuLabel: "Open menu",
+      closeMobileMenuLabel: "Close menu",
+      themeLabel: "Interface theme",
+      activateDarkModeLabel: "Activate dark mode",
+      activateLightModeLabel: "Activate light mode",
+    },
     sessionCard: {
       title: "Active session",
       description: "This data comes from the current Auth.js session.",
@@ -152,6 +179,9 @@ export const en = {
     quickActions: {
       title: "Quick actions",
       description: "The next flows will start from here.",
+      primaryGroupLabel: "High priority",
+      secondaryGroupLabel: "Management",
+      adminGroupLabel: "Administration",
       newBookLabel: "Add book",
       profileLabel: "Edit profile",
       booksLabel: "Explore books",
@@ -276,6 +306,7 @@ export const en = {
       visibilityFilterLabel: "Visibility",
       allAvailabilitiesLabel: "All availabilities",
       allVisibilitiesLabel: "All visibilities",
+      pageSizeLabel: "Books per page",
       resultsLabel: "results",
       clearFiltersLabel: "Clear filters",
     },

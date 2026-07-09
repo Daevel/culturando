@@ -8,6 +8,10 @@ function isUserRole(value: unknown): value is "admin" | "user" {
   return value === "admin" || value === "user";
 }
 
+function isSalutationPreference(value: unknown): value is "masculine" | "feminine" | "neutral" {
+  return value === "masculine" || value === "feminine" || value === "neutral";
+}
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
   trustHost: true,
@@ -22,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.salutationPreference = user.salutationPreference;
       }
 
       return token;
@@ -30,6 +35,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (session.user) {
         session.user.id = String(token.id ?? token.sub ?? "");
         session.user.role = isUserRole(token.role) ? token.role : "user";
+        session.user.salutationPreference = isSalutationPreference(token.salutationPreference)
+          ? token.salutationPreference
+          : "neutral";
       }
 
       return session;
@@ -71,6 +79,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          salutationPreference: user.salutationPreference,
         };
       },
     }),

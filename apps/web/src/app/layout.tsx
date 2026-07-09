@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./global.css";
 import { JetBrains_Mono, Lora, Poppins } from "next/font/google";
+import { AppFloatingBar } from "@/components/AppFloatingBar";
 
 export const metadata: Metadata = {
   title: {
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
+        <AppFloatingBar />
         {children}
       </body>
     </html>

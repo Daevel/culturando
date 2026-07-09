@@ -10,6 +10,7 @@ export async function getUserProfile(userId: string): Promise<UserProfile | null
       id: true,
       email: true,
       name: true,
+      salutationPreference: true,
       role: true,
       avatarUrl: true,
       bio: true,
@@ -44,6 +45,7 @@ type StoredUserProfile = {
   id: string;
   email: string;
   name: string | null;
+  salutationPreference: UserProfile["salutationPreference"];
   role: UserProfile["role"];
   avatarUrl: string | null;
   bio: string | null;
@@ -60,6 +62,7 @@ function toUserProfile(user: StoredUserProfile): UserProfile {
     id: user.id,
     email: user.email,
     name: user.name ?? undefined,
+    salutationPreference: user.salutationPreference,
     role: user.role,
     avatarUrl: user.avatarUrl ?? undefined,
     bio: user.bio ?? undefined,

@@ -16,16 +16,18 @@ export function ReceivedLoanRequests({ requests }: ReceivedLoanRequestsProps) {
   const t = useTranslation();
 
   return (
-    <Card>
+    <Card className="flex flex-1 flex-col">
       <CardHeader>
         <CardTitle>{t("requests.received.title")}</CardTitle>
         <CardDescription>{t("requests.received.description")}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex flex-1 flex-col">
         {requests.length === 0 ? (
-          <p className="text-sm text-muted-foreground">{t("requests.received.emptyState")}</p>
+          <p className="flex flex-1 items-center text-sm text-muted-foreground">
+            {t("requests.received.emptyState")}
+          </p>
         ) : (
-          <div className="space-y-4">
+          <div className="flex flex-1 flex-col gap-4">
             {requests.map((request) => (
               <article key={request.id} className="rounded-lg border p-4">
                 <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-start">

@@ -4,7 +4,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PageDescription, PageShell, PageTitle, ResponsiveActions } from "@/components/ui/page";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -13,13 +12,6 @@ export function HomePageContent() {
 
   return (
     <PageShell className="flex items-center">
-      <div className="fixed right-4 top-4 z-20 sm:right-6 sm:top-6">
-        <ThemeToggle
-          darkLabel={t("home.theme.darkLabel")}
-          lightLabel={t("home.theme.lightLabel")}
-        />
-      </div>
-
       <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center py-8 text-center sm:py-12 lg:min-h-[calc(100vh-8rem)]">
         <Badge variant="secondary">{t("home.hero.eyebrow")}</Badge>
 

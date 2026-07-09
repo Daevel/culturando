@@ -94,6 +94,7 @@ export const it = {
         review: {
           nameLabel: "Nome",
           emailLabel: "Email",
+          salutationPreferenceLabel: "Saluto",
           emptyValue: "Non compilato",
           notice: "La password non viene mostrata per motivi di sicurezza.",
         },
@@ -102,6 +103,14 @@ export const it = {
         name: {
           label: "Nome",
           placeholder: "Luigi Avitabile",
+        },
+        salutationPreference: {
+          label: "Come preferisci essere salutato/a?",
+          options: {
+            masculine: "Benvenuto",
+            feminine: "Benvenuta",
+            neutral: "Benvenuto/a",
+          },
         },
         email: {
           label: "Email",
@@ -140,10 +149,28 @@ export const it = {
   dashboard: {
     eyebrow: "Area personale",
     title: "Dashboard",
+    welcomeTitle: {
+      masculine: "Benvenuto",
+      feminine: "Benvenuta",
+      neutral: "Benvenuto/a",
+    },
     description:
       "Gestisci il tuo profilo, prepara la pubblicazione dei tuoi libri e verifica lo stato della sessione.",
     logoutLabel: "Esci",
     userFallback: "Utente Culturando",
+    nav: {
+      logoLabel: "Vai alla dashboard Culturando",
+      primaryLabel: "Navigazione dashboard",
+      dashboardLabel: "Dashboard",
+      booksLabel: "Lista libri",
+      newBookLabel: "Pubblica un libro",
+      profileLabel: "Profilo",
+      openMobileMenuLabel: "Apri menu",
+      closeMobileMenuLabel: "Chiudi menu",
+      themeLabel: "Tema interfaccia",
+      activateDarkModeLabel: "Attiva dark mode",
+      activateLightModeLabel: "Attiva light mode",
+    },
     sessionCard: {
       title: "Sessione attiva",
       description: "Questi dati arrivano dalla sessione Auth.js corrente.",
@@ -154,6 +181,9 @@ export const it = {
     quickActions: {
       title: "Azioni rapide",
       description: "I prossimi flussi partiranno da qui.",
+      primaryGroupLabel: "Priorità alta",
+      secondaryGroupLabel: "Gestione",
+      adminGroupLabel: "Amministrazione",
       newBookLabel: "Aggiungi libro",
       profileLabel: "Modifica profilo",
       booksLabel: "Esplora libri",
@@ -279,6 +309,7 @@ export const it = {
       visibilityFilterLabel: "Visibilita",
       allAvailabilitiesLabel: "Tutte le disponibilita",
       allVisibilitiesLabel: "Tutte le visibilita",
+      pageSizeLabel: "Libri per pagina",
       resultsLabel: "risultati",
       clearFiltersLabel: "Cancella filtri",
     },

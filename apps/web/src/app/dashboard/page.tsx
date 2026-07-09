@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
-import { logoutAction } from "@/features/auth/actions/logout.action";
 import { getDashboardStats } from "@/features/dashboard/actions/dashboard-stats.repository";
 import { DashboardOverview } from "@/features/dashboard/components/DashboardOverview";
 import { getReceivedLoanRequests } from "@/features/requests/actions/loan-requests.repository";
@@ -23,7 +22,6 @@ export default async function DashboardPage() {
 
   return (
     <DashboardOverview
-      logoutAction={logoutAction}
       receivedLoanRequests={receivedLoanRequests}
       stats={stats}
       user={session.user}

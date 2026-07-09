@@ -14,5 +14,19 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 function hasCurrentPrismaSchema(client: PrismaClient) {
-  return "emailVerificationToken" in client;
+  const runtimeDataModel = client as PrismaClient & {
+    _runtimeDataModel?: {
+      models?: {
+        User?: {
+          fields?: Array<{ name?: string }>;
+        };
+      };
+    };
+  };
+  const userFields = runtimeDataModel._runtimeDataModel?.models?.User?.fields ?? [];
+
+  return (
+    "emailVerificationToken" in client &&
+    userFields.some((field) => field.name === "salutationPreference")
+  );
 }

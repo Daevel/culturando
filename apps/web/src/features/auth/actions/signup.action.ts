@@ -11,7 +11,7 @@ import {
   sendVerificationEmail,
 } from "./email-verification";
 
-type SignupField = "name" | "email" | "password" | "confirmPassword";
+type SignupField = "name" | "salutationPreference" | "email" | "password" | "confirmPassword";
 
 export async function signupAction(
   _state: AuthFormState<SignupField>,
@@ -19,6 +19,7 @@ export async function signupAction(
 ): Promise<AuthFormState<SignupField>> {
   const values = {
     name: formData.get("name"),
+    salutationPreference: formData.get("salutationPreference"),
     email: formData.get("email"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
@@ -33,6 +34,7 @@ export async function signupAction(
       success: false,
       errors: {
         name: errors.name?.[0],
+        salutationPreference: errors.salutationPreference?.[0],
         email: errors.email?.[0],
         password: errors.password?.[0],
         confirmPassword: errors.confirmPassword?.[0],
@@ -74,6 +76,7 @@ export async function signupAction(
     data: {
       email,
       name: validation.data.name,
+      salutationPreference: validation.data.salutationPreference,
       passwordHash,
     },
   });
