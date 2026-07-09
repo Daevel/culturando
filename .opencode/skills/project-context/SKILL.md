@@ -163,8 +163,11 @@ apps/web/src/components/ui/
 ├── checkbox.tsx
 ├── input.tsx
 ├── page.tsx
+├── pagination.tsx
 ├── progress.tsx
+├── radio-group.tsx
 ├── theme-toggle.tsx
+├── tooltip.tsx
 ├── wizard.tsx
 └── label.tsx
 ```
@@ -180,8 +183,11 @@ Corretto:
 - `Badge`;
 - `Checkbox`;
 - `PageShell`, `PageContainer`, `PageHeader`, `PageTitle` e primitive pagina responsive;
+- `Pagination` e primitive correlate per paginazione stile shadcn;
 - `Progress`;
+- `RadioGroup`;
 - `ThemeToggle`;
+- `Tooltip`;
 - `Wizard` per flussi guidati con stepper e progress bar;
 - futuro `Textarea`;
 - futuro `Dialog`.
@@ -444,7 +450,7 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
+Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, preferenza di saluto, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `User.salutationPreference` salva la preferenza grammaticale di saluto (`masculine`, `feminine`, `neutral`) usata dalla dashboard per mostrare `Benvenuto`, `Benvenuta` o `Benvenuto/a` senza raccogliere dati sensibili non necessari. `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
 
 ### 6.4 `packages/geo`
 
@@ -637,6 +643,7 @@ Configurazione attuale:
 - Credentials provider collegato agli utenti reali nel database PostgreSQL tramite Prisma;
 - login consentito solo agli utenti con `emailVerifiedAt` valorizzato;
 - sessione arricchita con `session.user.id`, corrispondente all'id reale della tabella `User`;
+- sessione arricchita con `session.user.salutationPreference`, derivata da `User.salutationPreference`;
 - password salvate come hash `scrypt` con salt, tramite utility server-side in `apps/web/src/lib/password.ts`.
 
 Variabili richieste per Auth.js:
@@ -680,16 +687,20 @@ apps/web/src/features/auth/actions/signup.action.ts
 Responsabilità:
 
 - mostrare form nome/email/password/conferma password;
+- raccogliere la preferenza grammaticale di saluto tramite `RadioGroup` (`masculine`, `feminine`, `neutral`);
 - guidare l’utente tramite `Wizard` con step dati account, sicurezza e riepilogo;
 - controllare disponibilità email mentre l’utente digita e bloccare il proseguimento se già usata;
 - validare input con Zod;
 - verificare corrispondenza password;
 - creare un utente reale non ancora verificato in PostgreSQL tramite Prisma;
+- salvare `salutationPreference` sul record utente;
 - generare un token di conferma email salvato come hash in `EmailVerificationToken`;
 - inviare email di conferma tramite provider configurabile (`console`, `http` o `resend`);
 - mostrare toast primary di conferma invio email;
 - salvare la password come hash, mai in chiaro;
 - linkare alla login.
+
+La dashboard usa `session.user.salutationPreference` per scegliere la forma del titolo di benvenuto. Questa informazione va trattata come preferenza di UI/linguaggio, non come orientamento sessuale o dato sensibile.
 
 La route `/auth/confirm-email?token=...` conferma il token, valorizza `User.emailVerifiedAt`, elimina i token residui dell’utente e mostra una pagina di ringraziamento con CTA verso la login. Senza token valido mostra uno stato non valido, quindi la pagina di successo è raggiungibile solo passando dal link email.
 
@@ -1239,7 +1250,9 @@ Stato dei primi step:
 30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato;
 31. introdurre design system responsive con primitive pagina, Wizard, Poppins/Lora e dark mode toggle — completato;
 32. introdurre package `@culturando/assets` per centralizzare i path degli asset pubblici — completato;
-33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato.
+33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato;
+34. introdurre preferenza di saluto utente e titolo dashboard personalizzato — completato;
+35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato.
 
 Ordine dei prossimi step:
 
