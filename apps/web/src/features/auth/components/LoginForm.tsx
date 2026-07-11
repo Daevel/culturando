@@ -7,6 +7,7 @@ import Link from "next/link";
 import { startTransition, useActionState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type { z } from "zod";
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -69,6 +70,8 @@ export function LoginForm() {
           noValidate
           onSubmit={handleSubmit(onSubmit)}
         >
+          <BrandLogo className="mx-auto size-16" priority variant="mark" />
+
           <div className="space-y-2 text-center">
             <PageTitle className="max-w-none text-2xl lg:text-3xl">
               {t("auth.login.title")}

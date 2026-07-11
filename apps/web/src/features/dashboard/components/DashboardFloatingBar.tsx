@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { Session } from "next-auth";
 import { useState } from "react";
 
+import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import {
   NavigationMenu,
@@ -79,10 +80,8 @@ export function DashboardFloatingBar({ logoutAction, user }: DashboardFloatingBa
             className="flex min-w-0 items-center gap-2 rounded-full pr-3 font-semibold tracking-tight text-foreground transition-colors hover:text-primary"
             href={routes.dashboard}
           >
-            <span className="grid size-10 shrink-0 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
-              C
-            </span>
-            <span className="truncate">Culturando</span>
+            <BrandLogo className="size-10" variant="mark" />
+            <span className="sr-only">Culturando</span>
           </Link>
 
           <Button
@@ -118,9 +117,7 @@ export function DashboardFloatingBar({ logoutAction, user }: DashboardFloatingBa
           <aside className="absolute top-0 right-0 flex h-full w-[min(22rem,calc(100%-2rem))] flex-col gap-5 border-l bg-background p-5 shadow-2xl animate-in slide-in-from-right-6 duration-200 sm:rounded-l-lg">
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <span className="grid size-10 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
-                  C
-                </span>
+                <BrandLogo className="size-10" variant="mark" />
                 <div className="min-w-0">
                   <p className="font-semibold">Culturando</p>
                   <p className="truncate text-sm text-muted-foreground">{displayName}</p>
@@ -230,10 +227,8 @@ function DesktopFloatingBar({
           className="flex items-center gap-2 rounded-full pr-3 font-semibold tracking-tight text-foreground transition-colors hover:text-primary"
           href={routes.dashboard}
         >
-          <span className="grid size-10 place-items-center rounded-md bg-primary text-primary-foreground shadow-sm">
-            C
-          </span>
-          <span>Culturando</span>
+          <BrandLogo className="size-10" variant="mark" />
+          <span className="sr-only">Culturando</span>
         </Link>
 
         <nav aria-label={t("dashboard.nav.primaryLabel")}>

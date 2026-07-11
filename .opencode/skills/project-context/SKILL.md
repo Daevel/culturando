@@ -201,6 +201,8 @@ Non corretto:
 
 I componenti di dominio devono stare dentro le rispettive feature.
 
+I componenti condivisi specifici della web app, ma non appartenenti al set generico shadcn-like, possono stare direttamente in `apps/web/src/components`. Esempio attuale: `BrandLogo`, che renderizza le varianti light/dark del logo Culturando usando i path centralizzati in `@culturando/assets`.
+
 ### 5.3 `features/`
 
 La cartella `features/` contiene le funzionalità applicative della web app.
@@ -529,6 +531,8 @@ packages/assets/
 Responsabilità attuali:
 
 - esporre `assets.favicon`;
+- esporre `assets.logo` con varianti full e mark per tema light/dark;
+- esporre `assets.icons` con favicon PNG, apple touch icon, manifest e icone PWA;
 - esporre immagini statiche, come `assets.images.loginPage`;
 - esporre builder URL per upload pubblici locali, come `assets.uploads.bookCover(fileName)`.
 
