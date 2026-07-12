@@ -27,6 +27,10 @@ function hasCurrentPrismaSchema(client: PrismaClient) {
 
   return (
     "emailVerificationToken" in client &&
-    userFields.some((field) => field.name === "salutationPreference")
+    userFields.some((field) => field.name === "salutationPreference") &&
+    userFields.some((field) => field.name === "addressLabel") &&
+    userFields.some((field) => field.name === "postalCode") &&
+    userFields.some((field) => field.name === "nickname") &&
+    userFields.some((field) => field.name === "nicknameUpdatedAt")
   );
 }

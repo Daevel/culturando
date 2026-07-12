@@ -1,3 +1,5 @@
+"use client";
+
 import type { Book } from "@culturando/types";
 
 import { useTranslation } from "@/hooks/useTranslation";

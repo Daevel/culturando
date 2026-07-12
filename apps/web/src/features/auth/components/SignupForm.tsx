@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import { PageDescription, PageTitle } from "@/components/ui/page";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
+import { useToast } from "@/components/ui/toast";
 import { Wizard, type WizardStep } from "@/components/ui/wizard";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -60,6 +61,7 @@ export function SignupForm() {
     },
   });
   const t = useTranslation();
+  const { showToast } = useToast();
   const emailAlreadyExistsMessage = t("auth.signup.emailAlreadyExistsMessage");
   const [currentStep, setCurrentStep] = useState(0);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
@@ -88,6 +90,16 @@ export function SignupForm() {
     control,
     name: "email",
   });
+
+  useEffect(() => {
+    if (state.success && state.messageKey) {
+      showToast({
+        title: t("auth.signup.toast.title"),
+        description: t(state.messageKey),
+        variant: "success",
+      });
+    }
+  }, [showToast, state.messageKey, state.success, t]);
 
   useEffect(() => {
     const email = String(emailValue ?? "")
@@ -212,16 +224,6 @@ export function SignupForm() {
       steps={signupSteps}
       title={t("auth.signup.title")}
     >
-      {state.success && state.messageKey ? (
-        <div
-          className="fixed right-4 top-4 z-50 max-w-sm rounded-xl border border-primary/30 bg-primary p-4 text-primary-foreground shadow-lg"
-          role="status"
-        >
-          <p className="font-semibold">{t("auth.signup.toast.title")}</p>
-          <p className="mt-1 text-sm text-primary-foreground/85">{t(state.messageKey)}</p>
-        </div>
-      ) : null}
-
       <form
         className="flex flex-col gap-y-6"
         noValidate

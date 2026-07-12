@@ -7,6 +7,7 @@ export const routes = {
   dashboardAdmin: "/dashboard/admin",
   dashboardProfile: "/dashboard/profile",
   dashboardRequests: "/dashboard/requests",
+  dashboardSettings: "/dashboard/settings",
   nearby: "/nearby",
   books: "/books",
   bookDetail: (bookId: string) => `/books/${bookId}`,

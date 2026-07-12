@@ -165,6 +165,7 @@ export const it = {
       booksLabel: "Lista libri",
       newBookLabel: "Pubblica un libro",
       profileLabel: "Profilo",
+      settingsLabel: "Impostazioni",
       openMobileMenuLabel: "Apri menu",
       closeMobileMenuLabel: "Chiudi menu",
       themeLabel: "Tema interfaccia",
@@ -260,19 +261,36 @@ export const it = {
       genericErrorMessage: "Non è stato possibile aggiornare il profilo.",
       fields: {
         name: {
-          label: "Nome",
+          label: "Nome completo",
           placeholder: "Luigi Avitabile",
+        },
+        nickname: {
+          label: "Nickname",
+          placeholder: "luigi_avitabile",
+          description: "Sarà il nome mostrato dentro Culturando. Potrai cambiarlo ogni 90 giorni.",
+          lockedDescription: "Potrai cambiare nickname dal {date}.",
+          checkingLabel: "Verifica nickname in corso...",
+          availableMessage: "Nickname disponibile",
+          unavailableMessage: "Questo nickname è già in uso.",
         },
         email: {
           label: "Email account",
         },
         avatarUrl: {
-          label: "URL avatar",
-          placeholder: "https://example.com/avatar.jpg",
+          label: "Avatar",
+          actionLabel: "Cambia foto",
+          helpText: "Clicca sull'immagine per scegliere una foto dal tuo dispositivo.",
+          previewAlt: "Anteprima avatar profilo",
         },
         bio: {
           label: "Biografia",
           placeholder: "Descrivi brevemente la tua biblioteca, i tuoi interessi o la tua raccolta.",
+        },
+        location: {
+          label: "Domicilio",
+          placeholder: "Inizia a scrivere il tuo indirizzo",
+          description: "Seleziona un risultato per salvare città, provincia e regione del profilo.",
+          searchingLabel: "Ricerca indirizzi in corso...",
         },
         city: {
           label: "Città",
@@ -292,6 +310,18 @@ export const it = {
             "Il profilo pubblico mostra solo dati descrittivi e area generale, mai indirizzi o coordinate precise.",
         },
       },
+    },
+  },
+  settings: {
+    eyebrow: "Preferenze",
+    title: "Impostazioni",
+    description: "Personalizza il comportamento dell'app e le preferenze del tuo account.",
+    backLabel: "Indietro",
+    language: {
+      title: "Lingua dell'app",
+      description: "Scegli la lingua da usare nell'interfaccia. La preferenza verrà ricordata.",
+      toastTitle: "Lingua aggiornata",
+      toastDescription: "La preferenza è stata salvata su questo dispositivo.",
     },
   },
   books: {

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/BrandLogo";
@@ -14,7 +16,7 @@ export function HomePageContent() {
   return (
     <PageShell className="flex items-center">
       <section className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center py-8 text-center sm:py-12 lg:min-h-[calc(100vh-8rem)]">
-        <BrandLogo className="mb-8 h-16 w-64 sm:h-20 sm:w-80" priority />
+        <BrandLogo className="mb-8 size-16 sm:size-20" priority variant="mark" />
 
         <Badge variant="secondary">{t("home.hero.eyebrow")}</Badge>
 

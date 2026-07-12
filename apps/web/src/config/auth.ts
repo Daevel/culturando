@@ -25,15 +25,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.avatarUrl = user.avatarUrl;
+        token.nickname = user.nickname;
         token.role = user.role;
         token.salutationPreference = user.salutationPreference;
       }
 
       return token;
     },
-    session({ session, token }) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = String(token.id ?? token.sub ?? "");
+        const userId = String(token.id ?? token.sub ?? "");
+        const profile = userId
+          ? await prisma.user.findUnique({
+              where: { id: userId },
+              select: {
+                avatarUrl: true,
+                nickname: true,
+              },
+            })
+          : null;
+
+        session.user.id = userId;
+        session.user.avatarUrl = profile?.avatarUrl ?? getOptionalString(token.avatarUrl);
+        session.user.nickname = profile?.nickname ?? getOptionalString(token.nickname);
         session.user.role = isUserRole(token.role) ? token.role : "user";
         session.user.salutationPreference = isSalutationPreference(token.salutationPreference)
           ? token.salutationPreference
@@ -78,6 +93,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           id: user.id,
           email: user.email,
           name: user.name,
+          avatarUrl: user.avatarUrl ?? undefined,
+          nickname: user.nickname ?? undefined,
           role: user.role,
           salutationPreference: user.salutationPreference,
         };
@@ -85,3 +102,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
 });
+
+function getOptionalString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value : undefined;
+}

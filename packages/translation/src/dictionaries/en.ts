@@ -163,6 +163,7 @@ export const en = {
       booksLabel: "Book list",
       newBookLabel: "Publish a book",
       profileLabel: "Profile",
+      settingsLabel: "Settings",
       openMobileMenuLabel: "Open menu",
       closeMobileMenuLabel: "Close menu",
       themeLabel: "Interface theme",
@@ -257,19 +258,36 @@ export const en = {
       genericErrorMessage: "The profile could not be updated.",
       fields: {
         name: {
-          label: "Name",
+          label: "Full name",
           placeholder: "Luigi Avitabile",
+        },
+        nickname: {
+          label: "Nickname",
+          placeholder: "luigi_avitabile",
+          description: "This is the name shown inside Culturando. You can change it every 90 days.",
+          lockedDescription: "You can change your nickname from {date}.",
+          checkingLabel: "Checking nickname...",
+          availableMessage: "Nickname available",
+          unavailableMessage: "This nickname is already in use.",
         },
         email: {
           label: "Account email",
         },
         avatarUrl: {
-          label: "Avatar URL",
-          placeholder: "https://example.com/avatar.jpg",
+          label: "Avatar",
+          actionLabel: "Change photo",
+          helpText: "Click the image to choose a photo from your device.",
+          previewAlt: "Profile avatar preview",
         },
         bio: {
           label: "Bio",
           placeholder: "Briefly describe your library, interests or collection.",
+        },
+        location: {
+          label: "Home address",
+          placeholder: "Start typing your address",
+          description: "Select a result to save the profile city, province and region.",
+          searchingLabel: "Searching addresses...",
         },
         city: {
           label: "City",
@@ -289,6 +307,18 @@ export const en = {
             "The public profile shows only descriptive data and a general area, never precise addresses or coordinates.",
         },
       },
+    },
+  },
+  settings: {
+    eyebrow: "Preferences",
+    title: "Settings",
+    description: "Customize app behavior and your account preferences.",
+    backLabel: "Back",
+    language: {
+      title: "App language",
+      description: "Choose the language used in the interface. This preference will be remembered.",
+      toastTitle: "Language updated",
+      toastDescription: "Your preference has been saved on this device.",
     },
   },
   books: {

@@ -1,3 +1,4 @@
+import { getTranslation } from "@culturando/translation";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -15,7 +16,7 @@ import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { getSentLoanRequests } from "@/features/requests/actions/loan-requests.repository";
 import { SentLoanRequests } from "@/features/requests/components/SentLoanRequests";
-import { useTranslation } from "@/hooks/useTranslation";
+import { getCurrentLocale } from "@/lib/locale";
 
 export default async function DashboardRequestsPage() {
   const session = await auth();
@@ -24,7 +25,8 @@ export default async function DashboardRequestsPage() {
     redirect(routes.login);
   }
 
-  const t = useTranslation();
+  const locale = await getCurrentLocale();
+  const t = (key: Parameters<typeof getTranslation>[0]) => getTranslation(key, locale);
   const sentLoanRequests = session.user.id ? await getSentLoanRequests(session.user.id) : [];
 
   return (

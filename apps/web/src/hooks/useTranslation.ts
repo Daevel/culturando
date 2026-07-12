@@ -1,8 +1,12 @@
-import { appConfig } from "@culturando/config";
-import { getTranslation, type Locale, type TranslationKey } from "@culturando/translation";
+"use client";
 
-const defaultLocale = appConfig.defaultLocale satisfies Locale;
+import { getTranslation, type TranslationKey } from "@culturando/translation";
+import { useCallback } from "react";
+
+import { useLocale } from "@/components/LocaleProvider";
 
 export function useTranslation() {
-  return (key: TranslationKey) => getTranslation(key, defaultLocale);
+  const { locale } = useLocale();
+
+  return useCallback((key: TranslationKey) => getTranslation(key, locale), [locale]);
 }

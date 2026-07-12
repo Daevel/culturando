@@ -1,6 +1,16 @@
 "use client";
 
-import { BookOpen, LayoutDashboard, LogOut, Menu, Plus, UserRound, X } from "lucide-react";
+import {
+  BookOpen,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Plus,
+  Settings,
+  UserRound,
+  X,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Session } from "next-auth";
@@ -42,7 +52,7 @@ export function DashboardFloatingBar({ logoutAction, user }: DashboardFloatingBa
     return null;
   }
 
-  const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
+  const displayName = user.nickname ?? user.name ?? user.email ?? t("dashboard.userFallback");
   const initials = getInitials(displayName);
   const links = [
     {
@@ -268,9 +278,11 @@ function DesktopFloatingBar({
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="h-10 rounded-md bg-muted/70 px-2 pr-3 hover:bg-muted data-[state=open]:bg-muted">
-                  <span className="grid size-7 place-items-center rounded-md bg-primary text-xs font-semibold text-primary-foreground">
-                    {initials}
-                  </span>
+                  <UserAvatar
+                    avatarUrl={user.avatarUrl}
+                    displayName={displayName}
+                    initials={initials}
+                  />
                   <span className="ml-2 max-w-32 truncate">{displayName}</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="absolute right-0 left-auto top-full mt-3 w-64 rounded-lg border bg-popover p-2 text-popover-foreground shadow-xl">
@@ -282,6 +294,12 @@ function DesktopFloatingBar({
                     <Link href={routes.dashboardProfile}>
                       <UserRound aria-hidden="true" className="size-4" />
                       {t("dashboard.nav.profileLabel")}
+                    </Link>
+                  </NavigationMenuLink>
+                  <NavigationMenuLink asChild className="mt-1 flex items-center gap-2 rounded-md">
+                    <Link href={routes.dashboardSettings}>
+                      <Settings aria-hidden="true" className="size-4" />
+                      {t("dashboard.nav.settingsLabel")}
                     </Link>
                   </NavigationMenuLink>
                   <form action={logoutAction}>
@@ -301,6 +319,40 @@ function DesktopFloatingBar({
         </div>
       </div>
     </div>
+  );
+}
+
+function UserAvatar({
+  avatarUrl,
+  displayName,
+  initials,
+}: {
+  avatarUrl?: string;
+  displayName: string;
+  initials: string;
+}) {
+  return (
+    <span
+      className={cn(
+        "relative grid size-7 shrink-0 place-items-center overflow-hidden rounded-md text-xs font-semibold",
+        avatarUrl
+          ? "border border-black/10 bg-white text-slate-900 shadow-sm"
+          : "bg-primary text-primary-foreground",
+      )}
+    >
+      {avatarUrl ? (
+        <Image
+          alt={displayName}
+          className="object-cover"
+          fill
+          sizes="28px"
+          src={avatarUrl}
+          unoptimized
+        />
+      ) : (
+        initials
+      )}
+    </span>
   );
 }
 

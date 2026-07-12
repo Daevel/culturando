@@ -1,6 +1,15 @@
 import type { TranslationKey } from "@culturando/translation";
 
-export type ProfileFormField = "avatarUrl" | "bio" | "city" | "name" | "province" | "region";
+export type ProfileFormField =
+  | "addressLabel"
+  | "avatarUrl"
+  | "bio"
+  | "city"
+  | "name"
+  | "nickname"
+  | "postalCode"
+  | "province"
+  | "region";
 
 export type ProfileFormState = {
   success: boolean;

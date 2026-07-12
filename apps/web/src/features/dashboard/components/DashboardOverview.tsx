@@ -1,3 +1,5 @@
+"use client";
+
 import { BookOpen, BookPlus, Inbox, ShieldCheck, UserRound } from "lucide-react";
 import Link from "next/link";
 import type { Session } from "next-auth";
@@ -33,7 +35,7 @@ type DashboardOverviewProps = {
 
 export function DashboardOverview({ receivedLoanRequests, stats, user }: DashboardOverviewProps) {
   const t = useTranslation();
-  const displayName = user.name ?? user.email ?? t("dashboard.userFallback");
+  const displayName = user.nickname ?? user.name ?? user.email ?? t("dashboard.userFallback");
   const welcomeTitleKey = getWelcomeTitleKey(user.salutationPreference);
 
   return (

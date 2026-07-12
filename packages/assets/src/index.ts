@@ -25,6 +25,7 @@ export const assets = {
   },
   uploads: {
     bookCover: (fileName: string) => assetPath(`/uploads/book-covers/${fileName}`),
+    profileAvatar: (fileName: string) => assetPath(`/uploads/profile-avatars/${fileName}`),
   },
 } as const;
 

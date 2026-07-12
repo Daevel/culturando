@@ -5,6 +5,9 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./global.css";
 import { JetBrains_Mono, Lora, Poppins } from "next/font/google";
 import { AppFloatingBar } from "@/components/AppFloatingBar";
+import { LocaleProvider } from "@/components/LocaleProvider";
+import { Toaster, ToastProvider } from "@/components/ui/toast";
+import { getCurrentLocale } from "@/lib/locale";
 
 export const metadata: Metadata = {
   title: {
@@ -44,18 +47,25 @@ const fontMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getCurrentLocale();
+
   return (
-    <html lang={appConfig.defaultLocale}>
+    <html lang={locale}>
       <body
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
-        <AppFloatingBar />
-        {children}
+        <LocaleProvider initialLocale={locale}>
+          <ToastProvider>
+            <AppFloatingBar />
+            {children}
+            <Toaster />
+          </ToastProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

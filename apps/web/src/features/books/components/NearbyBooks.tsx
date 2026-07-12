@@ -1,3 +1,5 @@
+"use client";
+
 import type { Book } from "@culturando/types";
 import Link from "next/link";
 
