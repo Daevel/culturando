@@ -921,7 +921,10 @@ Struttura attuale:
 apps/web/src/app/dashboard/profile/page.tsx
 apps/web/src/features/profile/
 ├── actions/
+│   ├── check-profile-nickname.action.ts
+│   ├── profile-avatar-storage.ts
 │   ├── profile.repository.ts
+│   ├── search-address-suggestions.action.ts
 │   └── update-profile.action.ts
 ├── components/
 │   └── ProfileForm.tsx
@@ -936,12 +939,27 @@ Funzionalità attuali:
 - route protetta `/dashboard/profile`;
 - lettura profilo tramite `getUserProfile`;
 - aggiornamento tramite server action `updateProfileAction`;
-- validazione Zod di nome, URL avatar, biografia, città, provincia, regione e visibilità profilo;
-- campi profilo salvati direttamente sul modello `User`: `avatarUrl`, `bio`, `city`, `province`, `region`, `isProfilePublic`;
+- validazione Zod di nome completo, nickname, avatar, biografia, domicilio e visibilità profilo;
+- upload avatar dal dispositivo tramite `profile-avatar-storage`, con R2 quando configurato e fallback locale in `apps/web/public/uploads/profile-avatars`;
+- nickname univoco a livello DB, controllato live dal form e modificabile ogni 90 giorni;
+- domicilio gestito tramite autocomplete Nominatim su un solo input, salvando `addressLabel`, `postalCode`, `city`, `province` e `region`;
+- campi profilo salvati direttamente sul modello `User`: `name`, `nickname`, `nicknameUpdatedAt`, `avatarUrl`, `bio`, `addressLabel`, `postalCode`, `city`, `province`, `region`, `isProfilePublic`;
 - email mostrata come dato account non modificabile dal form profilo;
 - testi UI centralizzati in `@culturando/translation`.
 
-### 11.1.2 Dashboard amministrativa
+### 11.1.2 Impostazioni utente
+
+La route protetta `/dashboard/settings` contiene preferenze applicative dell'utente.
+
+Funzionalità attuali:
+
+- pagina impostazioni raggiungibile dalla dropdown utente nella floating bar;
+- selezione lingua app tra italiano e inglese;
+- persistenza lingua in `localStorage` e cookie `culturando-locale`;
+- aggiornamento reattivo dei testi client tramite `LocaleProvider` e `useTranslation`;
+- toast di conferma al cambio lingua.
+
+### 11.1.3 Dashboard amministrativa
 
 La dashboard amministrativa copre il requisito della traccia relativo a dashboard e metriche aggregate del prototipo.
 
@@ -967,7 +985,7 @@ Funzionalità attuali:
 - lista ultimi utenti registrati;
 - lista ultimi libri pubblicati con link al dettaglio.
 
-### 11.1.3 Requests / richieste contatto-prestito
+### 11.1.4 Requests / richieste contatto-prestito
 
 La feature requests completa il primo flusso interattivo dell'MVP: un utente autenticato può inviare una richiesta per un libro pubblico disponibile e il proprietario può gestirla dalla dashboard.
 
@@ -999,6 +1017,7 @@ La feature books è stata introdotta come primo flusso funzionale dopo auth e da
 Funzionalità attuali:
 
 - catalogo pubblico `/books`;
+- loading route `/books/loading.tsx` con griglia skeleton di copertine libro;
 - dettaglio libro pubblico `/books/[bookId]`;
 - ricerca client-side nel catalogo per titolo, autore, ISBN, editore, città, categoria e descrizione;
 - filtri client-side per stato e visibilità;
