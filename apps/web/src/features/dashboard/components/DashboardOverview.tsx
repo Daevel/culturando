@@ -43,7 +43,7 @@ export function DashboardOverview({ receivedLoanRequests, stats, user }: Dashboa
       <PageContainer size="xl">
         <PageHeader>
           <PageHeaderContent>
-            <PageTitle className="lg:text-4xl">
+            <PageTitle>
               {t(welcomeTitleKey)} {displayName}
             </PageTitle>
             <PageDescription>{t("dashboard.description")}</PageDescription>
