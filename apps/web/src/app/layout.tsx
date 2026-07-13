@@ -20,11 +20,16 @@ export const metadata: Metadata = {
   manifest: assets.icons.manifest,
   icons: {
     icon: [
-      { url: assets.favicon, sizes: "any" },
-      { url: assets.icons.favicon16, sizes: "16x16", type: "image/png" },
-      { url: assets.icons.favicon32, sizes: "32x32", type: "image/png" },
-      { url: assets.icons.icon192, sizes: "192x192", type: "image/png" },
-      { url: assets.icons.icon512, sizes: "512x512", type: "image/png" },
+      {
+        url: assets.icons.faviconDark,
+        media: "(prefers-color-scheme: light)",
+        type: "image/svg+xml",
+      },
+      {
+        url: assets.icons.faviconLight,
+        media: "(prefers-color-scheme: dark)",
+        type: "image/svg+xml",
+      },
     ],
     apple: [{ url: assets.icons.appleTouch, sizes: "180x180", type: "image/png" }],
   },

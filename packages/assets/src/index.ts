@@ -14,6 +14,8 @@ export const assets = {
   },
   icons: {
     appleTouch: assetPath("/logo/apple-touch-icon.png"),
+    faviconDark: assetPath("/logo/favicon-dark.svg"),
+    faviconLight: assetPath("/logo/favicon-light.svg"),
     favicon16: assetPath("/logo/favicon-16x16.png"),
     favicon32: assetPath("/logo/favicon-32x32.png"),
     icon192: assetPath("/logo/icon-192.png"),
