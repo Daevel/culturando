@@ -1,7 +1,8 @@
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
+import { getUserProfile } from "@/features/profile/actions/profile.repository";
 import { SettingsPageContent } from "@/features/settings/components/SettingsPageContent";
 
 export default async function DashboardSettingsPage() {
@@ -11,5 +12,11 @@ export default async function DashboardSettingsPage() {
     redirect(routes.login);
   }
 
-  return <SettingsPageContent />;
+  const profile = await getUserProfile(session.user.id);
+
+  if (!profile) {
+    notFound();
+  }
+
+  return <SettingsPageContent isProfilePublic={profile.isProfilePublic} />;
 }

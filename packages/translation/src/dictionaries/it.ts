@@ -323,6 +323,12 @@ export const it = {
       toastTitle: "Lingua aggiornata",
       toastDescription: "La preferenza è stata salvata su questo dispositivo.",
     },
+    profileVisibility: {
+      toastTitle: "Visibilità profilo aggiornata",
+      toastDescription: "La preferenza è stata salvata nel tuo account.",
+      toastErrorTitle: "Impossibile aggiornare la visibilità",
+      toastErrorDescription: "Riprova tra qualche istante.",
+    },
   },
   books: {
     catalog: {
@@ -405,6 +411,31 @@ export const it = {
       backToCatalogLabel: "Catalogo",
       formTitle: "Dati principali",
       formDescription: "Compila una scheda libro salvata nel database PostgreSQL locale.",
+      wizard: {
+        progressLabel: "Avanzamento inserimento libro",
+        stepLabel: "Step",
+        ofLabel: "di",
+        previousLabel: "Indietro",
+        nextLabel: "Avanti",
+        steps: {
+          essentials: {
+            title: "Dati essenziali",
+            description: "Titolo, autore e ISBN se disponibile.",
+          },
+          assist: {
+            title: "Parti da un'immagine",
+            description: "Carica una foto e lascia che Culturando compili la scheda per te.",
+          },
+          sharing: {
+            title: "Condivisione",
+            description: "Disponibilita, visibilita, condizione e posizione.",
+          },
+          images: {
+            title: "Immagini",
+            description: "Copertina, immagini aggiuntive e conferma finale.",
+          },
+        },
+      },
       locationTitle: "Indirizzo del libro",
       locationDescription:
         "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",

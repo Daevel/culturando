@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,8 +45,15 @@ export function NearbySearchPage({
   geocodingFailed = false,
 }: NearbySearchPageProps) {
   const t = useTranslation();
+  const [radiusValue, setRadiusValue] = useState(radiusKm.toString());
   const mapPoints = origin ? getMapPoints(origin, books, t("nearby.search.originLabel")) : [];
   const hasSearched = query.length > 0;
+  const radiusOptions = [
+    { value: "5", label: t("nearby.search.radius5Label") },
+    { value: "10", label: t("nearby.search.radius10Label") },
+    { value: "25", label: t("nearby.search.radius25Label") },
+    { value: "50", label: t("nearby.search.radius50Label") },
+  ];
 
   return (
     <PageShell>
@@ -81,17 +90,13 @@ export function NearbySearchPage({
               </div>
               <div className="space-y-2">
                 <Label htmlFor="nearby-radius">{t("nearby.search.radiusLabel")}</Label>
-                <select
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  defaultValue={radiusKm.toString()}
+                <DropdownSelect
                   id="nearby-radius"
                   name="radius"
-                >
-                  <option value="5">{t("nearby.search.radius5Label")}</option>
-                  <option value="10">{t("nearby.search.radius10Label")}</option>
-                  <option value="25">{t("nearby.search.radius25Label")}</option>
-                  <option value="50">{t("nearby.search.radius50Label")}</option>
-                </select>
+                  onValueChange={setRadiusValue}
+                  options={radiusOptions}
+                  value={radiusValue}
+                />
               </div>
               <Button type="submit">{t("nearby.search.submitLabel")}</Button>
             </form>

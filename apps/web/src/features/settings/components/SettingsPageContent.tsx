@@ -2,10 +2,11 @@
 
 import type { Locale } from "@culturando/translation";
 import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 import { useLocale } from "@/components/LocaleProvider";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { DropdownSelect } from "@/components/ui/dropdown-select";
 import {
   PageContainer,
   PageDescription,
@@ -15,20 +16,27 @@ import {
   PageShell,
   PageTitle,
 } from "@/components/ui/page";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/hooks/useTranslation";
+import { updateProfileVisibilityAction } from "../actions/update-profile-visibility.action";
 
 const localeOptions = [
   { label: "Italiano", value: "it" },
   { label: "English", value: "en" },
-] satisfies Array<{ label: string; value: Locale }>;
+] as const satisfies ReadonlyArray<{ label: string; value: Locale }>;
 
-export function SettingsPageContent() {
+type SettingsPageContentProps = {
+  isProfilePublic: boolean;
+};
+
+export function SettingsPageContent({ isProfilePublic }: SettingsPageContentProps) {
   const t = useTranslation();
   const router = useRouter();
   const { locale, setLocale } = useLocale();
   const { showToast } = useToast();
+  const [profileVisible, setProfileVisible] = useState(isProfilePublic);
+  const [isUpdatingVisibility, startVisibilityUpdate] = useTransition();
 
   function updateLocale(nextLocale: Locale) {
     if (nextLocale === locale) {
@@ -44,9 +52,35 @@ export function SettingsPageContent() {
     router.refresh();
   }
 
+  function updateProfileVisibility(nextProfileVisible: boolean) {
+    const previousProfileVisible = profileVisible;
+
+    setProfileVisible(nextProfileVisible);
+    startVisibilityUpdate(() => {
+      void updateProfileVisibilityAction(nextProfileVisible).then((result) => {
+        if (!result.success) {
+          setProfileVisible(previousProfileVisible);
+          showToast({
+            title: t("settings.profileVisibility.toastErrorTitle"),
+            description: t("settings.profileVisibility.toastErrorDescription"),
+            variant: "destructive",
+          });
+          return;
+        }
+
+        showToast({
+          title: t("settings.profileVisibility.toastTitle"),
+          description: t("settings.profileVisibility.toastDescription"),
+          variant: "success",
+        });
+        router.refresh();
+      });
+    });
+  }
+
   return (
     <PageShell>
-      <PageContainer size="sm">
+      <PageContainer size="xl">
         <PageHeader>
           <PageHeaderContent>
             <PageEyebrow>{t("settings.eyebrow")}</PageEyebrow>
@@ -56,32 +90,47 @@ export function SettingsPageContent() {
         </PageHeader>
 
         <Card>
-          <CardHeader>
-            <CardTitle>{t("settings.language.title")}</CardTitle>
-            <CardDescription>{t("settings.language.description")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup
-              className="grid gap-3 sm:grid-cols-2"
-              onValueChange={updateLocale}
-              value={locale}
-            >
-              {localeOptions.map((option) => (
-                <label
-                  className="flex cursor-pointer items-center gap-3 rounded-lg border bg-background p-4 text-sm font-medium transition hover:bg-muted has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/10"
-                  htmlFor={`locale-${option.value}`}
-                  key={option.value}
+          <CardContent className="p-0">
+            <div className="grid gap-4 border-b p-4 sm:grid-cols-[20rem_minmax(0,1fr)] sm:items-center sm:p-6">
+              <div className="min-w-0 space-y-1">
+                <h2 className="font-semibold leading-tight tracking-tight">
+                  {t("settings.language.title")}
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {t("settings.language.description")}
+                </p>
+              </div>
+              <div className="flex justify-end">
+                <DropdownSelect
+                  className="w-full sm:w-44"
+                  id="settings-language"
+                  onValueChange={updateLocale}
+                  options={localeOptions}
+                  value={locale}
+                />
+              </div>
+            </div>
+            <div className="grid gap-4 p-4 sm:grid-cols-[20rem_minmax(0,1fr)] sm:items-center sm:p-6">
+              <div className="min-w-0 space-y-1">
+                <h2
+                  className="font-semibold leading-tight tracking-tight"
+                  id="settings-profile-visibility-title"
                 >
-                  <RadioGroupItem id={`locale-${option.value}`} value={option.value} />
-                  <span>{option.label}</span>
-                </label>
-              ))}
-            </RadioGroup>
-
-            <div className="mt-6 flex justify-end">
-              <Button onClick={() => router.back()} type="button" variant="outline">
-                {t("settings.backLabel")}
-              </Button>
+                  {t("profile.form.fields.isProfilePublic.label")}
+                </h2>
+                <p className="text-sm leading-6 text-muted-foreground">
+                  {t("profile.form.fields.isProfilePublic.description")}
+                </p>
+              </div>
+              <div className="flex justify-end">
+                <Switch
+                  aria-labelledby="settings-profile-visibility-title"
+                  checked={profileVisible}
+                  disabled={isUpdatingVisibility}
+                  id="settings-profile-visibility"
+                  onCheckedChange={updateProfileVisibility}
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

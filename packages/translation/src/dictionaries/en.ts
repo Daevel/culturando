@@ -320,6 +320,12 @@ export const en = {
       toastTitle: "Language updated",
       toastDescription: "Your preference has been saved on this device.",
     },
+    profileVisibility: {
+      toastTitle: "Profile visibility updated",
+      toastDescription: "Your preference has been saved to your account.",
+      toastErrorTitle: "Unable to update visibility",
+      toastErrorDescription: "Please try again in a moment.",
+    },
   },
   books: {
     catalog: {
@@ -401,6 +407,31 @@ export const en = {
       backToCatalogLabel: "Catalog",
       formTitle: "Main details",
       formDescription: "Fill in a book record saved to the local PostgreSQL database.",
+      wizard: {
+        progressLabel: "Book entry progress",
+        stepLabel: "Step",
+        ofLabel: "of",
+        previousLabel: "Back",
+        nextLabel: "Next",
+        steps: {
+          essentials: {
+            title: "Essential details",
+            description: "Title, author and ISBN if available.",
+          },
+          assist: {
+            title: "Start from an image",
+            description: "Upload a photo and let Culturando fill in the record for you.",
+          },
+          sharing: {
+            title: "Sharing",
+            description: "Availability, visibility, condition and location.",
+          },
+          images: {
+            title: "Images",
+            description: "Cover, additional images and final confirmation.",
+          },
+        },
+      },
       locationTitle: "Book address",
       locationDescription:
         "Enter a readable address: later it will be geocoded automatically and shown only approximately.",

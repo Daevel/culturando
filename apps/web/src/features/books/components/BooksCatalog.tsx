@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useDeferredValue, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -27,6 +28,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { BookCoverSkeletonGrid } from "@/components/ui/skeleton";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
 import { booksMock } from "../mocks/books.mock";
@@ -34,9 +36,10 @@ import { BookGrid } from "./BookGrid";
 
 type BooksCatalogProps = {
   books?: Book[];
+  isLoadingResults?: boolean;
 };
 
-export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
+export function BooksCatalog({ books = booksMock, isLoadingResults = false }: BooksCatalogProps) {
   const t = useTranslation();
   const [query, setQuery] = useState("");
   const [availability, setAvailability] = useState("all");
@@ -74,6 +77,23 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
     safeCurrentPage * pageSize,
   );
   const pageItems = getPaginationItems(safeCurrentPage, totalPages);
+  const availabilityOptions = [
+    { value: "all", label: t("books.catalog.allAvailabilitiesLabel") },
+    { value: "available", label: t("books.availability.available") },
+    { value: "consultation_only", label: t("books.availability.consultationOnly") },
+    { value: "loanable", label: t("books.availability.loanable") },
+    { value: "unavailable", label: t("books.availability.unavailable") },
+  ];
+  const visibilityOptions = [
+    { value: "all", label: t("books.catalog.allVisibilitiesLabel") },
+    { value: "public", label: t("books.visibility.public") },
+    { value: "private", label: t("books.visibility.private") },
+  ];
+  const pageSizeOptions = [
+    { value: "10", label: "10" },
+    { value: "25", label: "25" },
+    { value: "50", label: "50" },
+  ];
 
   function resetPagination() {
     setCurrentPage(1);
@@ -116,62 +136,53 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
             <Label htmlFor="books-availability-filter">
               {t("books.catalog.availabilityFilterLabel")}
             </Label>
-            <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            <DropdownSelect
               id="books-availability-filter"
-              onChange={(event) => {
-                setAvailability(event.target.value);
+              onValueChange={(nextAvailability) => {
+                setAvailability(nextAvailability);
                 resetPagination();
               }}
+              options={availabilityOptions}
               value={availability}
-            >
-              <option value="all">{t("books.catalog.allAvailabilitiesLabel")}</option>
-              <option value="available">{t("books.availability.available")}</option>
-              <option value="consultation_only">{t("books.availability.consultationOnly")}</option>
-              <option value="loanable">{t("books.availability.loanable")}</option>
-              <option value="unavailable">{t("books.availability.unavailable")}</option>
-            </select>
+            />
           </div>
           <div className="space-y-2">
             <Label htmlFor="books-visibility-filter">
               {t("books.catalog.visibilityFilterLabel")}
             </Label>
-            <select
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            <DropdownSelect
               id="books-visibility-filter"
-              onChange={(event) => {
-                setVisibility(event.target.value);
+              onValueChange={(nextVisibility) => {
+                setVisibility(nextVisibility);
                 resetPagination();
               }}
+              options={visibilityOptions}
               value={visibility}
-            >
-              <option value="all">{t("books.catalog.allVisibilitiesLabel")}</option>
-              <option value="public">{t("books.visibility.public")}</option>
-              <option value="private">{t("books.visibility.private")}</option>
-            </select>
+            />
           </div>
         </section>
 
         <div className="flex flex-col gap-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>
-            {filteredBooks.length} {t("books.catalog.resultsLabel")}
-          </p>
+          {isLoadingResults ? (
+            <span />
+          ) : (
+            <p>
+              {filteredBooks.length} {t("books.catalog.resultsLabel")}
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-3">
             <label className="flex items-center gap-2" htmlFor="books-page-size">
               {t("books.catalog.pageSizeLabel")}
-              <select
-                className="h-9 rounded-md border border-input bg-background px-2 text-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              <DropdownSelect
+                className="h-9 w-20 px-3"
                 id="books-page-size"
-                onChange={(event) => {
-                  setPageSize(Number(event.target.value));
+                onValueChange={(nextPageSize) => {
+                  setPageSize(Number(nextPageSize));
                   resetPagination();
                 }}
-                value={pageSize}
-              >
-                <option value={10}>10</option>
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-              </select>
+                options={pageSizeOptions}
+                value={pageSize.toString()}
+              />
             </label>
             {(query || availability !== "all" || visibility !== "all") && (
               <Button
@@ -190,41 +201,51 @@ export function BooksCatalog({ books = booksMock }: BooksCatalogProps) {
           </div>
         </div>
 
-        <BookGrid books={paginatedBooks} />
+        <div className={!isLoadingResults && totalPages > 1 ? "pb-24" : undefined}>
+          {isLoadingResults ? (
+            <BookCoverSkeletonGrid columns={{ base: 1, md: 2, xl: 3 }} rows={2} />
+          ) : (
+            <BookGrid books={paginatedBooks} />
+          )}
+        </div>
 
-        {totalPages > 1 ? (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  disabled={safeCurrentPage === 1}
-                  onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                />
-              </PaginationItem>
-              {pageItems.map((item) =>
-                typeof item === "string" ? (
-                  <PaginationItem key={item}>
-                    <PaginationEllipsis />
+        {!isLoadingResults && totalPages > 1 ? (
+          <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-6xl justify-center rounded-lg border border-border/70 bg-background/88 px-3 py-3 shadow-xl shadow-primary/5 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+            <div className="max-w-full overflow-x-auto">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      disabled={safeCurrentPage === 1}
+                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    />
                   </PaginationItem>
-                ) : (
-                  <PaginationItem key={item}>
-                    <PaginationButton
-                      isActive={item === safeCurrentPage}
-                      onClick={() => setCurrentPage(item)}
-                    >
-                      {item}
-                    </PaginationButton>
+                  {pageItems.map((item) =>
+                    typeof item === "string" ? (
+                      <PaginationItem key={item}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={item}>
+                        <PaginationButton
+                          isActive={item === safeCurrentPage}
+                          onClick={() => setCurrentPage(item)}
+                        >
+                          {item}
+                        </PaginationButton>
+                      </PaginationItem>
+                    ),
+                  )}
+                  <PaginationItem>
+                    <PaginationNext
+                      disabled={safeCurrentPage === totalPages}
+                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    />
                   </PaginationItem>
-                ),
-              )}
-              <PaginationItem>
-                <PaginationNext
-                  disabled={safeCurrentPage === totalPages}
-                  onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          </div>
         ) : null}
       </PageContainer>
     </PageShell>

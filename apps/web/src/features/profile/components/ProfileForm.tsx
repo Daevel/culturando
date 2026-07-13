@@ -21,7 +21,6 @@ import {
   PageTitle,
 } from "@/components/ui/page";
 import { Spinner } from "@/components/ui/spinner";
-import { Switch } from "@/components/ui/switch";
 import { useTranslation } from "@/hooks/useTranslation";
 import { checkProfileNicknameAvailabilityAction } from "../actions/check-profile-nickname.action";
 import {
@@ -339,22 +338,11 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                 ) : null}
               </Field>
 
-              <div className="flex items-center justify-between gap-4 rounded-lg border bg-muted/30 p-4">
-                <div className="space-y-1">
-                  <Label className="block text-sm font-medium" htmlFor="isProfilePublic">
-                    {t("profile.form.fields.isProfilePublic.label")}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("profile.form.fields.isProfilePublic.description")}
-                  </p>
-                </div>
-                <Switch
-                  defaultChecked={profile.isProfilePublic}
-                  id="isProfilePublic"
-                  name="isProfilePublic"
-                  value="on"
-                />
-              </div>
+              <input
+                name="isProfilePublic"
+                type="hidden"
+                value={profile.isProfilePublic ? "on" : "off"}
+              />
 
               {state.messageKey ? (
                 <p

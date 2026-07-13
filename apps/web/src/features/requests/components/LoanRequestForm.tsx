@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Label } from "@/components/ui/label";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createLoanRequestAction } from "../actions/create-loan-request.action";
@@ -20,6 +21,7 @@ const initialState: LoanRequestFormState = {
 export function LoanRequestForm({ bookId }: LoanRequestFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
   const t = useTranslation();
+  const [requestType, setRequestType] = useState("consultation");
   const [state, formAction, isPending] = useActionState(
     createLoanRequestAction.bind(null, bookId),
     initialState,
@@ -28,8 +30,15 @@ export function LoanRequestForm({ bookId }: LoanRequestFormProps) {
   useEffect(() => {
     if (state.success) {
       formRef.current?.reset();
+      setRequestType("consultation");
     }
   }, [state.success]);
+
+  const requestTypeOptions = [
+    { value: "consultation", label: t("requests.type.consultation") },
+    { value: "loan", label: t("requests.type.loan") },
+    { value: "info", label: t("requests.type.info") },
+  ];
 
   return (
     <form ref={formRef} action={formAction} className="space-y-4 rounded-lg border bg-card p-4">
@@ -40,16 +49,13 @@ export function LoanRequestForm({ bookId }: LoanRequestFormProps) {
 
       <div className="space-y-2">
         <Label htmlFor="request-type">{t("requests.form.typeLabel")}</Label>
-        <select
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          defaultValue="consultation"
+        <DropdownSelect
           id="request-type"
           name="type"
-        >
-          <option value="consultation">{t("requests.type.consultation")}</option>
-          <option value="loan">{t("requests.type.loan")}</option>
-          <option value="info">{t("requests.type.info")}</option>
-        </select>
+          onValueChange={setRequestType}
+          options={requestTypeOptions}
+          value={requestType}
+        />
         {state.errors.type ? <p className="text-sm text-destructive">{state.errors.type}</p> : null}
       </div>
 

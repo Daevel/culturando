@@ -55,6 +55,13 @@ export async function updateUserProfile(
   });
 }
 
+export async function updateUserProfileVisibility(userId: string, isProfilePublic: boolean) {
+  return prisma.user.update({
+    where: { id: userId },
+    data: { isProfilePublic },
+  });
+}
+
 export async function getUserNicknameState(userId: string) {
   return prisma.user.findUnique({
     where: { id: userId },
