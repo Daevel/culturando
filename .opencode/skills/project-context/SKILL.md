@@ -161,6 +161,8 @@ apps/web/src/components/ui/
 ├── button.tsx
 ├── card.tsx
 ├── checkbox.tsx
+├── dropdown-menu.tsx
+├── dropdown-select.tsx
 ├── input.tsx
 ├── page.tsx
 ├── pagination.tsx
@@ -182,6 +184,7 @@ Corretto:
 - `Card`;
 - `Badge`;
 - `Checkbox`;
+- `DropdownMenu` e `DropdownSelect` per menu e dropdown accessibili basati su Radix/shadcn;
 - `PageShell`, `PageContainer`, `PageHeader`, `PageTitle` e primitive pagina responsive;
 - `Pagination` e primitive correlate per paginazione stile shadcn;
 - `Progress`;
@@ -532,7 +535,7 @@ Responsabilità attuali:
 
 - esporre `assets.favicon`;
 - esporre `assets.logo` con varianti full e mark per tema light/dark;
-- esporre `assets.icons` con favicon PNG, apple touch icon, manifest e icone PWA;
+- esporre `assets.icons` con favicon SVG light/dark basate su `prefers-color-scheme`, apple touch icon, manifest e icone PWA;
 - esporre immagini statiche, come `assets.images.loginPage`;
 - esporre builder URL per upload pubblici locali, come `assets.uploads.bookCover(fileName)`.
 
