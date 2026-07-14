@@ -496,7 +496,8 @@ Responsabilità attuali:
 - lookup metadati libro da ISBN o titolo tramite adapter Open Library;
 - estrazione ISBN da testo con validazione ISBN-10/ISBN-13 tramite check digit;
 - adapter OCR provider-agnostic `extractTextFromImage` per inviare immagini a un endpoint esterno;
-- supporto al flusso OCR Cloudflare tramite Worker configurabile dalla web app.
+- supporto al flusso OCR Cloudflare tramite Worker configurabile dalla web app;
+- file di riferimento versionato `packages/ai/cloudflare-ocr-worker.js`, da mantenere allineato al Worker Cloudflare deployato quando cambia il prompt o il contratto di risposta OCR.
 
 Responsabilità future:
 
@@ -895,12 +896,12 @@ Responsabilità attuali:
 - mostrare le richieste ricevute sui libri dell'utente;
 - permettere al proprietario di accettare o rifiutare richieste ancora `pending`;
 - mostrare statistiche d'uso personali sui libri dell'utente, incluse visualizzazioni, richieste ricevute, richieste in attesa e libri più visualizzati;
+- mostrare i libri pubblicati dall'utente nella dashboard usando le stesse card formato copertina del catalogo;
 - esporre accesso alla modifica del profilo;
 - esporre accesso alla dashboard amministrativa solo quando `session.user.role` è `admin`.
 
 Funzionalità previste:
 
-- visualizzazione libri pubblicati;
 - aggiunta nuovi libri;
 - accesso rapido alle funzioni di catalogazione.
 
@@ -1039,14 +1040,14 @@ Funzionalità attuali:
 - testi UI centralizzati in `@culturando/translation`;
 - dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
 - l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde;
-- upload copertina dal form nuovo libro tramite adapter `book-cover-storage`, con salvataggio su Cloudflare R2 quando le variabili `R2_*` sono configurate e fallback locale in `apps/web/public/uploads/book-covers`;
+- upload copertina e immagini fronte/retro dal form nuovo libro tramite adapter `book-cover-storage`, con salvataggio su Cloudflare R2 quando le variabili `R2_*` sono configurate e fallback locale in `apps/web/public/uploads/book-covers`; la prima immagine caricata resta l'immagine primaria;
 - supporto a URL immagini aggiuntive nel form libro;
 - ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e copia della cover trovata nello storage configurato quando possibile;
 - fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN;
 - URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage;
 - catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN o titolo OCR, con proposta dati e applicazione esplicita/manuale quando richiesta;
 - estrazione ISBN da testo incollato o testo OCR, tramite `@culturando/ai`;
-- upload immagine per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale.
+- upload di una o due immagini per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale; il primo step resta bloccato finché il servizio esterno non termina il riconoscimento.
 - conteggio visualizzazioni tramite `BookStats` quando viene aperta la pagina dettaglio `/books/[bookId]`;
 - visualizzazione del numero di viste nella scheda dettaglio libro.
 
@@ -1179,8 +1180,8 @@ Funzionalità attuali:
 - proposta di titolo, autori, editore, anno, lingua, categorie, descrizione e copertina;
 - applicazione selettiva al form tramite checkbox, con campi vuoti preselezionati e campi già compilati non selezionati di default; i dati recuperati dal flusso OCR vengono applicati automaticamente solo sui campi vuoti;
 - estrazione ISBN da testo incollato o testo OCR tramite funzione pura `extractIsbnFromText`;
-- upload immagine retro/copertina per OCR tramite `extractIsbnFromImageAction`;
-- fallback metadati da OCR: se la Worker restituisce `metadata` o JSON incorporato nel testo OCR, il form può proporre titolo/autori/categorie anche quando Open Library non trova l'ISBN;
+- upload di una o due immagini fronte/retro per OCR tramite `extractIsbnFromImageAction`, con merge del testo riconosciuto e dei metadati;
+- fallback metadati da OCR: se la Worker restituisce `metadata`, JSON incorporato nel testo OCR o un elenco testuale/Markdown con campi come ISBN, titolo, autore, editore, anno, lingua, categorie e descrizione, il form può proporre i dati anche quando Open Library non trova l'ISBN;
 - diagnostica OCR più specifica per timeout, errore HTTP Worker, rete, risposta vuota e formato non valido;
 - integrazione opzionale con Worker Cloudflare OCR usando `CLOUDFLARE_OCR_ENDPOINT` e `CLOUDFLARE_OCR_TOKEN`;
 - supporto a `CLOUDFLARE_OCR_MOCK_TEXT` per test locali senza Worker reale.
@@ -1188,7 +1189,7 @@ Funzionalità attuali:
 Pipeline prevista:
 
 ```txt
-upload immagine copertina/retro
+upload una o due immagini copertina/retro
 → OCR
 → estrazione testo
 → estrazione ISBN o inferenza titolo
