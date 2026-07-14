@@ -7,7 +7,7 @@ import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { validateBookForm } from "../schemas/book.schema";
 import type { BookFormField, BookFormState } from "../types/book-form.types";
-import { saveCoverImage, saveRemoteCoverImage } from "./book-cover-storage";
+import { saveCoverImages, saveRemoteCoverImage } from "./book-cover-storage";
 import { createStoredBook } from "./books.repository";
 
 const OPEN_LIBRARY_COVER_TIMEOUT_MS = 2500;
@@ -105,7 +105,7 @@ export async function createBookAction(
     };
   }
 
-  const uploadedCover = await saveCoverImage(formData.get("coverImage"));
+  const uploadedCover = await saveCoverImages(getUploadedCoverImages(formData));
 
   if (uploadedCover.error) {
     return {
@@ -125,7 +125,7 @@ export async function createBookAction(
   });
 
   const images = await getBookImages({
-    uploadedCoverUrl: uploadedCover.url,
+    uploadedCoverUrls: uploadedCover.urls,
     imageUrls,
     externalCoverUrl,
     isbn: bookData.isbn,
@@ -149,6 +149,7 @@ export async function createBookAction(
     images,
   });
   revalidatePath(routes.books);
+  revalidatePath(routes.dashboard);
 
   return {
     success: true,
@@ -158,21 +159,21 @@ export async function createBookAction(
 }
 
 async function getBookImages({
-  uploadedCoverUrl,
+  uploadedCoverUrls,
   imageUrls,
   externalCoverUrl,
   isbn,
 }: {
-  uploadedCoverUrl: string | undefined;
+  uploadedCoverUrls: string[];
   imageUrls: string | undefined;
   externalCoverUrl: string | undefined;
   isbn: string | undefined;
 }) {
   const manualImageUrls = parseImageUrls(imageUrls);
 
-  if (uploadedCoverUrl) {
+  if (uploadedCoverUrls.length > 0) {
     return [
-      { url: uploadedCoverUrl, source: "user_upload" as const },
+      ...uploadedCoverUrls.map((url) => ({ url, source: "user_upload" as const })),
       ...manualImageUrls.map((url) => ({ url, source: "user_upload" as const })),
     ];
   }
@@ -198,6 +199,18 @@ async function getBookImages({
   const storedCover = await saveRemoteCoverImage(fallbackCoverUrl);
 
   return [{ url: storedCover.url ?? fallbackCoverUrl, source: "external_api" as const }];
+}
+
+function getUploadedCoverImages(formData: FormData) {
+  const coverImages = formData.getAll("coverImages");
+
+  if (coverImages.length > 0) {
+    return coverImages;
+  }
+
+  const legacyCoverImage = formData.get("coverImage");
+
+  return legacyCoverImage ? [legacyCoverImage] : [];
 }
 
 function normalizeOpenLibraryCoverUrl(value: string | undefined) {

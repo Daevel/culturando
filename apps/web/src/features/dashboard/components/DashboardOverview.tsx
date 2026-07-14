@@ -1,5 +1,6 @@
 "use client";
 
+import type { Book } from "@culturando/types";
 import { BookOpen, BookPlus, Inbox, ShieldCheck, UserRound } from "lucide-react";
 import Link from "next/link";
 import type { Session } from "next-auth";
@@ -22,6 +23,7 @@ import {
   PageTitle,
 } from "@/components/ui/page";
 import { routes } from "@/config/routes";
+import { BookCard } from "@/features/books/components/BookCard";
 import type { DashboardStats } from "@/features/dashboard/actions/dashboard-stats.repository";
 import type { ReceivedLoanRequest } from "@/features/requests/actions/loan-requests.repository";
 import { ReceivedLoanRequests } from "@/features/requests/components/ReceivedLoanRequests";
@@ -30,10 +32,16 @@ import { useTranslation } from "@/hooks/useTranslation";
 type DashboardOverviewProps = {
   receivedLoanRequests: ReceivedLoanRequest[];
   stats: DashboardStats | null;
+  userBooks: Book[];
   user: NonNullable<Session["user"]>;
 };
 
-export function DashboardOverview({ receivedLoanRequests, stats, user }: DashboardOverviewProps) {
+export function DashboardOverview({
+  receivedLoanRequests,
+  stats,
+  userBooks,
+  user,
+}: DashboardOverviewProps) {
   const t = useTranslation();
   const displayName = user.nickname ?? user.name ?? user.email ?? t("dashboard.userFallback");
   const welcomeTitleKey = getWelcomeTitleKey(user.salutationPreference);
@@ -200,6 +208,34 @@ export function DashboardOverview({ receivedLoanRequests, stats, user }: Dashboa
             <ReceivedLoanRequests requests={receivedLoanRequests} />
           </div>
         </div>
+
+        <section className="mt-6 space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-1">
+              <h2 className="font-serif text-2xl font-semibold tracking-tight">
+                {t("dashboard.userBooks.title")}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t("dashboard.userBooks.description")}
+              </p>
+            </div>
+            <Button asChild variant="outline">
+              <Link href={routes.newBook}>{t("dashboard.userBooks.newBookLabel")}</Link>
+            </Button>
+          </div>
+
+          {userBooks.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {userBooks.map((book) => (
+                <BookCard book={book} key={book.id} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-xl border border-dashed bg-card px-6 py-12 text-center text-muted-foreground">
+              {t("dashboard.userBooks.emptyState")}
+            </div>
+          )}
+        </section>
       </PageContainer>
     </PageShell>
   );

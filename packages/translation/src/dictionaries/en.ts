@@ -203,6 +203,12 @@ export const en = {
       topBooksTitle: "Most viewed books",
       emptyTopBooks: "There are no books with statistics to show yet.",
     },
+    userBooks: {
+      title: "Your published books",
+      description: "The book records you uploaded to Culturando, using the same cover format as the catalog.",
+      newBookLabel: "Add book",
+      emptyState: "You have not published any books yet. Add the first volume to your library.",
+    },
   },
   admin: {
     eyebrow: "Administration",
@@ -405,18 +411,19 @@ export const en = {
         "Fill in a real book record: it will be associated with your account and saved to the local database.",
       backToDashboardLabel: "Dashboard",
       backToCatalogLabel: "Catalog",
-      formTitle: "Main details",
-      formDescription: "Fill in a book record saved to the local PostgreSQL database.",
+      formTitle: "Add a book",
+      formDescription: "Upload a photo: Culturando tries to fill in the record for you.",
       wizard: {
         progressLabel: "Book entry progress",
         stepLabel: "Step",
         ofLabel: "of",
         previousLabel: "Back",
         nextLabel: "Next",
+        waitForCatalogingLabel: "Wait for recognition...",
         steps: {
           essentials: {
-            title: "Essential details",
-            description: "Title, author and ISBN if available.",
+            title: "Review details",
+            description: "Check or complete title, author and ISBN.",
           },
           assist: {
             title: "Start from an image",
@@ -437,13 +444,13 @@ export const en = {
         "Enter a readable address: later it will be geocoded automatically and shown only approximately.",
       imagesTitle: "Cover and images",
       imagesDescription:
-        "Upload a cover from your device, add external URLs or let Culturando search for one by ISBN.",
+        "Upload front and back from your device, add external URLs or let Culturando search for one by ISBN.",
       imagesHelpText:
         "The uploaded cover becomes the main image. If you do not add images and provide an ISBN, the system tries Open Library as a fallback.",
-      catalogingPanelTitle: "Guided cataloging",
+      catalogingPanelTitle: "Start from the book image",
       catalogingPanelDescription:
-        "Start from a photo, extracted text or an ISBN: Culturando helps recognize the book and suggests data to apply only after confirmation.",
-      catalogingStepImageLabel: "1. Image",
+        "Upload one or two photos, for example front and back cover: the search starts automatically. If no reliable data is found, continue and fill in the record manually.",
+      catalogingStepImageLabel: "Image",
       catalogingStepTextLabel: "2. Text or ISBN",
       catalogingStepMetadataLabel: "3. Book data",
       isbnExtractionTitle: "ISBN extraction from text",
@@ -453,15 +460,17 @@ export const en = {
       isbnExtractionLabel: "Extract ISBN",
       isbnExtractionFoundMessage: "ISBN recognized and inserted into the form.",
       isbnExtractionNotFoundMessage: "No valid ISBN was recognized in the text.",
-      ocrLookupTitle: "OCR from image",
+      ocrLookupTitle: "Upload the book photo",
       ocrLookupDescription:
-        "Upload a photo of the back cover or cover: Culturando tries to read the title, ISBN and other useful data to fill in the form.",
+        "As soon as you select the images, Culturando looks for a valid ISBN. If it cannot find one, it tries to recover the title and other data from the recognized text.",
+      selectedImagesLabel: "Selected images: {count}",
       ocrLookupLabel: "Read image",
       ocrLookupPendingLabel: "Reading image...",
-      ocrLookupFoundMessage: "Data recognized from the image and inserted into the form.",
+      ocrLookupFoundMessage: "Search complete. Recognized data was inserted into empty fields.",
       ocrLookupEmptyResponseMessage: "OCR responded, but did not return readable text.",
       ocrLookupHttpErrorMessage: "The OCR Worker returned an error. Try again shortly.",
-      ocrLookupNotFoundMessage: "Text was read, but no useful title or ISBN was recognized.",
+      ocrLookupNotFoundMessage:
+        "We could not recover reliable data. You can continue and fill in the record manually.",
       ocrLookupMissingImageMessage: "Upload an image before starting OCR.",
       ocrLookupNetworkErrorMessage: "The OCR Worker could not be reached.",
       ocrLookupNotConfiguredMessage:
@@ -482,13 +491,16 @@ export const en = {
       metadataLookupNotFoundMessage: "No data found for this ISBN.",
       metadataLookupErrorMessage: "The book data lookup could not be completed.",
       metadataLookupMissingIsbnMessage: "Enter an ISBN before searching for book data.",
-      metadataPreviewTitle: "Fields that will be updated",
+      metadataPreviewTitle: "Recovered data",
       metadataSourceLabel: "Source:",
       metadataSourceOpenLibrary: "Open Library",
       metadataSourceOcr: "Image OCR",
       metadataCoverAvailableLabel: "Cover available",
       metadataOverwriteWarningLabel: "Current value",
-      metadataApplyLabel: "Apply to form",
+      metadataApplyLabel: "Apply again to form",
+      catalogingFallbackTitle: "If we cannot find the book",
+      catalogingFallbackDescription:
+        "No blocker: the image stays ready as the cover and in the next step you can enter missing data manually.",
       coverLookupTitle: "Automatic lookup",
       coverLookupDescription: "Use the entered ISBN to search for a cover on Open Library.",
       coverLookupLabel: "Search cover",
@@ -501,6 +513,9 @@ export const en = {
       submitLabel: "Save book",
       pendingLabel: "Saving...",
       successMessage: "Book saved successfully to the database.",
+      toast: {
+        successTitle: "Book uploaded successfully",
+      },
       unauthorizedMessage: "You must sign in to add a book.",
       genericErrorMessage: "The book could not be saved.",
       fields: {

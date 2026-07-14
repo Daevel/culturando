@@ -66,7 +66,7 @@ export function Toaster() {
   const { dismissToast, toasts } = useToast();
 
   return (
-    <div className="fixed right-4 top-4 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3">
+    <div className="fixed bottom-4 right-4 z-[100] flex w-[calc(100%-2rem)] max-w-sm flex-col gap-3">
       {toasts.map((toast) => (
         <div
           className={cn(

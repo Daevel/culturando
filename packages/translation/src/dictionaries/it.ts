@@ -206,6 +206,12 @@ export const it = {
       topBooksTitle: "Libri più visualizzati",
       emptyTopBooks: "Non ci sono ancora libri con statistiche da mostrare.",
     },
+    userBooks: {
+      title: "I tuoi libri pubblicati",
+      description: "Le schede libro che hai caricato su Culturando, nello stesso formato copertina del catalogo.",
+      newBookLabel: "Aggiungi libro",
+      emptyState: "Non hai ancora pubblicato libri. Aggiungi il primo volume alla tua biblioteca.",
+    },
   },
   admin: {
     eyebrow: "Amministrazione",
@@ -409,18 +415,19 @@ export const it = {
         "Compila una scheda libro reale: verrà associata al tuo account e salvata nel database locale.",
       backToDashboardLabel: "Dashboard",
       backToCatalogLabel: "Catalogo",
-      formTitle: "Dati principali",
-      formDescription: "Compila una scheda libro salvata nel database PostgreSQL locale.",
+      formTitle: "Aggiungi un libro",
+      formDescription: "Carica una foto: Culturando prova a compilare la scheda per te.",
       wizard: {
         progressLabel: "Avanzamento inserimento libro",
         stepLabel: "Step",
         ofLabel: "di",
         previousLabel: "Indietro",
         nextLabel: "Avanti",
+        waitForCatalogingLabel: "Attendi il riconoscimento...",
         steps: {
           essentials: {
-            title: "Dati essenziali",
-            description: "Titolo, autore e ISBN se disponibile.",
+            title: "Verifica dati",
+            description: "Controlla o completa titolo, autore e ISBN.",
           },
           assist: {
             title: "Parti da un'immagine",
@@ -441,13 +448,13 @@ export const it = {
         "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",
       imagesTitle: "Copertina e immagini",
       imagesDescription:
-        "Carica una copertina dal tuo dispositivo, aggiungi URL esterni o lascia che Culturando cerchi una copertina tramite ISBN.",
+        "Carica fronte e retro dal tuo dispositivo, aggiungi URL esterni o lascia che Culturando cerchi una copertina tramite ISBN.",
       imagesHelpText:
         "La copertina caricata diventa l'immagine principale. Se non carichi immagini e inserisci un ISBN, il sistema prova a usare Open Library come fallback.",
-      catalogingPanelTitle: "Catalogazione guidata",
+      catalogingPanelTitle: "Parti dall'immagine del libro",
       catalogingPanelDescription:
-        "Parti da una foto, da testo letto o da un ISBN: Culturando ti aiuta a riconoscere il libro e propone dati da applicare solo dopo conferma.",
-      catalogingStepImageLabel: "1. Immagine",
+        "Carica una o due foto, ad esempio fronte e retro: la ricerca parte automaticamente. Se non troviamo dati affidabili, prosegui e compila la scheda a mano.",
+      catalogingStepImageLabel: "Immagine",
       catalogingStepTextLabel: "2. Testo o ISBN",
       catalogingStepMetadataLabel: "3. Dati libro",
       isbnExtractionTitle: "Estrazione ISBN da testo",
@@ -457,15 +464,17 @@ export const it = {
       isbnExtractionLabel: "Estrai ISBN",
       isbnExtractionFoundMessage: "ISBN riconosciuto e inserito nel form.",
       isbnExtractionNotFoundMessage: "Nessun ISBN valido riconosciuto nel testo.",
-      ocrLookupTitle: "OCR da immagine",
+      ocrLookupTitle: "Carica la foto del libro",
       ocrLookupDescription:
-        "Carica una foto del retro o della copertina: Culturando prova a leggere titolo, ISBN e altri dati utili per compilare il form.",
+        "Appena selezioni le immagini, Culturando cerca un ISBN valido. Se non lo trova, prova a recuperare titolo e altri dati dal testo letto.",
+      selectedImagesLabel: "Immagini selezionate: {count}",
       ocrLookupLabel: "Leggi immagine",
       ocrLookupPendingLabel: "Lettura immagine...",
-      ocrLookupFoundMessage: "Dati riconosciuti dall'immagine e inseriti nel form.",
+      ocrLookupFoundMessage: "Ricerca completata. I dati riconosciuti sono stati inseriti nei campi vuoti.",
       ocrLookupEmptyResponseMessage: "L'OCR ha risposto, ma non ha restituito testo leggibile.",
       ocrLookupHttpErrorMessage: "La Worker OCR ha restituito un errore. Riprova tra poco.",
-      ocrLookupNotFoundMessage: "Testo letto, ma nessun titolo o ISBN utile riconosciuto.",
+      ocrLookupNotFoundMessage:
+        "Non siamo riusciti a recuperare dati affidabili. Puoi continuare e compilare la scheda manualmente.",
       ocrLookupMissingImageMessage: "Carica un'immagine prima di avviare l'OCR.",
       ocrLookupNetworkErrorMessage: "Non è stato possibile raggiungere la Worker OCR.",
       ocrLookupNotConfiguredMessage:
@@ -485,13 +494,16 @@ export const it = {
       metadataLookupNotFoundMessage: "Nessun dato trovato per questo ISBN.",
       metadataLookupErrorMessage: "Non è stato possibile cercare i dati del libro.",
       metadataLookupMissingIsbnMessage: "Inserisci un ISBN prima di cercare i dati del libro.",
-      metadataPreviewTitle: "Campi che verranno aggiornati",
+      metadataPreviewTitle: "Dati recuperati",
       metadataSourceLabel: "Fonte:",
       metadataSourceOpenLibrary: "Open Library",
       metadataSourceOcr: "OCR immagine",
       metadataCoverAvailableLabel: "Copertina disponibile",
       metadataOverwriteWarningLabel: "Valore attuale",
-      metadataApplyLabel: "Applica al form",
+      metadataApplyLabel: "Applica di nuovo al form",
+      catalogingFallbackTitle: "Se non troviamo il libro",
+      catalogingFallbackDescription:
+        "Nessun blocco: l'immagine resta pronta come copertina e nel passo successivo puoi inserire i dati mancanti a mano.",
       coverLookupTitle: "Ricerca automatica",
       coverLookupDescription: "Usa l'ISBN inserito per cercare una copertina su Open Library.",
       coverLookupLabel: "Cerca copertina",
@@ -504,6 +516,9 @@ export const it = {
       submitLabel: "Salva libro",
       pendingLabel: "Salvataggio in corso...",
       successMessage: "Libro salvato correttamente nel database.",
+      toast: {
+        successTitle: "Libro caricato con successo",
+      },
       unauthorizedMessage: "Devi accedere per aggiungere un libro.",
       genericErrorMessage: "Non è stato possibile salvare il libro.",
       fields: {

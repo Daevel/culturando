@@ -17,6 +17,11 @@ type SaveCoverImageResult = {
   error: string | undefined;
 };
 
+type SaveCoverImagesResult = {
+  urls: string[];
+  error: string | undefined;
+};
+
 type R2Config = {
   accountId: string;
   bucketName: string;
@@ -61,6 +66,30 @@ export async function saveCoverImage(
     extension,
     fileBuffer,
   });
+}
+
+export async function saveCoverImages(values: FormDataEntryValue[]): Promise<SaveCoverImagesResult> {
+  const urls: string[] = [];
+
+  for (const value of values) {
+    const result = await saveCoverImage(value);
+
+    if (result.error) {
+      return {
+        urls: [],
+        error: result.error,
+      };
+    }
+
+    if (result.url) {
+      urls.push(result.url);
+    }
+  }
+
+  return {
+    urls,
+    error: undefined,
+  };
 }
 
 export async function saveRemoteCoverImage(url: string): Promise<SaveCoverImageResult> {

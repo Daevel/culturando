@@ -57,6 +57,12 @@ export async function getBooks(): Promise<Book[]> {
   return [...storedBooks.map(toBook), ...booksMock];
 }
 
+export async function getBooksByOwnerId(ownerId: string): Promise<Book[]> {
+  const storedBooks = await findStoredBooksByOwnerId(ownerId);
+
+  return storedBooks.map(toBook);
+}
+
 export async function getBookById(bookId: string): Promise<Book | null> {
   const mockBook = booksMock.find((book) => book.id === bookId);
 
@@ -310,6 +316,24 @@ function findStoredBooksByIds(bookIds: string[]) {
       },
       location: true,
       stats: true,
+    },
+  });
+}
+
+function findStoredBooksByOwnerId(ownerId: string) {
+  return prisma.book.findMany({
+    where: {
+      ownerId,
+    },
+    include: {
+      images: {
+        orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
+      },
+      location: true,
+      stats: true,
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
 }
