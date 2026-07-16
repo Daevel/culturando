@@ -94,7 +94,6 @@ export const en = {
         review: {
           nameLabel: "Name",
           emailLabel: "Email",
-          salutationPreferenceLabel: "Greeting",
           emptyValue: "Not filled in",
           notice: "The password is not shown for security reasons.",
         },
@@ -103,14 +102,6 @@ export const en = {
         name: {
           label: "Name",
           placeholder: "Luigi Avitabile",
-        },
-        salutationPreference: {
-          label: "How would you like to be greeted?",
-          options: {
-            masculine: "Welcome",
-            feminine: "Welcome",
-            neutral: "Welcome",
-          },
         },
         email: {
           label: "Email",
@@ -205,7 +196,8 @@ export const en = {
     },
     userBooks: {
       title: "Your published books",
-      description: "The book records you uploaded to Culturando, using the same cover format as the catalog.",
+      description:
+        "The book records you uploaded to Culturando, using the same cover format as the catalog.",
       newBookLabel: "Add book",
       emptyState: "You have not published any books yet. Add the first volume to your library.",
     },
@@ -360,6 +352,10 @@ export const en = {
       isbnLabel: "ISBN",
       detailLabel: "Details",
     },
+    imageCarousel: {
+      previousLabel: "Previous image",
+      nextLabel: "Next image",
+    },
     detail: {
       eyebrow: "Book record",
       backToCatalogLabel: "Back to catalog",
@@ -442,6 +438,9 @@ export const en = {
       locationTitle: "Book address",
       locationDescription:
         "Enter a readable address: later it will be geocoded automatically and shown only approximately.",
+      locationSearchingLabel: "Searching address...",
+      locationAutocompleteDescription:
+        "Select a suggestion to automatically fill city, province and region.",
       imagesTitle: "Cover and images",
       imagesDescription:
         "Upload front and back from your device, add external URLs or let Culturando search for one by ISBN.",
@@ -466,7 +465,7 @@ export const en = {
       selectedImagesLabel: "Selected images: {count}",
       ocrLookupLabel: "Read image",
       ocrLookupPendingLabel: "Reading image...",
-      ocrLookupFoundMessage: "Search complete. Recognized data was inserted into empty fields.",
+      ocrLookupFoundMessage: "Search complete. Recognized data was inserted into the form.",
       ocrLookupEmptyResponseMessage: "OCR responded, but did not return readable text.",
       ocrLookupHttpErrorMessage: "The OCR Worker returned an error. Try again shortly.",
       ocrLookupNotFoundMessage:
@@ -480,24 +479,15 @@ export const en = {
       ocrLookupTooLargeMessage: "Image too large. Use a file up to 6 MB.",
       ocrLookupUnsupportedTypeMessage: "Unsupported format. Use JPG, PNG or WebP.",
       ocrLookupErrorMessage: "The image could not be read.",
-      ocrTextPreviewLabel: "Text read from the image",
       metadataLookupTitle: "Assisted cataloging",
       metadataLookupDescription:
         "Use the ISBN to search for title, author and other metadata before filling in the record.",
       metadataLookupLabel: "Search book data",
       metadataLookupPendingLabel: "Searching data...",
-      metadataLookupFoundMessage:
-        "Data found. Review it and apply it to the form if it is correct.",
+      metadataLookupFoundMessage: "Data found and automatically inserted into the form.",
       metadataLookupNotFoundMessage: "No data found for this ISBN.",
       metadataLookupErrorMessage: "The book data lookup could not be completed.",
       metadataLookupMissingIsbnMessage: "Enter an ISBN before searching for book data.",
-      metadataPreviewTitle: "Recovered data",
-      metadataSourceLabel: "Source:",
-      metadataSourceOpenLibrary: "Open Library",
-      metadataSourceOcr: "Image OCR",
-      metadataCoverAvailableLabel: "Cover available",
-      metadataOverwriteWarningLabel: "Current value",
-      metadataApplyLabel: "Apply again to form",
       catalogingFallbackTitle: "If we cannot find the book",
       catalogingFallbackDescription:
         "No blocker: the image stays ready as the cover and in the next step you can enter missing data manually.",
@@ -510,6 +500,9 @@ export const en = {
       coverLookupErrorMessage: "The cover lookup could not be completed.",
       coverLookupMissingIsbnMessage: "Enter an ISBN before searching for a cover.",
       coverPreviewAlt: "Book cover preview",
+      fileUploadLabel: "Add images",
+      fileUploadDescription: "Choose one or more images from your device.",
+      fileUploadFromDeviceLabel: "Upload from device",
       submitLabel: "Save book",
       pendingLabel: "Saving...",
       successMessage: "Book saved successfully to the database.",

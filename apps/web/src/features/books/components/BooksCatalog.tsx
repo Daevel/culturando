@@ -210,7 +210,7 @@ export function BooksCatalog({ books = booksMock, isLoadingResults = false }: Bo
         </div>
 
         {!isLoadingResults && totalPages > 1 ? (
-          <div className="fixed inset-x-0 bottom-4 z-40 mx-auto flex w-[calc(100%-2rem)] max-w-6xl justify-center rounded-lg border border-border/70 bg-background/88 px-3 py-3 shadow-xl shadow-primary/5 backdrop-blur-xl supports-[backdrop-filter]:bg-background/70">
+          <div className="fixed bottom-4 left-1/2 z-40 flex w-max max-w-[calc(100%-2rem)] -translate-x-1/2 justify-center rounded-lg border border-border/70 bg-background/90 px-3 py-3 shadow-2xl shadow-black/25 backdrop-blur-xl supports-[backdrop-filter]:bg-background/75">
             <div className="max-w-full overflow-x-auto">
               <Pagination>
                 <PaginationContent>

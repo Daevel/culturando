@@ -34,6 +34,12 @@ export type BookStats = {
   viewCount: number;
 };
 
+export type BookOwner = {
+  email?: string;
+  name?: string;
+  nickname?: string;
+};
+
 export type Book = {
   id: string;
   ownerId: string;
@@ -48,6 +54,7 @@ export type Book = {
   availability: BookAvailability;
   visibility: BookVisibility;
   physicalCondition: BookPhysicalCondition;
+  owner?: BookOwner;
   location?: BookLocation;
   images: BookImage[];
   stats?: BookStats;

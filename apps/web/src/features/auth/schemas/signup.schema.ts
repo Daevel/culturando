@@ -6,9 +6,7 @@ export const salutationPreferences = ["masculine", "feminine", "neutral"] as con
 export const signupSchema = z
   .object({
     name: z.string().trim().min(1, "Il nome è obbligatorio."),
-    salutationPreference: z.enum(salutationPreferences, {
-      message: "Scegli come preferisci essere salutato/a.",
-    }),
+    salutationPreference: z.enum(salutationPreferences).default("neutral"),
     email: z.string().trim().min(1, "L'email è obbligatoria.").email("Inserisci un'email valida."),
     password: z
       .string()

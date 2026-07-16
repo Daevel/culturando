@@ -84,7 +84,7 @@ export function SettingsPageContent({ isProfilePublic }: SettingsPageContentProp
         <PageHeader>
           <PageHeaderContent>
             <PageEyebrow>{t("settings.eyebrow")}</PageEyebrow>
-            <PageTitle className="lg:text-4xl">{t("settings.title")}</PageTitle>
+            <PageTitle>{t("settings.title")}</PageTitle>
             <PageDescription>{t("settings.description")}</PageDescription>
           </PageHeaderContent>
         </PageHeader>

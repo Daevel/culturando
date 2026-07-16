@@ -94,7 +94,6 @@ export const it = {
         review: {
           nameLabel: "Nome",
           emailLabel: "Email",
-          salutationPreferenceLabel: "Saluto",
           emptyValue: "Non compilato",
           notice: "La password non viene mostrata per motivi di sicurezza.",
         },
@@ -103,14 +102,6 @@ export const it = {
         name: {
           label: "Nome",
           placeholder: "Luigi Avitabile",
-        },
-        salutationPreference: {
-          label: "Come preferisci essere salutato/a?",
-          options: {
-            masculine: "Benvenuto",
-            feminine: "Benvenuta",
-            neutral: "Benvenuto/a",
-          },
         },
         email: {
           label: "Email",
@@ -152,7 +143,7 @@ export const it = {
     welcomeTitle: {
       masculine: "Benvenuto",
       feminine: "Benvenuta",
-      neutral: "Benvenuto/a",
+      neutral: "Benvenuto",
     },
     description:
       "Gestisci il tuo profilo, prepara la pubblicazione dei tuoi libri e verifica lo stato della sessione.",
@@ -208,7 +199,8 @@ export const it = {
     },
     userBooks: {
       title: "I tuoi libri pubblicati",
-      description: "Le schede libro che hai caricato su Culturando, nello stesso formato copertina del catalogo.",
+      description:
+        "Le schede libro che hai caricato su Culturando, nello stesso formato copertina del catalogo.",
       newBookLabel: "Aggiungi libro",
       emptyState: "Non hai ancora pubblicato libri. Aggiungi il primo volume alla tua biblioteca.",
     },
@@ -363,6 +355,10 @@ export const it = {
       isbnLabel: "ISBN",
       detailLabel: "Dettaglio",
     },
+    imageCarousel: {
+      previousLabel: "Immagine precedente",
+      nextLabel: "Immagine successiva",
+    },
     detail: {
       eyebrow: "Scheda libro",
       backToCatalogLabel: "Torna al catalogo",
@@ -446,6 +442,9 @@ export const it = {
       locationTitle: "Indirizzo del libro",
       locationDescription:
         "Inserisci un indirizzo leggibile: in seguito verrà geocodificato automaticamente e mostrato solo in forma approssimata.",
+      locationSearchingLabel: "Ricerca indirizzo...",
+      locationAutocompleteDescription:
+        "Seleziona un suggerimento per compilare automaticamente città, provincia e regione.",
       imagesTitle: "Copertina e immagini",
       imagesDescription:
         "Carica fronte e retro dal tuo dispositivo, aggiungi URL esterni o lascia che Culturando cerchi una copertina tramite ISBN.",
@@ -470,7 +469,8 @@ export const it = {
       selectedImagesLabel: "Immagini selezionate: {count}",
       ocrLookupLabel: "Leggi immagine",
       ocrLookupPendingLabel: "Lettura immagine...",
-      ocrLookupFoundMessage: "Ricerca completata. I dati riconosciuti sono stati inseriti nei campi vuoti.",
+      ocrLookupFoundMessage:
+        "Ricerca completata. I dati riconosciuti sono stati inseriti nel form.",
       ocrLookupEmptyResponseMessage: "L'OCR ha risposto, ma non ha restituito testo leggibile.",
       ocrLookupHttpErrorMessage: "La Worker OCR ha restituito un errore. Riprova tra poco.",
       ocrLookupNotFoundMessage:
@@ -484,23 +484,15 @@ export const it = {
       ocrLookupTooLargeMessage: "Immagine troppo grande. Usa un file fino a 6 MB.",
       ocrLookupUnsupportedTypeMessage: "Formato non supportato. Usa JPG, PNG o WebP.",
       ocrLookupErrorMessage: "Non è stato possibile leggere l'immagine.",
-      ocrTextPreviewLabel: "Testo letto dall'immagine",
       metadataLookupTitle: "Catalogazione assistita",
       metadataLookupDescription:
         "Usa l'ISBN per cercare titolo, autore e altri metadati prima di compilare la scheda.",
       metadataLookupLabel: "Cerca dati libro",
       metadataLookupPendingLabel: "Ricerca dati...",
-      metadataLookupFoundMessage: "Dati trovati. Controllali e applicali al form se sono corretti.",
+      metadataLookupFoundMessage: "Dati trovati e inseriti automaticamente nel form.",
       metadataLookupNotFoundMessage: "Nessun dato trovato per questo ISBN.",
       metadataLookupErrorMessage: "Non è stato possibile cercare i dati del libro.",
       metadataLookupMissingIsbnMessage: "Inserisci un ISBN prima di cercare i dati del libro.",
-      metadataPreviewTitle: "Dati recuperati",
-      metadataSourceLabel: "Fonte:",
-      metadataSourceOpenLibrary: "Open Library",
-      metadataSourceOcr: "OCR immagine",
-      metadataCoverAvailableLabel: "Copertina disponibile",
-      metadataOverwriteWarningLabel: "Valore attuale",
-      metadataApplyLabel: "Applica di nuovo al form",
       catalogingFallbackTitle: "Se non troviamo il libro",
       catalogingFallbackDescription:
         "Nessun blocco: l'immagine resta pronta come copertina e nel passo successivo puoi inserire i dati mancanti a mano.",
@@ -513,6 +505,9 @@ export const it = {
       coverLookupErrorMessage: "Non è stato possibile cercare la copertina.",
       coverLookupMissingIsbnMessage: "Inserisci un ISBN prima di cercare la copertina.",
       coverPreviewAlt: "Anteprima copertina libro",
+      fileUploadLabel: "Aggiungi immagini",
+      fileUploadDescription: "Scegli una o più immagini dal dispositivo.",
+      fileUploadFromDeviceLabel: "Carica dal dispositivo",
       submitLabel: "Salva libro",
       pendingLabel: "Salvataggio in corso...",
       successMessage: "Libro salvato correttamente nel database.",

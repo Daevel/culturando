@@ -22,7 +22,7 @@ export type CreateStoredBookInput = {
   ownerId: string;
   book: {
     title: string;
-    author: string;
+    author?: string;
     isbn?: string;
     publisher?: string;
     publishedYear?: number;
@@ -63,6 +63,20 @@ export async function getBooksByOwnerId(ownerId: string): Promise<Book[]> {
   return storedBooks.map(toBook);
 }
 
+export async function hasStoredBookWithIsbn(ownerId: string, isbn: string): Promise<boolean> {
+  const books = await prisma.book.findMany({
+    where: {
+      ownerId,
+    },
+    select: {
+      isbn: true,
+    },
+  });
+  const normalizedIsbn = normalizeIsbn(isbn);
+
+  return books.some((book) => book.isbn && normalizeIsbn(book.isbn) === normalizedIsbn);
+}
+
 export async function getBookById(bookId: string): Promise<Book | null> {
   const mockBook = booksMock.find((book) => book.id === bookId);
 
@@ -79,6 +93,13 @@ export async function getBookById(bookId: string): Promise<Book | null> {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      owner: {
+        select: {
+          email: true,
+          name: true,
+          nickname: true,
+        },
+      },
       stats: true,
     },
   });
@@ -165,6 +186,7 @@ export async function createStoredBook(input: CreateStoredBookInput) {
   return prisma.book.create({
     data: {
       ...input.book,
+      author: input.book.author ?? "",
       ownerId: input.ownerId,
       location: {
         create: input.location,
@@ -295,6 +317,13 @@ function findStoredBooks() {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      owner: {
+        select: {
+          email: true,
+          name: true,
+          nickname: true,
+        },
+      },
       stats: true,
     },
     orderBy: {
@@ -315,6 +344,13 @@ function findStoredBooksByIds(bookIds: string[]) {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      owner: {
+        select: {
+          email: true,
+          name: true,
+          nickname: true,
+        },
+      },
       stats: true,
     },
   });
@@ -330,6 +366,13 @@ function findStoredBooksByOwnerId(ownerId: string) {
         orderBy: [{ isPrimary: "desc" }, { createdAt: "asc" }],
       },
       location: true,
+      owner: {
+        select: {
+          email: true,
+          name: true,
+          nickname: true,
+        },
+      },
       stats: true,
     },
     orderBy: {
@@ -353,6 +396,11 @@ function toBook(book: StoredBook): Book {
     availability: book.availability,
     visibility: book.visibility,
     physicalCondition: book.physicalCondition,
+    owner: {
+      email: book.owner.email,
+      name: book.owner.name ?? undefined,
+      nickname: book.owner.nickname ?? undefined,
+    },
     location: book.location
       ? {
           id: book.location.id,
@@ -405,4 +453,8 @@ function calculateDistanceKm(
 
 function toRadians(value: number) {
   return (value * Math.PI) / 180;
+}
+
+function normalizeIsbn(isbn: string) {
+  return isbn.replace(/[-\s]/g, "").trim();
 }

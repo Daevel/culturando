@@ -21,12 +21,12 @@ import {
   PageTitle,
 } from "@/components/ui/page";
 import { Spinner } from "@/components/ui/spinner";
-import { useTranslation } from "@/hooks/useTranslation";
-import { checkProfileNicknameAvailabilityAction } from "../actions/check-profile-nickname.action";
 import {
   type AddressSuggestion,
   searchAddressSuggestions,
-} from "../actions/search-address-suggestions.action";
+} from "@/features/location/actions/search-address-suggestions.action";
+import { useTranslation } from "@/hooks/useTranslation";
+import { checkProfileNicknameAvailabilityAction } from "../actions/check-profile-nickname.action";
 import { updateProfileAction } from "../actions/update-profile.action";
 import type { ProfileFormState } from "../types/profile-form.types";
 
@@ -135,7 +135,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
         <PageHeader>
           <PageHeaderContent>
             <PageEyebrow>{t("profile.eyebrow")}</PageEyebrow>
-            <PageTitle className="lg:text-4xl">{t("profile.title")}</PageTitle>
+            <PageTitle>{t("profile.title")}</PageTitle>
             <PageDescription>{t("profile.description")}</PageDescription>
           </PageHeaderContent>
         </PageHeader>

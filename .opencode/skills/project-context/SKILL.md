@@ -40,6 +40,7 @@ Stack principale:
 - TypeScript;
 - Tailwind CSS v3;
 - componenti UI ispirati a shadcn/ui;
+- `embla-carousel-react` per il primitivo UI Carousel in stile shadcn;
 - tema grafico generato tramite tweakcn;
 - Auth.js tramite `next-auth` beta;
 - Zod per validazione form;
@@ -160,6 +161,7 @@ apps/web/src/components/ui/
 ├── badge.tsx
 ├── button.tsx
 ├── card.tsx
+├── carousel.tsx
 ├── checkbox.tsx
 ├── dropdown-menu.tsx
 ├── dropdown-select.tsx
@@ -182,6 +184,7 @@ Corretto:
 - `Input`;
 - `Label`;
 - `Card`;
+- `Carousel`, basato su `embla-carousel-react`, per slider accessibili di immagini/contenuti;
 - `Badge`;
 - `Checkbox`;
 - `DropdownMenu` e `DropdownSelect` per menu e dropdown accessibili basati su Radix/shadcn;
@@ -250,6 +253,10 @@ apps/web/src/features/nearby/
 └── components/
     └── NearbySearchPage.tsx
 
+apps/web/src/features/location/
+└── actions/
+    └── search-address-suggestions.action.ts
+
 apps/web/src/features/requests/
 ├── actions/
 │   ├── create-loan-request.action.ts
@@ -269,11 +276,12 @@ apps/web/src/features/requests/
 Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
 I testi riutilizzabili non devono essere duplicati nelle feature: quando esiste una chiave, devono passare da `@culturando/translation` e dall'hook web `useTranslation`.
 
+La feature `location` contiene azioni web condivise per suggerimenti indirizzo/autocomplete basati su Nominatim/OpenStreetMap, riutilizzate da profilo e pubblicazione libro senza import trasversali tra feature.
+
 In futuro saranno previste feature come:
 
 ```txt
 features/cataloging/
-features/profile/
 ```
 
 Ogni feature deve contenere solo il codice specifico della funzionalità.
@@ -455,7 +463,7 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, preferenza di saluto, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `User.salutationPreference` salva la preferenza grammaticale di saluto (`masculine`, `feminine`, `neutral`) usata dalla dashboard per mostrare `Benvenuto`, `Benvenuta` o `Benvenuto/a` senza raccogliere dati sensibili non necessari. `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
+Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, preferenza di saluto, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `User.salutationPreference` salva la preferenza grammaticale di saluto (`masculine`, `feminine`, `neutral`) usata dalla dashboard per mostrare `Benvenuto`, `Benvenuta` o `Benvenuto` senza raccogliere dati sensibili non necessari. `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
 
 ### 6.4 `packages/geo`
 

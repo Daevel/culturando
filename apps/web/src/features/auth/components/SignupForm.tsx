@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageDescription, PageTitle } from "@/components/ui/page";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 import { useToast } from "@/components/ui/toast";
 import { Wizard, type WizardStep } from "@/components/ui/wizard";
@@ -26,17 +25,14 @@ type SignupFormInput = z.input<typeof signupSchema>;
 type SignupFormValues = z.output<typeof signupSchema>;
 type SignupField = "name" | "salutationPreference" | "email" | "password" | "confirmPassword";
 type EmailAvailabilityStatus = "idle" | "checking" | "available" | "unavailable";
+const defaultSalutationPreference = "neutral" satisfies SignupFormValues["salutationPreference"];
 
 const initialState: AuthFormState<SignupField> = {
   success: false,
   errors: {},
 };
 
-const stepFields: SignupField[][] = [
-  ["name", "salutationPreference", "email"],
-  ["password", "confirmPassword"],
-  [],
-];
+const stepFields: SignupField[][] = [["name", "email"], ["password", "confirmPassword"], []];
 
 export function SignupForm() {
   const [state, formAction, isPending] = useActionState(signupAction, initialState);
@@ -46,7 +42,6 @@ export function SignupForm() {
     clearErrors,
     control,
     setError,
-    setValue,
     trigger,
     watch,
     formState: { errors },
@@ -54,7 +49,7 @@ export function SignupForm() {
     resolver: zodResolver(signupSchema),
     defaultValues: {
       name: "",
-      salutationPreference: "neutral",
+      salutationPreference: defaultSalutationPreference,
       email: "",
       password: "",
       confirmPassword: "",
@@ -85,7 +80,6 @@ export function SignupForm() {
     },
   ];
   const nameValue = watch("name");
-  const salutationPreferenceValue = watch("salutationPreference");
   const emailValue = useWatch({
     control,
     name: "email",
@@ -140,7 +134,7 @@ export function SignupForm() {
   }, [clearErrors, emailAlreadyExistsMessage, emailValue, setError]);
 
   useEffect(() => {
-    if (state.errors?.name || state.errors?.salutationPreference || state.errors?.email) {
+    if (state.errors?.name || state.errors?.email) {
       setCurrentStep(0);
       return;
     }
@@ -154,7 +148,7 @@ export function SignupForm() {
     const formData = new FormData();
 
     formData.set("name", values.name);
-    formData.set("salutationPreference", values.salutationPreference);
+    formData.set("salutationPreference", defaultSalutationPreference);
     formData.set("email", values.email);
     formData.set("password", values.password);
     formData.set("confirmPassword", values.confirmPassword);
@@ -165,8 +159,6 @@ export function SignupForm() {
   }
 
   const nameError = errors.name?.message ?? state.errors?.name;
-  const salutationPreferenceError =
-    errors.salutationPreference?.message ?? state.errors?.salutationPreference;
   const emailError = errors.email?.message ?? state.errors?.email;
   const passwordError = errors.password?.message ?? state.errors?.password;
   const confirmPasswordError = errors.confirmPassword?.message ?? state.errors?.confirmPassword;
@@ -267,42 +259,11 @@ export function SignupForm() {
               ) : null}
             </div>
 
-            <div className="flex flex-col gap-y-2">
-              <Label>{t("auth.signup.fields.salutationPreference.label")}</Label>
-              <RadioGroup
-                aria-invalid={Boolean(salutationPreferenceError)}
-                className="grid gap-2 sm:grid-cols-3"
-                defaultValue="neutral"
-                onValueChange={(value) => {
-                  if (!isSalutationPreference(value)) {
-                    return;
-                  }
-
-                  setValue("salutationPreference", value, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                }}
-                value={salutationPreferenceValue}
-              >
-                {(["masculine", "feminine", "neutral"] as const).map((value) => (
-                  <Label
-                    className="flex cursor-pointer items-center gap-3 rounded-md border bg-background px-3 py-2 text-sm font-medium hover:bg-muted"
-                    htmlFor={`salutation-${value}`}
-                    key={value}
-                  >
-                    <RadioGroupItem id={`salutation-${value}`} value={value} />
-                    {t(getSalutationPreferenceOptionKey(value))}
-                  </Label>
-                ))}
-              </RadioGroup>
-              <input type="hidden" {...register("salutationPreference")} />
-              {salutationPreferenceError ? (
-                <p className="text-sm text-destructive" id="signup-salutation-error">
-                  {salutationPreferenceError}
-                </p>
-              ) : null}
-            </div>
+            <input
+              type="hidden"
+              value={defaultSalutationPreference}
+              {...register("salutationPreference")}
+            />
 
             <div className="flex flex-col gap-y-2">
               <Label htmlFor="email">{t("auth.signup.fields.email.label")}</Label>
@@ -404,14 +365,6 @@ export function SignupForm() {
                 {emailValue || t("auth.signup.wizard.review.emptyValue")}
               </p>
             </div>
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">
-                {t("auth.signup.wizard.review.salutationPreferenceLabel")}
-              </p>
-              <p className="font-semibold">
-                {t(getSalutationPreferenceOptionKey(salutationPreferenceValue))}
-              </p>
-            </div>
             <p className="text-sm text-muted-foreground">{t("auth.signup.wizard.review.notice")}</p>
           </div>
         ) : null}
@@ -495,22 +448,6 @@ function getEmailDescriptionId(
   }
 
   return undefined;
-}
-
-function getSalutationPreferenceOptionKey(value: SignupFormValues["salutationPreference"]) {
-  if (value === "masculine") {
-    return "auth.signup.fields.salutationPreference.options.masculine";
-  }
-
-  if (value === "feminine") {
-    return "auth.signup.fields.salutationPreference.options.feminine";
-  }
-
-  return "auth.signup.fields.salutationPreference.options.neutral";
-}
-
-function isSalutationPreference(value: string): value is SignupFormValues["salutationPreference"] {
-  return value === "masculine" || value === "feminine" || value === "neutral";
 }
 
 function cnMessageClass(success: boolean) {

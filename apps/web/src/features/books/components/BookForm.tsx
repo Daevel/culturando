@@ -2,14 +2,35 @@
 
 import type { BookMetadataSuggestion } from "@culturando/ai";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ImagePlus, Upload } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect, useRef, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import type { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +41,10 @@ import {
   type ExtractIsbnFromImageResult,
   extractIsbnFromImageAction,
 } from "@/features/cataloging/actions/extract-isbn-from-image.action";
+import {
+  type AddressSuggestion,
+  searchAddressSuggestions,
+} from "@/features/location/actions/search-address-suggestions.action";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createBookAction } from "../actions/create-book.action";
 import { bookSchema } from "../schemas/book.schema";
@@ -27,6 +52,12 @@ import type { BookFormState } from "../types/book-form.types";
 
 type BookFormInput = z.input<typeof bookSchema>;
 type BookFormValues = z.output<typeof bookSchema>;
+
+type BookPreviewImage = {
+  alt: string;
+  id: string;
+  url: string;
+};
 
 const initialState: BookFormState = {
   success: false,
@@ -45,7 +76,6 @@ type MetadataApplyField =
   | "publishedYear"
   | "publisher"
   | "title";
-type MetadataSuggestionSource = "ocr" | "open-library";
 type OcrLookupStatus =
   | "idle"
   | "loading"
@@ -56,6 +86,11 @@ const bookStepFields = [
   [],
   ["title", "author", "isbn"],
   [
+    "publisher",
+    "publishedYear",
+    "language",
+    "category",
+    "description",
     "availability",
     "visibility",
     "physicalCondition",
@@ -71,18 +106,18 @@ const bookStepFields = [
 export function BookForm() {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
-  const coverObjectUrlRef = useRef<string | null>(null);
+  const coverObjectUrlRef = useRef<string[]>([]);
+  const coverImageInputRef = useRef<HTMLInputElement | null>(null);
   const ocrImageInputRef = useRef<HTMLInputElement | null>(null);
-  const [coverPreviewUrl, setCoverPreviewUrl] = useState<string>();
+  const [isSearchingAddress, startAddressSearch] = useTransition();
+  const [addressQuery, setAddressQuery] = useState("");
+  const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
+  const [hasInteractedWithAddress, setHasInteractedWithAddress] = useState(false);
+  const [coverPreviewImages, setCoverPreviewImages] = useState<BookPreviewImage[]>([]);
   const [coverImageFiles, setCoverImageFiles] = useState<File[]>([]);
   const [coverLookupStatus, setCoverLookupStatus] = useState<CoverLookupStatus>("idle");
   const [metadataLookupStatus, setMetadataLookupStatus] = useState<MetadataLookupStatus>("idle");
-  const [metadataSuggestion, setMetadataSuggestion] = useState<BookMetadataSuggestion>();
-  const [metadataSuggestionSource, setMetadataSuggestionSource] =
-    useState<MetadataSuggestionSource>("open-library");
-  const [selectedMetadataFields, setSelectedMetadataFields] = useState<MetadataApplyField[]>([]);
   const [ocrLookupStatus, setOcrLookupStatus] = useState<OcrLookupStatus>("idle");
-  const [ocrTextPreview, setOcrTextPreview] = useState<string>();
   const [currentStep, setCurrentStep] = useState(0);
   const [state, formAction, isPending] = useActionState(createBookAction, initialState);
   const {
@@ -124,6 +159,14 @@ export function BookForm() {
   const visibilityValue = watch("visibility");
   const physicalConditionValue = watch("physicalCondition");
 
+  const clearCoverObjectUrl = useCallback(() => {
+    for (const objectUrl of coverObjectUrlRef.current) {
+      URL.revokeObjectURL(objectUrl);
+    }
+
+    coverObjectUrlRef.current = [];
+  }, []);
+
   function onSubmit(_values: BookFormValues) {
     const formData = new FormData();
     const values = getValues();
@@ -158,23 +201,37 @@ export function BookForm() {
       });
       reset();
       formRef.current?.reset();
-      if (coverObjectUrlRef.current) {
-        URL.revokeObjectURL(coverObjectUrlRef.current);
-        coverObjectUrlRef.current = null;
-      }
-      setCoverPreviewUrl(undefined);
+      clearCoverObjectUrl();
+      setCoverPreviewImages([]);
       setCoverImageFiles([]);
       setCoverLookupStatus("idle");
       setMetadataLookupStatus("idle");
-      setMetadataSuggestion(undefined);
-      setMetadataSuggestionSource("open-library");
-      setSelectedMetadataFields([]);
       setOcrLookupStatus("idle");
-      setOcrTextPreview(undefined);
+      setAddressQuery("");
+      setAddressSuggestions([]);
+      setHasInteractedWithAddress(false);
       setCurrentStep(0);
       router.push(routes.dashboard);
     }
-  }, [reset, router, showToast, state.messageKey, state.success, t]);
+  }, [clearCoverObjectUrl, reset, router, showToast, state.messageKey, state.success, t]);
+
+  useEffect(() => {
+    const normalizedQuery = addressQuery.trim();
+
+    if (!hasInteractedWithAddress || normalizedQuery.length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      startAddressSearch(async () => {
+        const suggestions = await searchAddressSuggestions(normalizedQuery);
+        setAddressSuggestions(suggestions);
+      });
+    }, 300);
+
+    return () => window.clearTimeout(timeout);
+  }, [addressQuery, hasInteractedWithAddress]);
 
   useEffect(() => {
     if (state.errors.title || state.errors.author || state.errors.isbn) {
@@ -183,6 +240,11 @@ export function BookForm() {
     }
 
     if (
+      state.errors.publisher ||
+      state.errors.publishedYear ||
+      state.errors.language ||
+      state.errors.category ||
+      state.errors.description ||
       state.errors.availability ||
       state.errors.visibility ||
       state.errors.physicalCondition ||
@@ -203,11 +265,9 @@ export function BookForm() {
 
   useEffect(() => {
     return () => {
-      if (coverObjectUrlRef.current) {
-        URL.revokeObjectURL(coverObjectUrlRef.current);
-      }
+      clearCoverObjectUrl();
     };
-  }, []);
+  }, [clearCoverObjectUrl]);
 
   async function lookupCoverByIsbn() {
     const normalizedIsbn = isbnValue?.replace(/[-\s]/g, "").trim();
@@ -240,7 +300,7 @@ export function BookForm() {
       const coverUrl = `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`;
 
       clearCoverObjectUrl();
-      setCoverPreviewUrl(coverUrl);
+      setCoverPreviewImages([{ alt: t("books.new.coverPreviewAlt"), id: coverUrl, url: coverUrl }]);
       setValue("externalCoverUrl", coverUrl, { shouldDirty: true });
       setCoverLookupStatus("found");
     } catch {
@@ -251,8 +311,6 @@ export function BookForm() {
   async function extractIsbnFromImage(imageOverrides?: File[]) {
     const images = imageOverrides ?? Array.from(ocrImageInputRef.current?.files ?? []);
 
-    setOcrTextPreview(undefined);
-    setMetadataSuggestion(undefined);
     setMetadataLookupStatus("idle");
     setOcrLookupStatus("loading");
 
@@ -266,7 +324,6 @@ export function BookForm() {
 
     if (!result.success) {
       setOcrLookupStatus(result.reason);
-      setOcrTextPreview(result.text);
       return;
     }
 
@@ -275,87 +332,65 @@ export function BookForm() {
     }
 
     if (result.metadata) {
-      const selectedFields = getDefaultSelectedMetadataFields(
-        result.metadata,
-        getValues(),
-        coverPreviewUrl,
-      );
-
-      setMetadataSuggestion(result.metadata);
-      setMetadataSuggestionSource("ocr");
-      setSelectedMetadataFields(selectedFields);
       setMetadataLookupStatus("found");
-      applyMetadataFields(result.metadata, selectedFields);
+      applyMetadataFields(result.metadata);
     }
 
     setOcrLookupStatus("found");
-    setOcrTextPreview(result.text);
   }
 
-  function applyMetadataSuggestion() {
-    if (!metadataSuggestion) {
-      return;
-    }
-
-    applyMetadataFields(metadataSuggestion, selectedMetadataFields);
-  }
-
-  function applyMetadataFields(
-    metadata: BookMetadataSuggestion,
-    fields: MetadataApplyField[],
-  ) {
+  function applyMetadataFields(metadata: BookMetadataSuggestion) {
     const metadataValues = getMetadataFieldValues(metadata);
-    const shouldApply = (field: MetadataApplyField) => fields.includes(field);
 
-    if (shouldApply("isbn")) {
-      setValue("isbn", metadataValues.isbn ?? "", { shouldDirty: true, shouldValidate: true });
+    if (metadataValues.isbn) {
+      setValue("isbn", metadataValues.isbn, { shouldDirty: true, shouldValidate: true });
     }
 
-    if (shouldApply("title")) {
-      setValue("title", metadataValues.title ?? "", { shouldDirty: true, shouldValidate: true });
+    if (metadataValues.title) {
+      setValue("title", metadataValues.title, { shouldDirty: true, shouldValidate: true });
     }
 
-    if (shouldApply("author")) {
-      setValue("author", metadataValues.author ?? "", {
+    if (metadataValues.author) {
+      setValue("author", metadataValues.author, {
         shouldDirty: true,
         shouldValidate: true,
       });
     }
 
-    if (shouldApply("publisher")) {
-      setValue("publisher", metadataValues.publisher ?? "", { shouldDirty: true });
+    if (metadataValues.publisher) {
+      setValue("publisher", metadataValues.publisher, { shouldDirty: true });
     }
 
-    if (shouldApply("publishedYear")) {
-      setValue("publishedYear", metadataValues.publishedYear ?? "", { shouldDirty: true });
+    if (metadataValues.publishedYear) {
+      setValue("publishedYear", metadataValues.publishedYear, { shouldDirty: true });
     }
 
-    if (shouldApply("language")) {
-      setValue("language", metadataValues.language ?? "", { shouldDirty: true });
+    if (metadataValues.language) {
+      setValue("language", metadataValues.language, { shouldDirty: true });
     }
 
-    if (shouldApply("category")) {
-      setValue("category", metadataValues.category ?? "", { shouldDirty: true });
+    if (metadataValues.category) {
+      setValue("category", metadataValues.category, { shouldDirty: true });
     }
 
-    if (shouldApply("description")) {
-      setValue("description", metadataValues.description ?? "", { shouldDirty: true });
+    if (metadataValues.description) {
+      setValue("description", metadataValues.description, { shouldDirty: true });
     }
 
-    if (shouldApply("coverUrl") && metadata.coverUrl) {
-      clearCoverObjectUrl();
-      setCoverPreviewUrl(metadata.coverUrl);
-      setValue("externalCoverUrl", metadata.coverUrl, { shouldDirty: true });
+    if (metadataValues.coverUrl) {
+      if (coverImageFiles.length === 0) {
+        clearCoverObjectUrl();
+        setCoverPreviewImages([
+          {
+            alt: t("books.new.coverPreviewAlt"),
+            id: metadataValues.coverUrl,
+            url: metadataValues.coverUrl,
+          },
+        ]);
+      }
+      setValue("externalCoverUrl", metadataValues.coverUrl, { shouldDirty: true });
       setCoverLookupStatus("found");
     }
-  }
-
-  function toggleMetadataField(field: MetadataApplyField) {
-    setSelectedMetadataFields((currentFields) =>
-      currentFields.includes(field)
-        ? currentFields.filter((currentField) => currentField !== field)
-        : [...currentFields, field],
-    );
   }
 
   function handleCoverImageChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -367,15 +402,21 @@ export function BookForm() {
 
     if (files.length === 0) {
       setCoverImageFiles([]);
-      setCoverPreviewUrl(undefined);
+      setCoverPreviewImages([]);
       return;
     }
 
     setCoverImageFiles(files);
-    const objectUrl = URL.createObjectURL(files[0]);
+    const objectUrls = files.map((file) => URL.createObjectURL(file));
 
-    coverObjectUrlRef.current = objectUrl;
-    setCoverPreviewUrl(objectUrl);
+    coverObjectUrlRef.current = objectUrls;
+    setCoverPreviewImages(
+      objectUrls.map((url, index) => ({
+        alt: files[index].name,
+        id: `${files[index].name}-${files[index].lastModified}-${index}`,
+        url,
+      })),
+    );
   }
 
   function handleCatalogingImageChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -385,19 +426,32 @@ export function BookForm() {
 
     if (files.length === 0) {
       setOcrLookupStatus("idle");
-      setOcrTextPreview(undefined);
-      setMetadataSuggestion(undefined);
       return;
     }
 
     void extractIsbnFromImage(files);
   }
 
-  function clearCoverObjectUrl() {
-    if (coverObjectUrlRef.current) {
-      URL.revokeObjectURL(coverObjectUrlRef.current);
-      coverObjectUrlRef.current = null;
-    }
+  function handleAddressQueryChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const nextQuery = event.target.value;
+
+    setHasInteractedWithAddress(true);
+    setAddressQuery(nextQuery);
+    setValue("addressLabel", nextQuery, { shouldDirty: true, shouldValidate: true });
+    setValue("city", "", { shouldDirty: true, shouldValidate: true });
+    setValue("province", "", { shouldDirty: true, shouldValidate: true });
+    setValue("region", "", { shouldDirty: true, shouldValidate: true });
+    setValue("country", "Italia", { shouldDirty: true, shouldValidate: true });
+  }
+
+  function applyAddressSuggestion(suggestion: AddressSuggestion) {
+    setAddressQuery(suggestion.displayName);
+    setValue("addressLabel", suggestion.addressLabel, { shouldDirty: true, shouldValidate: true });
+    setValue("city", suggestion.city, { shouldDirty: true, shouldValidate: true });
+    setValue("province", suggestion.province, { shouldDirty: true, shouldValidate: true });
+    setValue("region", suggestion.region, { shouldDirty: true, shouldValidate: true });
+    setValue("country", "Italia", { shouldDirty: true, shouldValidate: true });
+    setAddressSuggestions([]);
   }
 
   const titleError = errors.title?.message ?? state.errors.title;
@@ -417,13 +471,12 @@ export function BookForm() {
   const provinceError = errors.province?.message ?? state.errors.province;
   const regionError = errors.region?.message ?? state.errors.region;
   const countryError = errors.country?.message ?? state.errors.country;
+  const locationError =
+    addressLabelError ?? cityError ?? provinceError ?? regionError ?? countryError;
   const coverImageError = state.errors.coverImage;
   const imageUrlsError = errors.imageUrls?.message ?? state.errors.imageUrls;
   const coverLookupMessage = getCoverLookupMessage(coverLookupStatus, t);
   const metadataLookupMessage = getMetadataLookupMessage(metadataLookupStatus, t);
-  const metadataPreviewRows = metadataSuggestion
-    ? getMetadataPreviewRows(metadataSuggestion, getValues(), coverPreviewUrl, t)
-    : [];
   const ocrLookupMessage = getOcrLookupMessage(ocrLookupStatus, t);
   const availabilityOptions = [
     { value: "available", label: t("books.availability.available") },
@@ -542,12 +595,20 @@ export function BookForm() {
                 </div>
                 <Input
                   accept="image/jpeg,image/png,image/webp"
+                  className="sr-only"
                   id="ocrImage"
                   multiple
                   name="coverImages"
                   onChange={handleCatalogingImageChange}
                   ref={ocrImageInputRef}
                   type="file"
+                />
+                <FileUploadDropdown
+                  description={t("books.new.fileUploadDescription")}
+                  inputId="ocrImage"
+                  label={t("books.new.fileUploadLabel")}
+                  onChooseFile={() => ocrImageInputRef.current?.click()}
+                  uploadLabel={t("books.new.fileUploadFromDeviceLabel")}
                 />
                 {coverImageFiles.length > 0 ? (
                   <p className="text-sm text-muted-foreground">
@@ -568,93 +629,52 @@ export function BookForm() {
                     {metadataLookupMessage}
                   </p>
                 ) : null}
-
-                {metadataSuggestion ? (
-                  <div className="space-y-3 rounded-md border bg-muted/20 p-3">
-                    <div className="space-y-1">
-                      <p className="text-sm font-medium">{t("books.new.metadataPreviewTitle")}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {t("books.new.metadataSourceLabel")}{" "}
-                        {getMetadataSourceLabel(metadataSuggestionSource, t)}
-                      </p>
-                    </div>
-                    <div className="grid gap-2 text-sm">
-                      {metadataPreviewRows.map((row) => {
-                        const checkboxId = `metadata-field-${row.field}`;
-
-                        return (
-                          <label
-                            className="flex gap-3 rounded-md border bg-background px-3 py-2"
-                            htmlFor={checkboxId}
-                            key={row.field}
-                          >
-                            <Checkbox
-                              checked={selectedMetadataFields.includes(row.field)}
-                              className="mt-1"
-                              id={checkboxId}
-                              onCheckedChange={() => toggleMetadataField(row.field)}
-                            />
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                {row.label}
-                              </span>
-                              <span className="mt-1 block break-words text-foreground">
-                                {row.value}
-                              </span>
-                              {row.willOverwrite ? (
-                                <span className="mt-1 block text-xs text-amber-700">
-                                  {t("books.new.metadataOverwriteWarningLabel")}: {row.currentValue}
-                                </span>
-                              ) : null}
-                            </span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                    <Button
-                      className="w-full"
-                      disabled={selectedMetadataFields.length === 0}
-                      onClick={applyMetadataSuggestion}
-                      type="button"
-                      variant="secondary"
-                    >
-                      {t("books.new.metadataApplyLabel")}
-                    </Button>
-                  </div>
-                ) : null}
               </section>
 
               <aside className="space-y-3 rounded-lg border bg-muted/20 p-4">
                 <div className="space-y-1">
-                  <h3 className="text-sm font-semibold">{t("books.new.catalogingFallbackTitle")}</h3>
+                  <h3 className="text-sm font-semibold">
+                    {t("books.new.catalogingFallbackTitle")}
+                  </h3>
                   <p className="text-sm text-muted-foreground">
                     {t("books.new.catalogingFallbackDescription")}
                   </p>
                 </div>
 
-                {coverPreviewUrl ? (
-                  <div className="overflow-hidden rounded-lg border bg-background p-3">
-                    <Image
-                      alt={t("books.new.coverPreviewAlt")}
-                      className="h-52 w-full rounded-md object-contain"
-                      height={208}
-                      src={coverPreviewUrl}
-                      unoptimized
-                      width={360}
-                    />
-                  </div>
+                {coverPreviewImages.length > 0 ? (
+                  <Carousel opts={{ loop: coverPreviewImages.length > 1 }}>
+                    <CarouselContent>
+                      {coverPreviewImages.map((image) => (
+                        <CarouselItem key={image.id}>
+                          <div className="relative aspect-[16/9] overflow-hidden rounded-lg border bg-background">
+                            <Image
+                              alt={image.alt}
+                              className="h-full w-full object-contain"
+                              fill
+                              sizes="(min-width: 768px) 896px, 100vw"
+                              src={image.url}
+                              unoptimized
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {coverPreviewImages.length > 1 ? (
+                      <>
+                        <CarouselPrevious
+                          aria-label={t("books.imageCarousel.previousLabel")}
+                          className="left-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                        />
+                        <CarouselNext
+                          aria-label={t("books.imageCarousel.nextLabel")}
+                          className="right-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                        />
+                      </>
+                    ) : null}
+                  </Carousel>
                 ) : null}
               </aside>
             </div>
-
-            {ocrTextPreview ? (
-              <details className="rounded-md border bg-background p-3 text-sm text-muted-foreground">
-                <summary className="cursor-pointer font-medium text-foreground">
-                  {t("books.new.ocrTextPreviewLabel")}
-                </summary>
-                <p className="mt-2 whitespace-pre-wrap">{ocrTextPreview}</p>
-              </details>
-            ) : null}
           </div>
         ) : null}
 
@@ -878,84 +898,49 @@ export function BookForm() {
                 </p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="addressLabel">{t("books.new.fields.addressLabel.label")}</Label>
-                <Input
-                  aria-describedby={addressLabelError ? "book-address-error" : undefined}
-                  aria-invalid={Boolean(addressLabelError)}
-                  id="addressLabel"
-                  placeholder={t("books.new.fields.addressLabel.placeholder")}
-                  {...register("addressLabel")}
-                />
-                {addressLabelError ? (
-                  <p className="text-sm text-destructive" id="book-address-error">
-                    {addressLabelError}
+                <Label htmlFor="book-location">{t("books.new.fields.addressLabel.label")}</Label>
+                <div className="relative">
+                  <Input
+                    aria-describedby={locationError ? "book-location-error" : undefined}
+                    aria-invalid={Boolean(locationError)}
+                    autoComplete="street-address"
+                    id="book-location"
+                    onChange={handleAddressQueryChange}
+                    placeholder={t("books.new.fields.addressLabel.placeholder")}
+                    value={addressQuery}
+                  />
+                  {addressSuggestions.length > 0 ? (
+                    <div className="absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md">
+                      {addressSuggestions.map((suggestion) => (
+                        <button
+                          className="w-full rounded-sm px-3 py-2 text-left text-sm outline-none transition hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground"
+                          key={suggestion.id}
+                          onClick={() => applyAddressSuggestion(suggestion)}
+                          type="button"
+                        >
+                          {suggestion.displayName}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+                <input type="hidden" {...register("addressLabel")} />
+                <input type="hidden" {...register("city")} />
+                <input type="hidden" {...register("province")} />
+                <input type="hidden" {...register("region")} />
+                <input type="hidden" {...register("country")} />
+                {locationError ? (
+                  <p className="text-sm text-destructive" id="book-location-error">
+                    {locationError}
                   </p>
                 ) : null}
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="space-y-2">
-                  <Label htmlFor="city">{t("books.new.fields.city.label")}</Label>
-                  <Input
-                    aria-describedby={cityError ? "book-city-error" : undefined}
-                    aria-invalid={Boolean(cityError)}
-                    id="city"
-                    placeholder={t("books.new.fields.city.placeholder")}
-                    {...register("city")}
-                  />
-                  {cityError ? (
-                    <p className="text-sm text-destructive" id="book-city-error">
-                      {cityError}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="province">{t("books.new.fields.province.label")}</Label>
-                  <Input
-                    aria-describedby={provinceError ? "book-province-error" : undefined}
-                    aria-invalid={Boolean(provinceError)}
-                    id="province"
-                    placeholder={t("books.new.fields.province.placeholder")}
-                    {...register("province")}
-                  />
-                  {provinceError ? (
-                    <p className="text-sm text-destructive" id="book-province-error">
-                      {provinceError}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="region">{t("books.new.fields.region.label")}</Label>
-                  <Input
-                    aria-describedby={regionError ? "book-region-error" : undefined}
-                    aria-invalid={Boolean(regionError)}
-                    id="region"
-                    placeholder={t("books.new.fields.region.placeholder")}
-                    {...register("region")}
-                  />
-                  {regionError ? (
-                    <p className="text-sm text-destructive" id="book-region-error">
-                      {regionError}
-                    </p>
-                  ) : null}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="country">{t("books.new.fields.country.label")}</Label>
-                  <Input
-                    aria-describedby={countryError ? "book-country-error" : undefined}
-                    aria-invalid={Boolean(countryError)}
-                    id="country"
-                    placeholder={t("books.new.fields.country.placeholder")}
-                    {...register("country")}
-                  />
-                  {countryError ? (
-                    <p className="text-sm text-destructive" id="book-country-error">
-                      {countryError}
-                    </p>
-                  ) : null}
-                </div>
+                {isSearchingAddress || hasInteractedWithAddress ? (
+                  <p className="text-sm text-muted-foreground">
+                    {isSearchingAddress
+                      ? t("books.new.locationSearchingLabel")
+                      : t("books.new.locationAutocompleteDescription")}
+                  </p>
+                ) : null}
               </div>
             </div>
           </>
@@ -974,11 +959,20 @@ export function BookForm() {
                   accept="image/jpeg,image/png,image/webp"
                   aria-describedby={coverImageError ? "book-cover-image-error" : undefined}
                   aria-invalid={Boolean(coverImageError)}
+                  className="sr-only"
                   id="coverImage"
                   multiple
                   name="coverImages"
                   onChange={handleCoverImageChange}
+                  ref={coverImageInputRef}
                   type="file"
+                />
+                <FileUploadDropdown
+                  description={t("books.new.fileUploadDescription")}
+                  inputId="coverImage"
+                  label={t("books.new.fileUploadLabel")}
+                  onChooseFile={() => coverImageInputRef.current?.click()}
+                  uploadLabel={t("books.new.fileUploadFromDeviceLabel")}
                 />
                 {coverImageError ? (
                   <p className="text-sm text-destructive" id="book-cover-image-error">
@@ -1014,17 +1008,37 @@ export function BookForm() {
                 </p>
               ) : null}
 
-              {coverPreviewUrl ? (
-                <div className="overflow-hidden rounded-lg border bg-background p-3">
-                  <Image
-                    alt={t("books.new.coverPreviewAlt")}
-                    className="h-52 w-full rounded-md object-contain"
-                    height={208}
-                    src={coverPreviewUrl}
-                    unoptimized
-                    width={360}
-                  />
-                </div>
+              {coverPreviewImages.length > 0 ? (
+                <Carousel opts={{ loop: coverPreviewImages.length > 1 }}>
+                  <CarouselContent>
+                    {coverPreviewImages.map((image) => (
+                      <CarouselItem key={image.id}>
+                        <div className="relative aspect-[16/9] overflow-hidden rounded-lg border bg-background">
+                          <Image
+                            alt={image.alt}
+                            className="h-full w-full object-contain"
+                            fill
+                            sizes="(min-width: 768px) 896px, 100vw"
+                            src={image.url}
+                            unoptimized
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  {coverPreviewImages.length > 1 ? (
+                    <>
+                      <CarouselPrevious
+                        aria-label={t("books.imageCarousel.previousLabel")}
+                        className="left-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                      />
+                      <CarouselNext
+                        aria-label={t("books.imageCarousel.nextLabel")}
+                        className="right-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                      />
+                    </>
+                  ) : null}
+                </Carousel>
               ) : null}
 
               <Label htmlFor="imageUrls">{t("books.new.fields.imageUrls.label")}</Label>
@@ -1067,7 +1081,11 @@ export function BookForm() {
               {isPending ? t("books.new.pendingLabel") : t("books.new.submitLabel")}
             </Button>
           ) : (
-            <Button disabled={isPending || isWaitingForCataloging} onClick={goToNextStep} type="button">
+            <Button
+              disabled={isPending || isWaitingForCataloging}
+              onClick={goToNextStep}
+              type="button"
+            >
               {isWaitingForCataloging
                 ? t("books.new.wizard.waitForCatalogingLabel")
                 : t("books.new.wizard.nextLabel")}
@@ -1083,110 +1101,53 @@ function cnMessageClass(success: boolean) {
   return success ? "text-sm text-muted-foreground" : "text-sm text-destructive";
 }
 
-function getMetadataSourceLabel(
-  source: MetadataSuggestionSource,
-  t: ReturnType<typeof useTranslation>,
-) {
-  const labels = {
-    ocr: t("books.new.metadataSourceOcr"),
-    "open-library": t("books.new.metadataSourceOpenLibrary"),
-  } satisfies Record<MetadataSuggestionSource, string>;
-
-  return labels[source];
-}
-
-function getMetadataPreviewRows(
-  metadata: BookMetadataSuggestion,
-  currentValues: BookFormInput,
-  coverPreviewUrl: string | undefined,
-  t: ReturnType<typeof useTranslation>,
-) {
-  const metadataValues = getMetadataFieldValues(metadata);
-  const rows: { field: MetadataApplyField; label: string; value: string | undefined }[] = [
-    {
-      field: "isbn",
-      label: t("books.new.fields.isbn.label"),
-      value: metadataValues.isbn,
-    },
-    {
-      field: "title",
-      label: t("books.new.fields.title.label"),
-      value: metadataValues.title,
-    },
-    {
-      field: "author",
-      label: t("books.new.fields.author.label"),
-      value: metadataValues.author,
-    },
-    {
-      field: "publisher",
-      label: t("books.new.fields.publisher.label"),
-      value: metadataValues.publisher,
-    },
-    {
-      field: "publishedYear",
-      label: t("books.new.fields.publishedYear.label"),
-      value: metadataValues.publishedYear,
-    },
-    {
-      field: "language",
-      label: t("books.new.fields.language.label"),
-      value: metadataValues.language,
-    },
-    {
-      field: "category",
-      label: t("books.new.fields.category.label"),
-      value: metadataValues.category,
-    },
-    {
-      field: "description",
-      label: t("books.new.fields.description.label"),
-      value: metadataValues.description,
-    },
-    {
-      field: "coverUrl",
-      label: t("books.new.fields.coverImage.label"),
-      value: metadataValues.coverUrl ? t("books.new.metadataCoverAvailableLabel") : undefined,
-    },
-  ];
-
-  return rows
-    .map((row) => {
-      const currentValue = getCurrentMetadataFieldValue(row.field, currentValues, coverPreviewUrl);
-
-      return {
-        ...row,
-        currentValue,
-        willOverwrite: Boolean(currentValue),
-      };
-    })
-    .filter(
-      (
-        row,
-      ): row is {
-        currentValue: string | undefined;
-        field: MetadataApplyField;
-        label: string;
-        value: string;
-        willOverwrite: boolean;
-      } => Boolean(row.value),
-    );
-}
-
-function getDefaultSelectedMetadataFields(
-  metadata: BookMetadataSuggestion,
-  currentValues: BookFormInput,
-  coverPreviewUrl: string | undefined,
-) {
-  return Object.entries(getMetadataFieldValues(metadata)).flatMap(([field, value]) => {
-    const metadataField = field as MetadataApplyField;
-
-    if (!value || getCurrentMetadataFieldValue(metadataField, currentValues, coverPreviewUrl)) {
-      return [];
-    }
-
-    return [metadataField];
-  });
+function FileUploadDropdown({
+  description,
+  inputId,
+  label,
+  onChooseFile,
+  uploadLabel,
+}: {
+  description: string;
+  inputId: string;
+  label: string;
+  onChooseFile: () => void;
+  uploadLabel: string;
+}) {
+  return (
+    <div className="rounded-lg border bg-background p-3">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-sm font-medium">{label}</p>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              aria-controls={inputId}
+              className="w-full sm:w-auto"
+              type="button"
+              variant="outline"
+            >
+              <ImagePlus className="size-4" />
+              {label}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuItem
+              onSelect={(event) => {
+                event.preventDefault();
+                onChooseFile();
+              }}
+            >
+              <Upload className="size-4" />
+              {uploadLabel}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
 }
 
 function getMetadataFieldValues(
@@ -1203,22 +1164,6 @@ function getMetadataFieldValues(
     publisher: metadata.publisher,
     title: metadata.title,
   };
-}
-
-function getCurrentMetadataFieldValue(
-  field: MetadataApplyField,
-  currentValues: BookFormInput,
-  coverPreviewUrl: string | undefined,
-) {
-  if (field === "coverUrl") {
-    return cleanMetadataValue(currentValues.externalCoverUrl) || coverPreviewUrl;
-  }
-
-  return cleanMetadataValue(currentValues[field]);
-}
-
-function cleanMetadataValue(value: unknown) {
-  return typeof value === "string" ? value.trim() || undefined : undefined;
 }
 
 function getCoverLookupMessage(status: CoverLookupStatus, t: ReturnType<typeof useTranslation>) {

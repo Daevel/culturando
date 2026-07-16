@@ -17,6 +17,7 @@ import {
 import {
   PageContainer,
   PageDescription,
+  PageEyebrow,
   PageHeader,
   PageHeaderContent,
   PageShell,
@@ -51,8 +52,9 @@ export function DashboardOverview({
       <PageContainer size="xl">
         <PageHeader>
           <PageHeaderContent>
+            <PageEyebrow>{t("dashboard.eyebrow")}</PageEyebrow>
             <PageTitle>
-              {t(welcomeTitleKey)} {displayName}
+              {t(welcomeTitleKey)}, {displayName}
             </PageTitle>
             <PageDescription>{t("dashboard.description")}</PageDescription>
           </PageHeaderContent>

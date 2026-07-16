@@ -9,14 +9,16 @@ export const bookSchema = z.object({
   author: z
     .string()
     .trim()
-    .min(1, "L'autore è obbligatorio.")
-    .max(140, "Il nome autore è troppo lungo."),
+    .max(140, "Il nome autore è troppo lungo.")
+    .optional()
+    .transform((value) => (value ? value : undefined)),
   isbn: z
     .string()
     .trim()
+    .min(1, "L'ISBN è obbligatorio.")
     .max(20, "L'ISBN è troppo lungo.")
-    .optional()
-    .transform((value) => (value ? value : undefined)),
+    .transform((value) => value.replace(/[-\s]/g, ""))
+    .refine((value) => value.length > 0, "L'ISBN è obbligatorio."),
   publisher: z
     .string()
     .trim()
@@ -27,6 +29,9 @@ export const bookSchema = z.object({
     .string()
     .trim()
     .optional()
+    .refine((value) => value === undefined || value === "" || /^\d+$/.test(value), {
+      message: "L'anno di pubblicazione deve contenere solo numeri.",
+    })
     .transform((value) => (value ? Number(value) : undefined))
     .refine(
       (value) => value === undefined || (Number.isInteger(value) && value >= 1000 && value <= 2100),
@@ -61,21 +66,21 @@ export const bookSchema = z.object({
   city: z
     .string()
     .trim()
+    .min(1, "La città è obbligatoria.")
     .max(80, "La città è troppo lunga.")
-    .optional()
-    .transform((value) => (value ? value : undefined)),
+    .transform((value) => value),
   province: z
     .string()
     .trim()
+    .min(1, "La provincia è obbligatoria.")
     .max(80, "La provincia è troppo lunga.")
-    .optional()
-    .transform((value) => (value ? value : undefined)),
+    .transform((value) => value),
   region: z
     .string()
     .trim()
+    .min(1, "La regione è obbligatoria.")
     .max(80, "La regione è troppo lunga.")
-    .optional()
-    .transform((value) => (value ? value : undefined)),
+    .transform((value) => value),
   country: z.string().trim().min(1, "Il paese è obbligatorio.").max(80, "Il paese è troppo lungo."),
   imageUrls: z
     .string()

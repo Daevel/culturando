@@ -8,7 +8,7 @@ import { routes } from "@/config/routes";
 import { validateBookForm } from "../schemas/book.schema";
 import type { BookFormField, BookFormState } from "../types/book-form.types";
 import { saveCoverImages, saveRemoteCoverImage } from "./book-cover-storage";
-import { createStoredBook } from "./books.repository";
+import { createStoredBook, hasStoredBookWithIsbn } from "./books.repository";
 
 const OPEN_LIBRARY_COVER_TIMEOUT_MS = 2500;
 
@@ -102,6 +102,17 @@ export async function createBookAction(
       success: false,
       errors: {},
       messageKey: "books.new.unauthorizedMessage",
+    };
+  }
+
+  const hasDuplicateIsbn = await hasStoredBookWithIsbn(ownerId, bookData.isbn);
+
+  if (hasDuplicateIsbn) {
+    return {
+      success: false,
+      errors: {
+        isbn: "Hai già pubblicato un libro con questo ISBN.",
+      },
     };
   }
 

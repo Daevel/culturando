@@ -13,6 +13,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
   PageContainer,
   PageDescription,
   PageEyebrow,
@@ -32,7 +39,11 @@ type BookDetailProps = {
 
 export function BookDetail({ book }: BookDetailProps) {
   const t = useTranslation();
-  const primaryImage = book.images.find((image) => image.isPrimary) ?? book.images[0];
+  const carouselImages = book.images.map((image) => ({
+    alt: image.alt ?? book.title,
+    id: image.id,
+    url: image.url,
+  }));
   const availabilityLabels = {
     available: t("books.availability.available"),
     consultation_only: t("books.availability.consultationOnly"),
@@ -52,6 +63,7 @@ export function BookDetail({ book }: BookDetailProps) {
   const hasPublicLocation =
     book.location?.publicLatitude !== undefined && book.location.publicLongitude !== undefined;
   const canReceiveRequests = book.visibility === "public" && book.availability !== "unavailable";
+  const ownerLabel = book.owner?.nickname ?? book.owner?.name ?? book.owner?.email;
 
   return (
     <PageShell>
@@ -75,17 +87,37 @@ export function BookDetail({ book }: BookDetailProps) {
         </PageHeader>
 
         <Card>
-          {primaryImage ? (
-            <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">
-              <Image
-                alt={primaryImage.alt ?? book.title}
-                className="h-full w-full object-cover"
-                fill
-                sizes="(min-width: 768px) 896px, 100vw"
-                src={primaryImage.url}
-                unoptimized
-              />
-            </div>
+          {carouselImages.length > 0 ? (
+            <Carousel className="rounded-t-lg" opts={{ loop: carouselImages.length > 1 }}>
+              <CarouselContent>
+                {carouselImages.map((image) => (
+                  <CarouselItem key={image.id}>
+                    <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg bg-muted">
+                      <Image
+                        alt={image.alt}
+                        className="h-full w-full object-contain"
+                        fill
+                        sizes="(min-width: 768px) 896px, 100vw"
+                        src={image.url}
+                        unoptimized
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              {carouselImages.length > 1 ? (
+                <>
+                  <CarouselPrevious
+                    aria-label={t("books.imageCarousel.previousLabel")}
+                    className="left-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                  />
+                  <CarouselNext
+                    aria-label={t("books.imageCarousel.nextLabel")}
+                    className="right-3 bg-background/90 shadow-lg backdrop-blur hover:bg-background"
+                  />
+                </>
+              ) : null}
+            </Carousel>
           ) : null}
           <CardHeader>
             <div className="flex flex-wrap gap-2">
@@ -161,7 +193,7 @@ export function BookDetail({ book }: BookDetailProps) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                   {t("books.detail.ownerLabel")}
                 </p>
-                <p className="mt-1 font-medium">{book.ownerId}</p>
+                <p className="mt-1 font-medium">{ownerLabel ?? t("books.detail.emptyValue")}</p>
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">

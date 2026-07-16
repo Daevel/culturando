@@ -5,9 +5,9 @@ import { cn } from "@/lib/utils";
 type PageContainerSize = "sm" | "md" | "lg" | "xl";
 
 const pageContainerSizes: Record<PageContainerSize, string> = {
-  sm: "max-w-3xl",
-  md: "max-w-4xl",
-  lg: "max-w-5xl",
+  sm: "max-w-6xl",
+  md: "max-w-6xl",
+  lg: "max-w-6xl",
   xl: "max-w-6xl",
 };
 
