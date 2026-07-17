@@ -85,16 +85,19 @@ export function DashboardOverview({
                   <div className="rounded-lg border bg-card p-4">
                     <h2 className="font-semibold">{t("dashboard.stats.visibilityTitle")}</h2>
                     <div className="mt-4 space-y-3">
-                      <StatRow
+                      <StatBar
                         label={t("dashboard.stats.publicBooksLabel")}
+                        maxValue={stats.booksCount}
                         value={stats.publicBooksCount}
                       />
-                      <StatRow
+                      <StatBar
                         label={t("dashboard.stats.privateBooksLabel")}
+                        maxValue={stats.booksCount}
                         value={stats.privateBooksCount}
                       />
-                      <StatRow
+                      <StatBar
                         label={t("dashboard.stats.acceptedRequestsLabel")}
+                        maxValue={stats.receivedRequestsCount}
                         value={stats.acceptedRequestsCount}
                       />
                     </div>
@@ -105,20 +108,30 @@ export function DashboardOverview({
                     {stats.topViewedBooks.length > 0 ? (
                       <div className="mt-4 space-y-3">
                         {stats.topViewedBooks.map((book) => (
-                          <div
-                            className="flex items-center justify-between gap-4 rounded-md bg-muted/40 px-3 py-2"
-                            key={book.id}
-                          >
-                            <div>
-                              <Link
-                                className="font-medium hover:underline"
-                                href={routes.bookDetail(book.id)}
-                              >
-                                {book.title}
-                              </Link>
-                              <p className="text-sm text-muted-foreground">{book.author}</p>
+                          <div className="rounded-md bg-muted/40 px-3 py-2" key={book.id}>
+                            <div className="flex items-center justify-between gap-4">
+                              <div>
+                                <Link
+                                  className="font-medium hover:underline"
+                                  href={routes.bookDetail(book.id)}
+                                >
+                                  {book.title}
+                                </Link>
+                                <p className="text-sm text-muted-foreground">{book.author}</p>
+                              </div>
+                              <span className="shrink-0 font-semibold">{book.viewCount}</span>
                             </div>
-                            <span className="shrink-0 font-semibold">{book.viewCount}</span>
+                            <div className="mt-2 h-2 overflow-hidden rounded-full bg-background">
+                              <div
+                                className="h-full rounded-full bg-primary"
+                                style={{
+                                  width: `${getChartPercentage(
+                                    book.viewCount,
+                                    stats.topViewedBooks[0]?.viewCount ?? 0,
+                                  )}%`,
+                                }}
+                              />
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -264,11 +277,28 @@ function StatTile({ label, value }: { label: string; value: number }) {
   );
 }
 
-function StatRow({ label, value }: { label: string; value: number }) {
+function StatBar({ label, maxValue, value }: { label: string; maxValue: number; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold">{value}</span>
+    <div className="space-y-2 text-sm">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-semibold">{value}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${getChartPercentage(value, maxValue)}%` }}
+        />
+      </div>
     </div>
   );
+}
+
+// CSS-only bars are enough for the prototype and avoid a charting dependency.
+function getChartPercentage(value: number, maxValue: number) {
+  if (maxValue <= 0) {
+    return 0;
+  }
+
+  return Math.max(4, Math.min(100, Math.round((value / maxValue) * 100)));
 }

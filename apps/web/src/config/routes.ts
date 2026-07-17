@@ -13,4 +13,5 @@ export const routes = {
   bookDetail: (bookId: string) => `/books/${bookId}`,
   nearbyBooks: (bookId: string) => `/books/${bookId}/nearby`,
   newBook: "/dashboard/books/new",
+  editBook: (bookId: string) => `/dashboard/books/${bookId}/edit`,
 } as const;

@@ -361,8 +361,20 @@ export const it = {
     },
     detail: {
       eyebrow: "Scheda libro",
+      breadcrumbCatalogLabel: "Catalogo",
       backToCatalogLabel: "Torna al catalogo",
       nearbyLabel: "Trova disponibilita vicine",
+      nextBookLabel: "Vai al prossimo libro",
+      previousBookLabel: "Vai al libro precedente",
+      ownerActionsTitle: "Gestisci la tua inserzione",
+      ownerActionsDescription:
+        "Puoi modificare i dati pubblicati o eliminare definitivamente questo libro.",
+      editBookLabel: "Modifica inserzione",
+      deleteBookLabel: "Elimina inserzione",
+      deleteToastTitle: "Eliminare questa inserzione?",
+      deleteToastDescription: "L'azione è definitiva e rimuoverà il libro dal catalogo.",
+      deleteToastActionLabel: "Elimina",
+      deleteToastCancelLabel: "Annulla",
       descriptionTitle: "Descrizione",
       ownerLabel: "Proprietario",
       categoryLabel: "Categoria",
@@ -587,6 +599,19 @@ export const it = {
         },
       },
     },
+    edit: {
+      eyebrow: "Modifica libro",
+      title: "Aggiorna la scheda libro",
+      description:
+        "Modifica dati bibliografici, disponibilità, posizione e immagini della tua inserzione.",
+      successMessage: "Libro aggiornato correttamente.",
+      unauthorizedMessage: "Devi accedere per modificare un libro.",
+      forbiddenMessage: "Puoi modificare solo i libri pubblicati da te.",
+      genericErrorMessage: "Non è stato possibile aggiornare il libro.",
+      toast: {
+        successTitle: "Libro aggiornato",
+      },
+    },
   },
   nearby: {
     search: {
@@ -643,6 +668,10 @@ export const it = {
       messagePlaceholder: "Presentati e spiega brevemente cosa vorresti consultare o chiedere.",
       submitLabel: "Invia richiesta",
       pendingLabel: "Invio in corso...",
+      loginCtaTitle: "Accedi per contattare il proprietario",
+      loginCtaDescription:
+        "Crea una sessione sicura per inviare una richiesta di consultazione, prestito o informazioni senza esporre dati personali.",
+      loginCtaLabel: "Accedi e richiedi contatto",
       successMessage: "Richiesta inviata correttamente.",
       unauthorizedMessage: "Devi accedere per inviare una richiesta.",
       unavailableBookMessage: "Questo libro non può ricevere richieste.",

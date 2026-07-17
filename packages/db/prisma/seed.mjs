@@ -442,6 +442,7 @@ async function createBook(input) {
       images: {
         create: {
           url: input.coverUrl,
+          thumbnailUrl: input.coverUrl.replace(/-L\.jpg$/, "-M.jpg"),
           source: "external_api",
           alt: `${input.title} - copertina`,
           isPrimary: true,

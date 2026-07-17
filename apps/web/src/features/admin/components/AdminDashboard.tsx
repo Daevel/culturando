@@ -52,12 +52,14 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
               <CardDescription>{t("admin.publication.description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <StatRow
+              <StatBar
                 label={t("admin.publication.publicBooksLabel")}
+                maxValue={stats.booksCount}
                 value={stats.publicBooksCount}
               />
-              <StatRow
+              <StatBar
                 label={t("admin.publication.privateBooksLabel")}
+                maxValue={stats.booksCount}
                 value={stats.privateBooksCount}
               />
             </CardContent>
@@ -69,20 +71,24 @@ export function AdminDashboard({ stats }: AdminDashboardProps) {
               <CardDescription>{t("admin.requests.description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <StatRow
+              <StatBar
                 label={t("admin.requests.pendingLabel")}
+                maxValue={stats.requestsCount}
                 value={stats.pendingRequestsCount}
               />
-              <StatRow
+              <StatBar
                 label={t("admin.requests.acceptedLabel")}
+                maxValue={stats.requestsCount}
                 value={stats.acceptedRequestsCount}
               />
-              <StatRow
+              <StatBar
                 label={t("admin.requests.rejectedLabel")}
+                maxValue={stats.requestsCount}
                 value={stats.rejectedRequestsCount}
               />
-              <StatRow
+              <StatBar
                 label={t("admin.requests.cancelledLabel")}
+                maxValue={stats.requestsCount}
                 value={stats.cancelledRequestsCount}
               />
             </CardContent>
@@ -139,11 +145,28 @@ function StatTile({ label, value }: { label: string; value: number }) {
   );
 }
 
-function StatRow({ label, value }: { label: string; value: number }) {
+function StatBar({ label, maxValue, value }: { label: string; maxValue: number; value: number }) {
   return (
-    <div className="flex items-center justify-between gap-4 text-sm">
-      <span className="text-muted-foreground">{label}</span>
-      <span className="font-semibold">{value}</span>
+    <div className="space-y-2 text-sm">
+      <div className="flex items-center justify-between gap-4">
+        <span className="text-muted-foreground">{label}</span>
+        <span className="font-semibold">{value}</span>
+      </div>
+      <div className="h-2 overflow-hidden rounded-full bg-muted">
+        <div
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${getChartPercentage(value, maxValue)}%` }}
+        />
+      </div>
     </div>
   );
+}
+
+// CSS-only bars keep the administrative metrics readable without adding chart libraries.
+function getChartPercentage(value: number, maxValue: number) {
+  if (maxValue <= 0) {
+    return 0;
+  }
+
+  return Math.max(4, Math.min(100, Math.round((value / maxValue) * 100)));
 }

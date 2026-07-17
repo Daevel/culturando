@@ -72,6 +72,7 @@ export function NearbyMap({
     const isCompactViewport = window.matchMedia("(max-width: 767px)").matches;
     const shouldStartIn3d = !prefersReducedMotion && !isCompactViewport;
     const origin = points.find((point) => point.variant === "origin") ?? points[0];
+    // Points are already privacy-safe: callers pass approximate public coordinates only.
     const nearbyPoints = points.filter((point) => point.variant === "nearby");
     originRef.current = origin;
     rotationEnabledRef.current = shouldStartIn3d;

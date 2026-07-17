@@ -3,8 +3,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join, sep } from "node:path";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { assets } from "@culturando/assets";
+import sharp from "sharp";
 
 const MAX_COVER_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const THUMBNAIL_CONTENT_TYPE = "image/webp";
+const THUMBNAIL_EXTENSION = "webp";
 
 const ALLOWED_COVER_IMAGE_TYPES = {
   "image/jpeg": "jpg",
@@ -14,11 +17,15 @@ const ALLOWED_COVER_IMAGE_TYPES = {
 
 type SaveCoverImageResult = {
   url: string | undefined;
+  thumbnailUrl: string | undefined;
   error: string | undefined;
 };
 
 type SaveCoverImagesResult = {
-  urls: string[];
+  images: Array<{
+    url: string;
+    thumbnailUrl?: string;
+  }>;
   error: string | undefined;
 };
 
@@ -39,6 +46,7 @@ export async function saveCoverImage(
   if (!(value instanceof File) || value.size === 0) {
     return {
       url: undefined,
+      thumbnailUrl: undefined,
       error: undefined,
     };
   }
@@ -48,6 +56,7 @@ export async function saveCoverImage(
   if (!extension) {
     return {
       url: undefined,
+      thumbnailUrl: undefined,
       error: "Carica una copertina in formato JPG, PNG o WebP.",
     };
   }
@@ -55,6 +64,7 @@ export async function saveCoverImage(
   if (value.size > MAX_COVER_IMAGE_SIZE_BYTES) {
     return {
       url: undefined,
+      thumbnailUrl: undefined,
       error: "La copertina non può superare 5 MB.",
     };
   }
@@ -68,26 +78,31 @@ export async function saveCoverImage(
   });
 }
 
-export async function saveCoverImages(values: FormDataEntryValue[]): Promise<SaveCoverImagesResult> {
-  const urls: string[] = [];
+export async function saveCoverImages(
+  values: FormDataEntryValue[],
+): Promise<SaveCoverImagesResult> {
+  const images: SaveCoverImagesResult["images"] = [];
 
   for (const value of values) {
     const result = await saveCoverImage(value);
 
     if (result.error) {
       return {
-        urls: [],
+        images: [],
         error: result.error,
       };
     }
 
     if (result.url) {
-      urls.push(result.url);
+      images.push({
+        url: result.url,
+        thumbnailUrl: result.thumbnailUrl,
+      });
     }
   }
 
   return {
-    urls,
+    images,
     error: undefined,
   };
 }
@@ -99,6 +114,7 @@ export async function saveRemoteCoverImage(url: string): Promise<SaveCoverImageR
     if (!response.ok) {
       return {
         url: undefined,
+        thumbnailUrl: undefined,
         error: undefined,
       };
     }
@@ -111,6 +127,7 @@ export async function saveRemoteCoverImage(url: string): Promise<SaveCoverImageR
     if (!contentType || !extension) {
       return {
         url: undefined,
+        thumbnailUrl: undefined,
         error: undefined,
       };
     }
@@ -120,6 +137,7 @@ export async function saveRemoteCoverImage(url: string): Promise<SaveCoverImageR
     if (fileBuffer.byteLength > MAX_COVER_IMAGE_SIZE_BYTES) {
       return {
         url: undefined,
+        thumbnailUrl: undefined,
         error: undefined,
       };
     }
@@ -132,6 +150,7 @@ export async function saveRemoteCoverImage(url: string): Promise<SaveCoverImageR
   } catch {
     return {
       url: undefined,
+      thumbnailUrl: undefined,
       error: undefined,
     };
   }
@@ -147,6 +166,8 @@ async function saveCoverImageBuffer({
   fileBuffer: Buffer;
 }): Promise<SaveCoverImageResult> {
   const fileName = `${randomUUID()}.${extension}`;
+  const thumbnailFileName = `thumb-${randomUUID()}.${THUMBNAIL_EXTENSION}`;
+  const thumbnailBuffer = await generateCoverThumbnail(fileBuffer);
   const r2Config = getR2Config();
 
   if (r2Config) {
@@ -155,10 +176,24 @@ async function saveCoverImageBuffer({
       contentType,
       fileBuffer,
       fileName,
+      thumbnailBuffer,
+      thumbnailFileName,
     });
   }
 
-  return saveCoverImageLocally({ fileBuffer, fileName });
+  return saveCoverImageLocally({ fileBuffer, fileName, thumbnailBuffer, thumbnailFileName });
+}
+
+async function generateCoverThumbnail(fileBuffer: Buffer) {
+  return sharp(fileBuffer)
+    .resize({
+      fit: "inside",
+      height: 480,
+      width: 320,
+      withoutEnlargement: true,
+    })
+    .webp({ quality: 72 })
+    .toBuffer();
 }
 
 async function saveCoverImageToR2({
@@ -166,26 +201,42 @@ async function saveCoverImageToR2({
   contentType,
   fileBuffer,
   fileName,
+  thumbnailBuffer,
+  thumbnailFileName,
 }: {
   config: R2Config;
   contentType: string;
   fileBuffer: Buffer;
   fileName: string;
+  thumbnailBuffer: Buffer;
+  thumbnailFileName: string;
 }): Promise<SaveCoverImageResult> {
   const key = `book-covers/${fileName}`;
+  const thumbnailKey = `book-covers/thumbnails/${thumbnailFileName}`;
   const client = getR2Client(config);
 
-  await client.send(
-    new PutObjectCommand({
-      Bucket: config.bucketName,
-      Key: key,
-      Body: fileBuffer,
-      ContentType: contentType,
-    }),
-  );
+  await Promise.all([
+    client.send(
+      new PutObjectCommand({
+        Bucket: config.bucketName,
+        Key: key,
+        Body: fileBuffer,
+        ContentType: contentType,
+      }),
+    ),
+    client.send(
+      new PutObjectCommand({
+        Bucket: config.bucketName,
+        Key: thumbnailKey,
+        Body: thumbnailBuffer,
+        ContentType: THUMBNAIL_CONTENT_TYPE,
+      }),
+    ),
+  ]);
 
   return {
     url: `${config.publicUrl}/${key}`,
+    thumbnailUrl: `${config.publicUrl}/${thumbnailKey}`,
     error: undefined,
   };
 }
@@ -193,17 +244,27 @@ async function saveCoverImageToR2({
 async function saveCoverImageLocally({
   fileBuffer,
   fileName,
+  thumbnailBuffer,
+  thumbnailFileName,
 }: {
   fileBuffer: Buffer;
   fileName: string;
+  thumbnailBuffer: Buffer;
+  thumbnailFileName: string;
 }): Promise<SaveCoverImageResult> {
   const uploadDirectory = getLocalCoverUploadDirectory();
+  const thumbnailDirectory = join(uploadDirectory, "thumbnails");
 
-  await mkdir(uploadDirectory, { recursive: true });
-  await writeFile(join(uploadDirectory, fileName), fileBuffer);
+  // The prototype stores a real WebP thumbnail so cards/details do not need the full cover.
+  await mkdir(thumbnailDirectory, { recursive: true });
+  await Promise.all([
+    writeFile(join(uploadDirectory, fileName), fileBuffer),
+    writeFile(join(thumbnailDirectory, thumbnailFileName), thumbnailBuffer),
+  ]);
 
   return {
     url: assets.uploads.bookCover(fileName),
+    thumbnailUrl: assets.uploads.bookCover(`thumbnails/${thumbnailFileName}`),
     error: undefined,
   };
 }

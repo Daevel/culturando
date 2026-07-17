@@ -1,6 +1,7 @@
 "use client";
 
 import type { BookMetadataSuggestion } from "@culturando/ai";
+import type { Book } from "@culturando/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Upload } from "lucide-react";
 import Image from "next/image";
@@ -59,6 +60,12 @@ type BookPreviewImage = {
   url: string;
 };
 
+type BookFormProps = {
+  action?: (state: BookFormState, formData: FormData) => Promise<BookFormState>;
+  book?: Book;
+  mode?: "create" | "edit";
+};
+
 const initialState: BookFormState = {
   success: false,
   errors: {},
@@ -103,23 +110,25 @@ const bookStepFields = [
   ["imageUrls", "externalCoverUrl"],
 ] satisfies Array<Array<keyof BookFormInput>>;
 
-export function BookForm() {
+export function BookForm({ action = createBookAction, book, mode = "create" }: BookFormProps) {
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
   const coverObjectUrlRef = useRef<string[]>([]);
   const coverImageInputRef = useRef<HTMLInputElement | null>(null);
   const ocrImageInputRef = useRef<HTMLInputElement | null>(null);
   const [isSearchingAddress, startAddressSearch] = useTransition();
-  const [addressQuery, setAddressQuery] = useState("");
+  const [addressQuery, setAddressQuery] = useState(book?.location?.addressLabel ?? "");
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [hasInteractedWithAddress, setHasInteractedWithAddress] = useState(false);
-  const [coverPreviewImages, setCoverPreviewImages] = useState<BookPreviewImage[]>([]);
+  const [coverPreviewImages, setCoverPreviewImages] = useState<BookPreviewImage[]>(() =>
+    getInitialPreviewImages(book),
+  );
   const [coverImageFiles, setCoverImageFiles] = useState<File[]>([]);
   const [coverLookupStatus, setCoverLookupStatus] = useState<CoverLookupStatus>("idle");
   const [metadataLookupStatus, setMetadataLookupStatus] = useState<MetadataLookupStatus>("idle");
   const [ocrLookupStatus, setOcrLookupStatus] = useState<OcrLookupStatus>("idle");
   const [currentStep, setCurrentStep] = useState(0);
-  const [state, formAction, isPending] = useActionState(createBookAction, initialState);
+  const [state, formAction, isPending] = useActionState(action, initialState);
   const {
     handleSubmit,
     getValues,
@@ -131,26 +140,7 @@ export function BookForm() {
     formState: { errors },
   } = useForm<BookFormInput, unknown, BookFormValues>({
     resolver: zodResolver(bookSchema),
-    defaultValues: {
-      title: "",
-      author: "",
-      isbn: "",
-      publisher: "",
-      publishedYear: "",
-      language: "",
-      category: "",
-      description: "",
-      availability: "available",
-      visibility: "public",
-      physicalCondition: "good",
-      addressLabel: "",
-      city: "",
-      province: "",
-      region: "",
-      country: "Italia",
-      imageUrls: "",
-      externalCoverUrl: "",
-    },
+    defaultValues: getDefaultBookFormValues(book),
   });
   const t = useTranslation();
   const { showToast } = useToast();
@@ -158,6 +148,10 @@ export function BookForm() {
   const availabilityValue = watch("availability");
   const visibilityValue = watch("visibility");
   const physicalConditionValue = watch("physicalCondition");
+  const successToastTitle =
+    mode === "edit" ? t("books.edit.toast.successTitle") : t("books.new.toast.successTitle");
+  const successMessage =
+    mode === "edit" ? t("books.edit.successMessage") : t("books.new.successMessage");
 
   const clearCoverObjectUrl = useCallback(() => {
     for (const objectUrl of coverObjectUrlRef.current) {
@@ -195,10 +189,16 @@ export function BookForm() {
   useEffect(() => {
     if (state.success) {
       showToast({
-        title: t("books.new.toast.successTitle"),
-        description: state.messageKey ? t(state.messageKey) : t("books.new.successMessage"),
+        title: successToastTitle,
+        description: state.messageKey ? t(state.messageKey) : successMessage,
         variant: "success",
       });
+
+      if (mode === "edit" && book) {
+        router.push(routes.bookDetail(book.id));
+        return;
+      }
+
       reset();
       formRef.current?.reset();
       clearCoverObjectUrl();
@@ -213,7 +213,19 @@ export function BookForm() {
       setCurrentStep(0);
       router.push(routes.dashboard);
     }
-  }, [clearCoverObjectUrl, reset, router, showToast, state.messageKey, state.success, t]);
+  }, [
+    book,
+    clearCoverObjectUrl,
+    mode,
+    reset,
+    router,
+    showToast,
+    state.messageKey,
+    state.success,
+    successMessage,
+    successToastTitle,
+    t,
+  ]);
 
   useEffect(() => {
     const normalizedQuery = addressQuery.trim();
@@ -575,6 +587,7 @@ export function BookForm() {
       >
         {currentStep === 0 ? (
           <div className="space-y-4 rounded-xl border bg-muted/20 p-4">
+            {/* OCR and metadata lookup assist cataloging, but the user keeps control before saving. */}
             <div className="space-y-1">
               <h2 className="text-base font-semibold">{t("books.new.catalogingPanelTitle")}</h2>
               <p className="text-sm text-muted-foreground">
@@ -1164,6 +1177,39 @@ function getMetadataFieldValues(
     publisher: metadata.publisher,
     title: metadata.title,
   };
+}
+
+function getDefaultBookFormValues(book: Book | undefined): BookFormInput {
+  return {
+    title: book?.title ?? "",
+    author: book?.author ?? "",
+    isbn: book?.isbn ?? "",
+    publisher: book?.publisher ?? "",
+    publishedYear: book?.publishedYear ? String(book.publishedYear) : "",
+    language: book?.language ?? "",
+    category: book?.category ?? "",
+    description: book?.description ?? "",
+    availability: book?.availability ?? "available",
+    visibility: book?.visibility ?? "public",
+    physicalCondition: book?.physicalCondition ?? "good",
+    addressLabel: book?.location?.addressLabel ?? "",
+    city: book?.location?.city ?? "",
+    province: book?.location?.province ?? "",
+    region: book?.location?.region ?? "",
+    country: book?.location?.country ?? "Italia",
+    imageUrls: "",
+    externalCoverUrl: "",
+  };
+}
+
+function getInitialPreviewImages(book: Book | undefined): BookPreviewImage[] {
+  return (
+    book?.images.map((image) => ({
+      alt: image.alt ?? book.title,
+      id: image.id,
+      url: image.url,
+    })) ?? []
+  );
 }
 
 function getCoverLookupMessage(status: CoverLookupStatus, t: ReturnType<typeof useTranslation>) {

@@ -358,8 +358,20 @@ export const en = {
     },
     detail: {
       eyebrow: "Book record",
+      breadcrumbCatalogLabel: "Catalog",
       backToCatalogLabel: "Back to catalog",
       nearbyLabel: "Find nearby availability",
+      nextBookLabel: "Go to next book",
+      previousBookLabel: "Go to previous book",
+      ownerActionsTitle: "Manage your listing",
+      ownerActionsDescription:
+        "You can update the published details or permanently delete this book.",
+      editBookLabel: "Edit listing",
+      deleteBookLabel: "Delete listing",
+      deleteToastTitle: "Delete this listing?",
+      deleteToastDescription: "This action is permanent and will remove the book from the catalog.",
+      deleteToastActionLabel: "Delete",
+      deleteToastCancelLabel: "Cancel",
       descriptionTitle: "Description",
       ownerLabel: "Owner",
       categoryLabel: "Category",
@@ -582,6 +594,18 @@ export const en = {
         },
       },
     },
+    edit: {
+      eyebrow: "Edit book",
+      title: "Update the book record",
+      description: "Edit bibliographic data, availability, location and images for your listing.",
+      successMessage: "Book updated successfully.",
+      unauthorizedMessage: "You must sign in to edit a book.",
+      forbiddenMessage: "You can only edit books published by you.",
+      genericErrorMessage: "The book could not be updated.",
+      toast: {
+        successTitle: "Book updated",
+      },
+    },
   },
   nearby: {
     search: {
@@ -636,6 +660,10 @@ export const en = {
       messagePlaceholder: "Introduce yourself and briefly explain what you would like to ask.",
       submitLabel: "Send request",
       pendingLabel: "Sending...",
+      loginCtaTitle: "Sign in to contact the owner",
+      loginCtaDescription:
+        "Start a secure session to send a consultation, loan or information request without exposing personal data.",
+      loginCtaLabel: "Sign in and request contact",
       successMessage: "Request sent successfully.",
       unauthorizedMessage: "You must sign in to send a request.",
       unavailableBookMessage: "This book cannot receive requests.",

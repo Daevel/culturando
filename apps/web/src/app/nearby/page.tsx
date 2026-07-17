@@ -1,5 +1,8 @@
 import { geocodeAddress } from "@culturando/geo";
+import { redirect } from "next/navigation";
 
+import { auth } from "@/config/auth";
+import { routes } from "@/config/routes";
 import { getNearbyBooksByCoordinates } from "@/features/books/actions/books.repository";
 import { NearbySearchPage } from "@/features/nearby/components/NearbySearchPage";
 
@@ -16,6 +19,12 @@ const allowedRadiusKm = [5, 10, 25, 50] as const;
 export const dynamic = "force-dynamic";
 
 export default async function NearbyPage({ searchParams }: NearbyPageProps) {
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect(routes.login);
+  }
+
   const { q, radius } = await searchParams;
   const query = q?.trim() ?? "";
   const radiusKm = parseRadiusKm(radius);

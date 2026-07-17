@@ -47,8 +47,14 @@ export type CreateStoredBookInput = {
   };
   images: Array<{
     url: string;
+    thumbnailUrl?: string;
     source: BookImageSource;
   }>;
+};
+
+export type UpdateStoredBookInput = Omit<CreateStoredBookInput, "ownerId"> & {
+  bookId: string;
+  replaceImages: boolean;
 };
 
 export async function getBooks(): Promise<Book[]> {
@@ -67,6 +73,27 @@ export async function hasStoredBookWithIsbn(ownerId: string, isbn: string): Prom
   const books = await prisma.book.findMany({
     where: {
       ownerId,
+    },
+    select: {
+      isbn: true,
+    },
+  });
+  const normalizedIsbn = normalizeIsbn(isbn);
+
+  return books.some((book) => book.isbn && normalizeIsbn(book.isbn) === normalizedIsbn);
+}
+
+export async function hasStoredBookWithIsbnExceptBook(
+  ownerId: string,
+  isbn: string,
+  bookId: string,
+): Promise<boolean> {
+  const books = await prisma.book.findMany({
+    where: {
+      ownerId,
+      id: {
+        not: bookId,
+      },
     },
     select: {
       isbn: true,
@@ -144,6 +171,19 @@ export async function getStoredBookOwnerId(bookId: string): Promise<string | nul
   return book?.ownerId ?? null;
 }
 
+export async function getAnyStoredBookOwnerId(bookId: string): Promise<string | null> {
+  const book = await prisma.book.findUnique({
+    where: {
+      id: bookId,
+    },
+    select: {
+      ownerId: true,
+    },
+  });
+
+  return book?.ownerId ?? null;
+}
+
 export async function getNearbyBooks(bookId: string, limit = 6): Promise<NearbyBook[]> {
   const origin = await getBookById(bookId);
   const originLatitude = origin?.location?.publicLatitude;
@@ -194,11 +234,59 @@ export async function createStoredBook(input: CreateStoredBookInput) {
       images: {
         create: input.images.map((image, index) => ({
           url: image.url,
+          thumbnailUrl: image.thumbnailUrl,
           source: image.source,
           alt: `${input.book.title} - immagine ${index + 1}`,
           isPrimary: index === 0,
         })),
       },
+    },
+  });
+}
+
+export async function updateStoredBook(input: UpdateStoredBookInput) {
+  return prisma.$transaction(async (tx) => {
+    if (input.replaceImages) {
+      await tx.bookImage.deleteMany({
+        where: {
+          bookId: input.bookId,
+        },
+      });
+    }
+
+    return tx.book.update({
+      where: {
+        id: input.bookId,
+      },
+      data: {
+        ...input.book,
+        author: input.book.author ?? "",
+        location: {
+          upsert: {
+            create: input.location,
+            update: input.location,
+          },
+        },
+        images: input.replaceImages
+          ? {
+              create: input.images.map((image, index) => ({
+                url: image.url,
+                thumbnailUrl: image.thumbnailUrl,
+                source: image.source,
+                alt: `${input.book.title} - immagine ${index + 1}`,
+                isPrimary: index === 0,
+              })),
+            }
+          : undefined,
+      },
+    });
+  });
+}
+
+export async function deleteStoredBook(bookId: string) {
+  return prisma.book.delete({
+    where: {
+      id: bookId,
     },
   });
 }
@@ -420,6 +508,7 @@ function toBook(book: StoredBook): Book {
       id: image.id,
       bookId: image.bookId,
       url: image.url,
+      thumbnailUrl: image.thumbnailUrl ?? undefined,
       source: image.source,
       alt: image.alt ?? undefined,
       isPrimary: image.isPrimary,

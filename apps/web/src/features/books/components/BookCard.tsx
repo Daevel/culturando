@@ -56,7 +56,7 @@ export function BookCard({ book }: BookCardProps) {
                   className="object-cover blur-[1px]"
                   fill
                   sizes="(min-width: 1280px) 25vw, (min-width: 768px) 50vw, 100vw"
-                  src={primaryImage.url}
+                  src={primaryImage.thumbnailUrl ?? primaryImage.url}
                   unoptimized
                 />
               </div>

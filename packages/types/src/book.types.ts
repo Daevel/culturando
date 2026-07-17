@@ -24,6 +24,7 @@ export type BookImage = {
   id: string;
   bookId: string;
   url: string;
+  thumbnailUrl?: string;
   source: BookImageSource;
   alt?: string;
   isPrimary: boolean;
