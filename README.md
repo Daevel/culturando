@@ -1,410 +1,263 @@
 # Culturando
 
-**Culturando** è una piattaforma web geolocalizzata per la valorizzazione e la condivisione del patrimonio librario privato.
-Il progetto nasce come tesi triennale e ha l’obiettivo di rendere più visibili collezioni, biblioteche domestiche e raccolte tematiche, permettendo agli utenti di pubblicare libri, cercare volumi nelle vicinanze e richiedere consultazioni o prestiti.
+**Culturando** è una piattaforma web geolocalizzata per pubblicare, cercare e valorizzare patrimoni librari privati.
 
-## Descrizione
+Il progetto nasce come Project Work per il CdS Informatica per le Aziende Digitali (L-31), traccia **"Sviluppo di un software di geolocalizzazione culturale per condividere il patrimonio librario degli utenti privati"**.
 
-Culturando consente agli utenti di creare un profilo personale, pubblicare libri della propria raccolta privata, associare i contenuti a una posizione approssimata e scoprire libri disponibili nel territorio tramite una mappa interattiva.
+## Obiettivo
 
-La piattaforma integra funzionalità di geolocalizzazione, visualizzazione 3D della mappa, gestione delle immagini di copertina, statistiche d’uso e una componente di catalogazione assistita tramite AI, basata su OCR, riconoscimento ISBN e recupero di metadati bibliografici.
+Il prototipo permette a utenti privati di creare un profilo, pubblicare libri della propria raccolta, associare i contenuti a una posizione approssimata, cercare libri per testo o distanza e inviare richieste di consultazione o prestito.
 
-Particolare attenzione viene dedicata a:
+Il sistema privilegia:
 
-* usabilità;
-* accessibilità;
-* privacy;
-* protezione della posizione degli utenti;
-* SEO delle pagine pubbliche;
-* valorizzazione culturale del patrimonio librario privato.
+- usabilità e accessibilità dell'interfaccia;
+- protezione dei dati personali;
+- geolocalizzazione privacy-safe;
+- gestione di copertine, miniature e anteprime;
+- statistiche d'uso semplici;
+- architettura modulare e documentabile.
 
-## Obiettivi del progetto
+## Requisiti Del Project Work
 
-Gli obiettivi principali di Culturando sono:
+Il template ufficiale del Project Work è conservato in:
 
-* permettere agli utenti di pubblicare e gestire libri appartenenti a patrimoni librari privati;
-* consentire la ricerca di libri per titolo, autore, categoria, disponibilità e distanza;
-* visualizzare su mappa i libri e gli utenti vicini tramite dati geospaziali;
-* mostrare una mappa interattiva con vista 3D, edifici estrusi e animazione della camera;
-* distinguere tra disponibilità verificate su Culturando e luoghi esterni potenzialmente rilevanti;
-* gestire immagini di copertina e miniature;
-* supportare la catalogazione assistita tramite immagine, OCR e ISBN;
-* raccogliere statistiche semplici come visualizzazioni e richieste;
-* proteggere i dati personali e la posizione precisa degli utenti;
-* ottimizzare le pagine pubbliche per la SEO.
+```txt
+thesis/Project Work - Luigi Avitabile.docx.pdf
+```
 
-## Stack tecnologico
+Il repository copre i principali artefatti richiesti:
 
-### Architettura
+- applicazione web prototipo;
+- registrazione, login, conferma email e profilo utente;
+- pubblicazione del patrimonio librario;
+- inserimento metadati libro: titolo, autore, anno, categorie, ISBN, editore, lingua e descrizione;
+- upload immagini di copertina con anteprime e URL thumbnail persistite;
+- ricerca testuale nel catalogo;
+- ricerca spaziale per area e distanza;
+- visualizzazione su mappa MapLibre;
+- dettaglio libro con immagini e richiesta prestito/consultazione simulata;
+- dashboard utente con metriche e grafici base;
+- dashboard amministrativa con metriche aggregate;
+- database PostgreSQL/PostGIS con schema Prisma e seed demo;
+- componenti front-end strutturati e commenti mirati sulle scelte meno ovvie.
 
-* **Nx Monorepo**
-* **pnpm**
-* **Node.js v24 LTS — Krypton**
-* **Next.js**
-* **TypeScript**
-* **Auth.js**
-* **PostgreSQL**
-* **PostGIS**
-* **Prisma**
-* **Biome**
-* **Tailwind CSS**
-* **shadcn/ui**
+Il rapporto tecnico della tesi è mantenuto come file separato fuori dal README.
 
-### Mappe e geospazialità
+## Stack Tecnologico
 
-* **MapLibre GL JS**
-* **WebGL**
-* **Vector tiles**
-* **Vista 3D con pitch, bearing e buildings extrusion**
-* **Animazione camera con `flyTo`, `rotateTo` e `requestAnimationFrame`**
-* **GeoJSON dinamico da API**
-* **OpenStreetMap / Overpass API**
-* **PMTiles**, opzionale per layer statici
-* **deck.gl**, opzionale per heatmap, colonne 3D e statistiche avanzate
+- Nx monorepo;
+- pnpm;
+- Next.js App Router;
+- React;
+- TypeScript;
+- Tailwind CSS;
+- componenti UI shadcn-like;
+- Auth.js;
+- Zod;
+- Prisma;
+- PostgreSQL con PostGIS;
+- MapLibre GL JS;
+- Cloudflare R2 opzionale per storage immagini;
+- Sharp per generazione miniature WebP;
+- Resend opzionale per email transazionali;
+- Biome;
+- package condivisi per config, tipi, database, geolocalizzazione, AI, asset e traduzioni.
 
-### AI
-
-La componente AI principale riguarda la **catalogazione assistita dei libri**.
-
-Pipeline prevista:
-
-1. upload immagine della copertina o del retro del libro;
-2. estrazione del testo tramite OCR;
-3. rilevamento di eventuale ISBN;
-4. lookup dei metadati bibliografici;
-5. ranking dei risultati;
-6. precompilazione del form libro;
-7. conferma o correzione manuale da parte dell’utente.
-
-## Struttura del monorepo
+## Struttura
 
 ```txt
 culturando/
-  apps/
-    web/
-
-  packages/
-    db/
-    types/
-    geo/
-    ai/
-    config/
+├── apps/
+│   └── web/                  # applicazione Next.js
+├── packages/
+│   ├── ai/                   # OCR, ISBN e metadati libro
+│   ├── assets/               # path asset pubblici
+│   ├── config/               # configurazioni condivise
+│   ├── db/                   # Prisma schema/client/seed
+│   ├── geo/                  # geocoding e coordinate privacy-safe
+│   ├── translation/          # dizionari i18n
+│   └── types/                # tipi di dominio condivisi
+├── thesis/                   # materiali del Project Work
+├── docker-compose.yml
+├── nx.json
+├── package.json
+└── pnpm-workspace.yaml
 ```
 
-### `apps/web`
-
-Contiene l’applicazione principale sviluppata con Next.js.
-
-Include:
-
-* homepage;
-* catalogo libri;
-* pagine dettaglio libro;
-* profili pubblici;
-* dashboard utente;
-* gestione libri;
-* gestione richieste;
-* mappa interattiva;
-* SEO;
-* interfaccia utente.
-
-### `packages/db`
-
-Contiene la logica relativa al database.
-
-Include:
-
-* schema Prisma;
-* client database;
-* migrazioni;
-* seed demo;
-* query comuni.
-
-### `packages/types`
-
-Contiene i tipi TypeScript condivisi tra le varie parti del progetto.
-
-Esempi:
-
-* `BookDTO`;
-* `UserDTO`;
-* `LocationDTO`;
-* `BookCategory`;
-* `LoanRequestStatus`;
-* `SearchFilters`.
-
-### `packages/geo`
-
-Contiene le funzioni geospaziali e privacy-safe.
-
-Esempi:
-
-* calcolo della distanza;
-* approssimazione delle coordinate;
-* generazione della posizione pubblica;
-* normalizzazione delle posizioni.
-
-### `packages/ai`
-
-Contiene la logica relativa alla catalogazione assistita.
-
-Esempi:
-
-* OCR;
-* estrazione ISBN;
-* lookup metadati;
-* ranking risultati;
-* suggerimento categoria;
-* suggerimento tag.
-
-### `packages/config`
-
-Contiene configurazioni condivise.
-
-Esempi:
-
-* configurazione TypeScript;
-* configurazione Biome;
-* utility per environment variables.
-
-## Funzionalità principali
+## Funzionalità Implementate
 
 ### Utenti
 
-* registrazione;
-* login;
-* logout;
-* profilo personale;
-* profilo pubblico;
-* gestione privacy;
-* gestione posizione.
+- registrazione e login;
+- conferma email tramite token;
+- profilo personale modificabile;
+- preferenza di saluto;
+- gestione visibilità profilo;
+- dashboard protetta;
+- ruolo admin.
 
 ### Libri
 
-* creazione libro;
-* modifica libro;
-* eliminazione libro;
-* upload copertina;
-* categorie;
-* tag;
-* disponibilità per consultazione;
-* disponibilità per prestito;
-* visibilità pubblica o privata.
+- creazione libro da area privata;
+- validazione form con Zod;
+- metadati bibliografici principali;
+- upload copertine e immagini multiple;
+- salvataggio immagini locale o su Cloudflare R2;
+- URL thumbnail persistita per miniature e anteprime;
+- ricerca copertina e metadati da Open Library;
+- catalogazione assistita da OCR/ISBN;
+- catalogo pubblico;
+- dettaglio libro;
+- conteggio visualizzazioni.
 
-### Ricerca
+### Ricerca E Geolocalizzazione
 
-* ricerca per titolo;
-* ricerca per autore;
-* ricerca per ISBN;
-* ricerca per categoria;
-* filtri per disponibilità;
-* filtri per distanza;
-* ordinamento per più recenti o più visualizzati.
-
-### Mappe
-
-* mappa interattiva con MapLibre GL JS;
-* basemap vettoriale tiled;
-* vista 3D urbana;
-* edifici 3D tramite `fill-extrusion`;
-* marker per risultati Culturando;
-* marker per biblioteche, librerie e cartolerie;
-* raggio di ricerca;
-* animazione della camera intorno a una zona scelta;
-* lista alternativa accessibile ai risultati.
-
-### Disponibilità vicine
-
-Culturando distingue tra:
-
-* **disponibilità verificata**, cioè libri pubblicati dagli utenti della piattaforma;
-* **luoghi esterni non verificati**, come biblioteche, librerie e cartolerie ottenute tramite OpenStreetMap / Overpass API.
-
-La disponibilità effettiva di un libro presso biblioteche o librerie esterne non viene garantita senza integrazioni con cataloghi o inventari reali.
+- ricerca testuale per titolo, autore, ISBN, editore, città, categoria e descrizione;
+- filtri per disponibilità e visibilità;
+- geocoding indirizzo tramite adapter in `@culturando/geo`;
+- coordinate private salvate separatamente dalle coordinate pubbliche approssimate;
+- ricerca libri vicini per raggio;
+- query geospaziali PostGIS con `ST_DWithin` e `ST_Distance`;
+- mappa MapLibre con marker, cluster, popup, legenda e vista 2D/3D.
 
 ### Richieste
 
-* invio richiesta di consultazione o prestito;
-* gestione richieste ricevute;
-* accettazione o rifiuto richiesta;
-* storico delle richieste inviate.
+- richiesta di consultazione, prestito o informazioni;
+- blocco richieste non valide o verso libri non disponibili;
+- gestione richieste ricevute;
+- accettazione/rifiuto da parte del proprietario;
+- storico richieste inviate;
+- annullamento richieste ancora in attesa.
 
 ### Statistiche
 
-* visualizzazioni libro;
-* numero richieste ricevute;
-* libri più visualizzati;
-* statistiche base del profilo;
-* statistiche aggregate per zona, opzionali.
+- visualizzazioni libro;
+- conteggio libri pubblici/privati;
+- richieste ricevute e in attesa;
+- libri più visualizzati;
+- dashboard admin con utenti, libri, richieste e visualizzazioni;
+- grafici base tramite barre CSS responsive.
 
-### SEO
+## Database
 
-Le pagine pubbliche saranno ottimizzate tramite:
+Il database usa PostgreSQL con estensione PostGIS. Lo schema vive in:
 
-* metadata globali;
-* title dinamici;
-* description dinamiche;
-* slug leggibili;
-* canonical URL;
-* Open Graph metadata;
-* sitemap;
-* robots.txt;
-* Schema.org `Book`;
-* ottimizzazione immagini;
-* Core Web Vitals.
-
-Le pagine private, la dashboard e i dati personali non saranno indicizzati.
-
-### Privacy
-
-Culturando non mostra pubblicamente la posizione precisa degli utenti.
-
-Strategia prevista:
-
-* coordinate precise usate solo internamente, se necessario;
-* coordinate pubbliche approssimate;
-* visualizzazione tramite città, quartiere o zona indicativa;
-* raggio di visibilità configurabile;
-* possibilità di nascondere la posizione;
-* nessuna email pubblica;
-* contatto tramite richieste interne.
-
-## Requisiti
-
-* Node.js v24 LTS — Krypton
-* pnpm
-* PostgreSQL
-* PostGIS
-* nvm, consigliato
-
-## Setup locale
-
-### 1. Clonare il repository
-
-```bash
-git clone https://github.com/username/culturando.git
-cd culturando
+```txt
+packages/db/prisma/schema.prisma
 ```
 
-### 2. Usare la versione corretta di Node.js
+Entità principali:
 
-```bash
-nvm use
+- `User`;
+- `EmailVerificationToken`;
+- `Book`;
+- `BookLocation`;
+- `BookImage`;
+- `BookStats`;
+- `LoanRequest`.
+
+Il seed demo vive in:
+
+```txt
+packages/db/prisma/seed.mjs
 ```
 
-Se la versione non è installata:
+Credenziali demo:
 
-```bash
-nvm install lts/krypton
-nvm use lts/krypton
+```txt
+admin@culturando.local / Culturando123!
 ```
 
-### 3. Installare le dipendenze
+Gli utenti demo condividono la password:
+
+```txt
+Culturando123!
+```
+
+## Setup Locale
+
+### 1. Installazione
 
 ```bash
 pnpm install
 ```
 
-### 4. Configurare le variabili ambiente
+### 2. Variabili Ambiente
 
-Creare un file `.env` partendo da `.env.example`:
+Creare `.env` da `.env.example`:
 
 ```bash
 cp .env.example .env
 ```
 
-Variabili previste:
+Variabili principali:
 
 ```env
-DATABASE_URL=
-AUTH_SECRET=
-AUTH_URL=
-NEXT_PUBLIC_APP_URL=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+AUTH_SECRET=secret-to-change-with-a-real-secret
+AUTH_URL=http://localhost:3000
+DATABASE_URL=postgresql://culturando:culturando@127.0.0.1:5433/culturando
+EMAIL_PROVIDER=console
 ```
 
-Altre variabili saranno aggiunte in base ai servizi scelti per storage immagini, geocoding, OCR e API bibliografiche.
+Le variabili `R2_*`, `RESEND_*` e `CLOUDFLARE_OCR_*` sono opzionali e servono per storage cloud, invio email reale e OCR esterno.
 
-### 5. Avviare il database
-
-Il progetto richiede PostgreSQL con estensione PostGIS attiva.
-
-### 6. Eseguire le migrazioni
+### 3. Avvio Database
 
 ```bash
-pnpm db:migrate
+pnpm db:up
+pnpm db:postgis
+pnpm db:push
+pnpm db:seed
 ```
 
-### 7. Avviare il progetto
+### 4. Avvio Applicazione
 
 ```bash
 pnpm dev
 ```
 
-L’app sarà disponibile su:
+Applicazione disponibile su:
 
 ```txt
 http://localhost:3000
 ```
 
-## Script principali
+## Script
 
 ```bash
-pnpm dev
-pnpm build
-pnpm lint
-pnpm format
-pnpm check
+pnpm dev              # avvia database, PostGIS e web app
+pnpm build            # build web app
+pnpm lint             # lint Nx per web
+pnpm biome:check      # controllo Biome
+pnpm biome:write      # format/lint auto-fix
+pnpm db:up            # avvia PostgreSQL/PostGIS
+pnpm db:down          # ferma i container
+pnpm db:postgis       # abilita estensione PostGIS
+pnpm db:push          # sincronizza schema Prisma
+pnpm db:seed          # popola dati demo
+pnpm db:studio        # apre Prisma Studio
 ```
 
-## Roadmap MVP
+## Privacy
 
-* [ ] setup Nx monorepo;
-* [ ] setup Next.js + TypeScript;
-* [ ] setup Biome;
-* [ ] setup Tailwind CSS + shadcn/ui;
-* [ ] setup PostgreSQL + PostGIS + Prisma;
-* [ ] autenticazione con Auth.js;
-* [ ] CRUD libri;
-* [ ] upload copertine;
-* [ ] profili utente;
-* [ ] ricerca e filtri;
-* [ ] geolocalizzazione base;
-* [ ] posizione approssimata;
-* [ ] mappa MapLibre;
-* [ ] vista 3D base;
-* [ ] disponibilità vicine Culturando;
-* [ ] POI esterni non verificati;
-* [ ] richieste consultazione/prestito;
-* [ ] statistiche base;
-* [ ] SEO base;
-* [ ] accessibilità base;
-* [ ] deploy.
+Culturando non mostra pubblicamente coordinate precise.
 
-## Sviluppi futuri
+La strategia adottata è:
 
-* app mobile con React Native / Expo;
-* integrazione deck.gl;
-* heatmap;
-* colonne 3D;
-* vector tiles custom da PostGIS;
-* PMTiles;
-* ricerca semantica;
-* raccomandazioni personalizzate;
-* notifiche;
-* chat interna;
-* integrazione con cataloghi bibliotecari reali;
-* integrazione con inventari di librerie.
+- salvataggio interno di coordinate precise quando disponibili;
+- generazione di coordinate pubbliche approssimate;
+- uso delle coordinate pubbliche per mappa e ricerca spaziale;
+- nessuna email pubblica nel flusso di contatto;
+- richieste interne per consultazione o prestito;
+- visibilità profilo configurabile.
 
-## Stato del progetto
+## Stato
 
-Il progetto è attualmente in fase di progettazione e setup iniziale.
-
-## Licenza
-
-Da definire.
+Il progetto è un prototipo funzionale coerente con la traccia del Project Work. Le estensioni naturali post-MVP sono modifica/eliminazione avanzata dei libri, profili pubblici dedicati, notifiche, chat interna, integrazione con cataloghi bibliotecari reali e applicazione mobile.
 
 ## Autore
 
-Progetto sviluppato come tesi triennale.
+Luigi Avitabile
 
-**Culturando** — piattaforma web geolocalizzata per la valorizzazione del patrimonio librario privato.
+Project Work - CdS Informatica per le Aziende Digitali (L-31)

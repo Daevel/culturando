@@ -1287,13 +1287,17 @@ Stato dei primi step:
 32. introdurre package `@culturando/assets` per centralizzare i path degli asset pubblici — completato;
 33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato;
 34. introdurre preferenza di saluto utente e titolo dashboard personalizzato — completato;
-35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato.
+35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato;
+36. completare CRUD libri con modifica/cancellazione protette da ownership e conferma cancellazione tramite toast applicativo — completato;
+37. aggiungere miniature reali WebP con Sharp e `BookImage.thumbnailUrl` — completato;
+38. proteggere ricerca nearby e disponibilità vicine dietro login, mantenendo pubblico il catalogo libri — completato;
+39. introdurre breadcrumb e navigazione precedente/successiva nel dettaglio libro — completato.
 
 Ordine dei prossimi step:
 
-1. iniziare la stesura della relazione tecnica della tesi;
-2. documentare requisiti funzionali/non funzionali, modello dati, UX/accessibilità, privacy e architettura;
-3. valutare pagina profilo pubblico e miniature reali come rifiniture post-MVP.
+1. rifinire SEO pubblica avanzata se richiesta dalla relazione;
+2. valutare pagina profilo pubblico del proprietario come rifinitura post-MVP;
+3. documentare nella relazione tecnica i flussi CRUD, privacy geospaziale e gestione immagini/thumbnail.
 
 ## 13. Principi da rispettare durante lo sviluppo
 
