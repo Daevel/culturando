@@ -30,6 +30,18 @@ export const it = {
       },
     },
   },
+  watchdog: {
+    inactivity: {
+      title: "Sei ancora lì?",
+      expiredTitle: "Timeout raggiunto",
+      description:
+        "Abbiamo rilevato un periodo di inattività durante la navigazione. Clicca su 'Continua la navigazione' per procedere, altrimenti verrai disconnesso allo scadere del tempo.",
+      expiredDescription:
+        "La sessione è scaduta, clicca su 'Accedi di nuovo' per tornare su questa pagina.",
+      continueLabel: "Continua la navigazione",
+      loginAgainLabel: "Accedi di nuovo",
+    },
+  },
   auth: {
     login: {
       title: "Accedi a Culturando",

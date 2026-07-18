@@ -30,6 +30,17 @@ export const en = {
       },
     },
   },
+  watchdog: {
+    inactivity: {
+      title: "Are you still there?",
+      expiredTitle: "Timeout reached",
+      description:
+        "We detected a period of inactivity while you were browsing. Click 'Continue browsing' to proceed, otherwise you will be signed out when the time expires.",
+      expiredDescription: "Your session has expired. Click 'Sign in again' to return to this page.",
+      continueLabel: "Continue browsing",
+      loginAgainLabel: "Sign in again",
+    },
+  },
   auth: {
     login: {
       title: "Sign in to Culturando",

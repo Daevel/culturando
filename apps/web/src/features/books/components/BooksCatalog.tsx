@@ -4,7 +4,6 @@ import type { Book } from "@culturando/types";
 import { MapPin } from "lucide-react";
 import Link from "next/link";
 import { useDeferredValue, useState } from "react";
-
 import { Button } from "@/components/ui/button";
 import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Input } from "@/components/ui/input";

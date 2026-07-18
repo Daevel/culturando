@@ -47,8 +47,10 @@ Stack principale:
 - Prisma come ORM e schema database locale;
 - PostgreSQL con estensione PostGIS per persistenza e query geospaziali;
 - MapLibre GL JS per mappe interattive 2D/3D;
+- Geoapify opzionale come provider principale di geocoding/autocomplete indirizzi, con fallback Nominatim/OpenStreetMap;
 - Cloudflare R2, tramite client S3 compatibile, per storage persistente delle copertine;
 - Resend per invio email transazionali di conferma account, con fallback console in sviluppo;
+- Sonner per notifiche applicative e conferme interattive;
 - `@culturando/assets` per centralizzare i path degli asset pubblici condivisi;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
 - Biome per linting e formatting;
@@ -276,7 +278,7 @@ apps/web/src/features/requests/
 Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
 I testi riutilizzabili non devono essere duplicati nelle feature: quando esiste una chiave, devono passare da `@culturando/translation` e dall'hook web `useTranslation`.
 
-La feature `location` contiene azioni web condivise per suggerimenti indirizzo/autocomplete basati su Nominatim/OpenStreetMap, riutilizzate da profilo e pubblicazione libro senza import trasversali tra feature.
+La feature `location` contiene una server action wrapper verso `@culturando/geo` per suggerimenti indirizzo/autocomplete. Il provider principale è Geoapify quando `GEOAPIFY_API_KEY` è configurata, con fallback Nominatim/OpenStreetMap; la action è riutilizzata da profilo e pubblicazione libro senza import trasversali tra feature.
 
 In futuro saranno previste feature come:
 
@@ -473,7 +475,9 @@ Responsabilità attuali:
 
 - normalizzazione coordinate;
 - approssimazione coordinate per privacy;
-- geocoding indirizzo -> coordinate tramite adapter iniziale Nominatim/OpenStreetMap;
+- geocoding indirizzo -> coordinate tramite adapter Geoapify quando `GEOAPIFY_API_KEY` è configurata, con fallback Nominatim/OpenStreetMap;
+- autocomplete indirizzi condiviso tramite `searchAddressSuggestions`, usato da profilo e form libro;
+- normalizzazione degli indirizzi nel formato `via/corso civico, città, provincia` tramite `formatStructuredAddress`;
 - funzioni riutilizzabili da web, API e mobile.
 
 Responsabilità future:
@@ -712,7 +716,7 @@ Responsabilità:
 - salvare `salutationPreference` sul record utente;
 - generare un token di conferma email salvato come hash in `EmailVerificationToken`;
 - inviare email di conferma tramite provider configurabile (`console`, `http` o `resend`);
-- mostrare toast primary di conferma invio email;
+- mostrare notifica Sonner di conferma invio email;
 - salvare la password come hash, mai in chiaro;
 - linkare alla login.
 
@@ -954,7 +958,7 @@ Funzionalità attuali:
 - validazione Zod di nome completo, nickname, avatar, biografia, domicilio e visibilità profilo;
 - upload avatar dal dispositivo tramite `profile-avatar-storage`, con R2 quando configurato e fallback locale in `apps/web/public/uploads/profile-avatars`;
 - nickname univoco a livello DB, controllato live dal form e modificabile ogni 90 giorni;
-- domicilio gestito tramite autocomplete Nominatim su un solo input, salvando `addressLabel`, `postalCode`, `city`, `province` e `region`;
+- domicilio gestito tramite autocomplete condiviso `@culturando/geo` su un solo input, con Geoapify quando configurato e fallback Nominatim, salvando `addressLabel`, `postalCode`, `city`, `province` e `region`;
 - campi profilo salvati direttamente sul modello `User`: `name`, `nickname`, `nicknameUpdatedAt`, `avatarUrl`, `bio`, `addressLabel`, `postalCode`, `city`, `province`, `region`, `isProfilePublic`;
 - email mostrata come dato account non modificabile dal form profilo;
 - testi UI centralizzati in `@culturando/translation`.
@@ -969,7 +973,7 @@ Funzionalità attuali:
 - selezione lingua app tra italiano e inglese;
 - persistenza lingua in `localStorage` e cookie `culturando-locale`;
 - aggiornamento reattivo dei testi client tramite `LocaleProvider` e `useTranslation`;
-- toast di conferma al cambio lingua.
+- notifica Sonner di conferma al cambio lingua.
 
 ### 11.1.3 Dashboard amministrativa
 
@@ -1094,7 +1098,7 @@ La feature nearby permette di cercare libri pubblici vicini a una zona o a un li
 Funzionalità attuali:
 
 - route pubblica `/nearby` con form di ricerca per città o indirizzo;
-- geocoding della zona cercata tramite `@culturando/geo` e Nominatim/OpenStreetMap;
+- geocoding della zona cercata tramite `@culturando/geo`, con Geoapify quando configurato e fallback Nominatim/OpenStreetMap;
 - selezione raggio ricerca: 5 km, 10 km, 25 km, 50 km;
 - route `/books/[bookId]/nearby` per trovare libri vicini a un libro specifico;
 - lista testuale accessibile ordinata per distanza approssimata;
@@ -1288,7 +1292,7 @@ Stato dei primi step:
 33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato;
 34. introdurre preferenza di saluto utente e titolo dashboard personalizzato — completato;
 35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato;
-36. completare CRUD libri con modifica/cancellazione protette da ownership e conferma cancellazione tramite toast applicativo — completato;
+36. completare CRUD libri con modifica/cancellazione protette da ownership e conferma cancellazione tramite notifica Sonner centrale — completato;
 37. aggiungere miniature reali WebP con Sharp e `BookImage.thumbnailUrl` — completato;
 38. proteggere ricerca nearby e disponibilità vicine dietro login, mantenendo pubblico il catalogo libri — completato;
 39. introdurre breadcrumb e navigazione precedente/successiva nel dettaglio libro — completato.

@@ -5,14 +5,13 @@ import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PageDescription, PageTitle } from "@/components/ui/page";
 import { Spinner } from "@/components/ui/spinner";
-import { useToast } from "@/components/ui/toast";
 import { Wizard, type WizardStep } from "@/components/ui/wizard";
 import { routes } from "@/config/routes";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -56,7 +55,6 @@ export function SignupForm() {
     },
   });
   const t = useTranslation();
-  const { showToast } = useToast();
   const emailAlreadyExistsMessage = t("auth.signup.emailAlreadyExistsMessage");
   const [currentStep, setCurrentStep] = useState(0);
   const [isCheckingEmail, setIsCheckingEmail] = useState(false);
@@ -87,13 +85,11 @@ export function SignupForm() {
 
   useEffect(() => {
     if (state.success && state.messageKey) {
-      showToast({
-        title: t("auth.signup.toast.title"),
+      toast.success(t("auth.signup.toast.title"), {
         description: t(state.messageKey),
-        variant: "success",
       });
     }
-  }, [showToast, state.messageKey, state.success, t]);
+  }, [state.messageKey, state.success, t]);
 
   useEffect(() => {
     const email = String(emailValue ?? "")

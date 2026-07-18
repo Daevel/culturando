@@ -1,12 +1,12 @@
 "use client";
 
+import type { AddressSuggestion } from "@culturando/geo";
 import type { UserProfile } from "@culturando/types";
 import { CheckCircle2, XCircle } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useActionState, useEffect, useState, useTransition } from "react";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,10 +21,7 @@ import {
   PageTitle,
 } from "@/components/ui/page";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  type AddressSuggestion,
-  searchAddressSuggestions,
-} from "@/features/location/actions/search-address-suggestions.action";
+import { searchAddressSuggestions } from "@/features/location/actions/search-address-suggestions.action";
 import { useTranslation } from "@/hooks/useTranslation";
 import { checkProfileNicknameAvailabilityAction } from "../actions/check-profile-nickname.action";
 import { updateProfileAction } from "../actions/update-profile.action";

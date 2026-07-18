@@ -3,6 +3,7 @@
 import type { Locale } from "@culturando/translation";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import { useLocale } from "@/components/LocaleProvider";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,7 +18,6 @@ import {
   PageTitle,
 } from "@/components/ui/page";
 import { Switch } from "@/components/ui/switch";
-import { useToast } from "@/components/ui/toast";
 import { useTranslation } from "@/hooks/useTranslation";
 import { updateProfileVisibilityAction } from "../actions/update-profile-visibility.action";
 
@@ -34,7 +34,6 @@ export function SettingsPageContent({ isProfilePublic }: SettingsPageContentProp
   const t = useTranslation();
   const router = useRouter();
   const { locale, setLocale } = useLocale();
-  const { showToast } = useToast();
   const [profileVisible, setProfileVisible] = useState(isProfilePublic);
   const [isUpdatingVisibility, startVisibilityUpdate] = useTransition();
 
@@ -44,10 +43,8 @@ export function SettingsPageContent({ isProfilePublic }: SettingsPageContentProp
     }
 
     setLocale(nextLocale);
-    showToast({
-      title: t("settings.language.toastTitle"),
+    toast.success(t("settings.language.toastTitle"), {
       description: t("settings.language.toastDescription"),
-      variant: "success",
     });
     router.refresh();
   }
@@ -60,18 +57,14 @@ export function SettingsPageContent({ isProfilePublic }: SettingsPageContentProp
       void updateProfileVisibilityAction(nextProfileVisible).then((result) => {
         if (!result.success) {
           setProfileVisible(previousProfileVisible);
-          showToast({
-            title: t("settings.profileVisibility.toastErrorTitle"),
+          toast.error(t("settings.profileVisibility.toastErrorTitle"), {
             description: t("settings.profileVisibility.toastErrorDescription"),
-            variant: "destructive",
           });
           return;
         }
 
-        showToast({
-          title: t("settings.profileVisibility.toastTitle"),
+        toast.success(t("settings.profileVisibility.toastTitle"), {
           description: t("settings.profileVisibility.toastDescription"),
-          variant: "success",
         });
         router.refresh();
       });

@@ -1,6 +1,7 @@
 "use client";
 
 import type { BookMetadataSuggestion } from "@culturando/ai";
+import type { AddressSuggestion } from "@culturando/geo";
 import type { Book } from "@culturando/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImagePlus, Upload } from "lucide-react";
@@ -16,8 +17,8 @@ import {
   useTransition,
 } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import type { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -35,17 +36,13 @@ import {
 import { DropdownSelect } from "@/components/ui/dropdown-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/toast";
 import { Wizard, type WizardStep } from "@/components/ui/wizard";
 import { routes } from "@/config/routes";
 import {
   type ExtractIsbnFromImageResult,
   extractIsbnFromImageAction,
 } from "@/features/cataloging/actions/extract-isbn-from-image.action";
-import {
-  type AddressSuggestion,
-  searchAddressSuggestions,
-} from "@/features/location/actions/search-address-suggestions.action";
+import { searchAddressSuggestions } from "@/features/location/actions/search-address-suggestions.action";
 import { useTranslation } from "@/hooks/useTranslation";
 import { createBookAction } from "../actions/create-book.action";
 import { bookSchema } from "../schemas/book.schema";
@@ -143,7 +140,6 @@ export function BookForm({ action = createBookAction, book, mode = "create" }: B
     defaultValues: getDefaultBookFormValues(book),
   });
   const t = useTranslation();
-  const { showToast } = useToast();
   const isbnValue = watch("isbn");
   const availabilityValue = watch("availability");
   const visibilityValue = watch("visibility");
@@ -188,10 +184,8 @@ export function BookForm({ action = createBookAction, book, mode = "create" }: B
 
   useEffect(() => {
     if (state.success) {
-      showToast({
-        title: successToastTitle,
+      toast.success(successToastTitle, {
         description: state.messageKey ? t(state.messageKey) : successMessage,
-        variant: "success",
       });
 
       if (mode === "edit" && book) {
@@ -219,7 +213,6 @@ export function BookForm({ action = createBookAction, book, mode = "create" }: B
     mode,
     reset,
     router,
-    showToast,
     state.messageKey,
     state.success,
     successMessage,

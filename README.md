@@ -57,9 +57,11 @@ Il rapporto tecnico della tesi è mantenuto come file separato fuori dal README.
 - Prisma;
 - PostgreSQL con PostGIS;
 - MapLibre GL JS;
+- Geoapify opzionale per geocoding e autocomplete indirizzi;
 - Cloudflare R2 opzionale per storage immagini;
 - Sharp per generazione miniature WebP;
 - Resend opzionale per email transazionali;
+- Sonner per notifiche applicative;
 - Biome;
 - package condivisi per config, tipi, database, geolocalizzazione, AI, asset e traduzioni.
 
@@ -115,6 +117,8 @@ culturando/
 - ricerca testuale per titolo, autore, ISBN, editore, città, categoria e descrizione;
 - filtri per disponibilità e visibilità;
 - geocoding indirizzo tramite adapter in `@culturando/geo`;
+- Geoapify come provider principale quando configurato, con fallback Nominatim/OpenStreetMap;
+- normalizzazione indirizzi nel formato `via/corso civico, città, provincia`;
 - coordinate private salvate separatamente dalle coordinate pubbliche approssimate;
 - ricerca libri vicini per raggio;
 - query geospaziali PostGIS con `ST_DWithin` e `ST_Distance`;
@@ -200,7 +204,7 @@ DATABASE_URL=postgresql://culturando:culturando@127.0.0.1:5433/culturando
 EMAIL_PROVIDER=console
 ```
 
-Le variabili `R2_*`, `RESEND_*` e `CLOUDFLARE_OCR_*` sono opzionali e servono per storage cloud, invio email reale e OCR esterno.
+Le variabili `R2_*`, `RESEND_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali e servono per storage cloud, invio email reale, OCR esterno e geocoding/autocomplete più accurato.
 
 ### 3. Avvio Database
 

@@ -4,9 +4,10 @@ import type { Metadata } from "next";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./global.css";
 import { JetBrains_Mono, Lora, Poppins } from "next/font/google";
+import { Toaster } from "sonner";
 import { AppFloatingBar } from "@/components/AppFloatingBar";
+import { InactivityWatchdog } from "@/components/InactivityWatchdog";
 import { LocaleProvider } from "@/components/LocaleProvider";
-import { Toaster, ToastProvider } from "@/components/ui/toast";
 import { getCurrentLocale } from "@/lib/locale";
 
 export const metadata: Metadata = {
@@ -65,11 +66,10 @@ export default async function RootLayout({
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
       >
         <LocaleProvider initialLocale={locale}>
-          <ToastProvider>
-            <AppFloatingBar />
-            {children}
-            <Toaster />
-          </ToastProvider>
+          <AppFloatingBar />
+          {children}
+          <InactivityWatchdog />
+          <Toaster richColors />
         </LocaleProvider>
       </body>
     </html>
