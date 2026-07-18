@@ -97,11 +97,12 @@ export async function extractIsbnFromImageAction(
   );
   const text = successfulOcrResults.map((ocrResult) => ocrResult.text).join("\n\n");
   const isbn = extractIsbnFromText(text);
-  const ocrMetadata = mergeOcrMetadata(
-    successfulOcrResults
-      .map((ocrResult) => ocrResult.metadata)
-      .filter((metadata): metadata is ImageOcrMetadata => Boolean(metadata)),
-  ) ?? extractOcrMetadataFromText(text);
+  const ocrMetadata =
+    mergeOcrMetadata(
+      successfulOcrResults
+        .map((ocrResult) => ocrResult.metadata)
+        .filter((metadata): metadata is ImageOcrMetadata => Boolean(metadata)),
+    ) ?? extractOcrMetadataFromText(text);
   const normalizedOcrMetadata = normalizeOcrMetadata(ocrMetadata, isbn, text);
   const lookupMetadata = isbn
     ? await lookupBookMetadataByIsbn(isbn)

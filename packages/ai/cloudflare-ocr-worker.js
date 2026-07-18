@@ -249,11 +249,7 @@ function uniqueStrings(values) {
 }
 
 function extractResponseText(response) {
-  if (
-    typeof response === "object" &&
-    response !== null &&
-    typeof response.response === "string"
-  ) {
+  if (typeof response === "object" && response !== null && typeof response.response === "string") {
     return response.response.trim();
   }
 
