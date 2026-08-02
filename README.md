@@ -178,68 +178,93 @@ Gli utenti demo condividono la password:
 Culturando123!
 ```
 
-## Setup Locale
+## Local development setup
 
-### 1. Installazione
+### Prerequisites
 
-```bash
-pnpm install
-```
+Make sure you have installed:
 
-### 2. Variabili Ambiente
+- Node.js
+- pnpm
+- Docker Desktop
 
-Creare `.env` da `.env.example`:
-
-```bash
-cp .env.example .env
-```
-
-Variabili principali:
-
-```env
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-AUTH_SECRET=secret-to-change-with-a-real-secret
-AUTH_URL=http://localhost:3000
-DATABASE_URL=postgresql://culturando:culturando@127.0.0.1:5433/culturando
-EMAIL_PROVIDER=console
-```
-
-Le variabili `R2_*`, `RESEND_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali e servono per storage cloud, invio email reale, OCR esterno e geocoding/autocomplete più accurato.
-
-### 3. Avvio Database
+Enable pnpm through Corepack if needed:
 
 ```bash
-pnpm db:up
-pnpm db:postgis
-pnpm db:push
-pnpm db:seed
+corepack enable
 ```
 
-### 4. Avvio Applicazione
+### Start the project from scratch
+
+After cloning the repository, start Docker Desktop and run:
 
 ```bash
-pnpm dev
+pnpm dev:fresh
 ```
 
-Applicazione disponibile su:
+This single command will:
+
+* install dependencies;
+* create `.env` from `.env.example` if missing;
+* start PostgreSQL with PostGIS through Docker Compose;
+* wait for the database to be ready;
+* generate Prisma Client when Prisma is configured;
+* apply local database migrations when Prisma is configured;
+* run the seed script when available;
+* start the Next.js web app.
+
+The web app will be available at:
 
 ```txt
 http://localhost:3000
 ```
 
+### Daily development
+
+After the first setup, you can usually start the app with:
+
+```bash
+pnpm dev
+```
+
+If you want to re-run the full setup and start the app again:
+
+```bash
+pnpm dev:fresh
+```
+
+### Reset local database
+
+```bash
+pnpm db:reset
+```
+
+### Prisma Studio
+
+```bash
+pnpm db:studio
+```
+
+Le variabili `R2_*`, `RESEND_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali e servono per storage cloud, invio email reale, OCR esterno e geocoding/autocomplete più accurato.
+
 ## Script
 
 ```bash
+pnpm dev:fresh        # setup completo e avvio web app
+pnpm setup:dev        # prepara ambiente, database e Prisma senza avviare l'app
 pnpm dev              # avvia database, PostGIS e web app
 pnpm build            # build web app
 pnpm lint             # lint Nx per web
 pnpm biome:check      # controllo Biome
 pnpm biome:write      # format/lint auto-fix
-pnpm db:up            # avvia PostgreSQL/PostGIS
-pnpm db:down          # ferma i container
-pnpm db:postgis       # abilita estensione PostGIS
+pnpm docker:up        # avvia PostgreSQL/PostGIS
+pnpm docker:down      # ferma i container
+pnpm docker:reset     # ferma i container e rimuove i volumi
+pnpm db:generate      # genera Prisma Client
+pnpm db:migrate       # applica migration Prisma locali
 pnpm db:push          # sincronizza schema Prisma
 pnpm db:seed          # popola dati demo
+pnpm db:reset         # reset completo database locale
 pnpm db:studio        # apre Prisma Studio
 ```
 
