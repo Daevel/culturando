@@ -3,13 +3,11 @@
 import { prisma } from "@culturando/db";
 
 import { hashPassword } from "@/lib/password";
+import { sendVerificationEmail } from "../emails/send-verification-email";
+import { createVerificationUrl } from "../lib/verification-url";
 import { validateSignupForm } from "../schemas/signup.schema";
 import type { AuthFormState } from "../types/auth-form.types";
-import {
-  buildEmailVerificationUrl,
-  createEmailVerificationToken,
-  sendVerificationEmail,
-} from "./email-verification";
+import { createEmailVerificationToken } from "./email-verification";
 
 type SignupField = "name" | "salutationPreference" | "email" | "password" | "confirmPassword";
 
@@ -81,10 +79,10 @@ export async function signupAction(
     },
   });
   const verificationToken = await createEmailVerificationToken(user.id);
-  const verificationUrl = buildEmailVerificationUrl(verificationToken);
+  const verificationUrl = createVerificationUrl(verificationToken);
 
   await sendVerificationEmail({
-    email,
+    to: email,
     name: validation.data.name,
     verificationUrl,
   });

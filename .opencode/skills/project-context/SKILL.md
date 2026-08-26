@@ -49,7 +49,7 @@ Stack principale:
 - MapLibre GL JS per mappe interattive 2D/3D;
 - Geoapify opzionale come provider principale di geocoding/autocomplete indirizzi, con fallback Nominatim/OpenStreetMap;
 - Cloudflare R2, tramite client S3 compatibile, per storage persistente delle copertine;
-- Resend per invio email transazionali di conferma account, con fallback console in sviluppo;
+- Nodemailer con SMTP per invio email transazionali di conferma account;
 - Sonner per notifiche applicative e conferme interattive;
 - `@culturando/assets` per centralizzare i path degli asset pubblici condivisi;
 - `@culturando/translation` per dizionari e chiavi testuali condivise;
@@ -715,25 +715,29 @@ Responsabilità:
 - creare un utente reale non ancora verificato in PostgreSQL tramite Prisma;
 - salvare `salutationPreference` sul record utente;
 - generare un token di conferma email salvato come hash in `EmailVerificationToken`;
-- inviare email di conferma tramite provider configurabile (`console`, `http` o `resend`);
+- inviare email di conferma tramite Nodemailer e SMTP;
 - mostrare notifica Sonner di conferma invio email;
 - salvare la password come hash, mai in chiaro;
 - linkare alla login.
 
 La dashboard usa `session.user.salutationPreference` per scegliere la forma del titolo di benvenuto. Questa informazione va trattata come preferenza di UI/linguaggio, non come orientamento sessuale o dato sensibile.
 
-La route `/auth/confirm-email?token=...` conferma il token, valorizza `User.emailVerifiedAt`, elimina i token residui dell’utente e mostra una pagina di ringraziamento con CTA verso la login. Senza token valido mostra uno stato non valido, quindi la pagina di successo è raggiungibile solo passando dal link email.
+La route `/auth/verify-email?token=...` conferma il token, valorizza `User.emailVerifiedAt`, elimina i token residui dell’utente e mostra una pagina di ringraziamento con CTA verso la login. Senza token valido mostra uno stato dedicato per token mancante, non valido o scaduto, quindi la pagina di successo è raggiungibile solo passando dal link email.
 
 Variabili email supportate:
 
 ```txt
-EMAIL_PROVIDER=console|http|resend
-RESEND_API_KEY=
-EMAIL_FROM="Culturando <onboarding@resend.dev>"
-EMAIL_PROVIDER_ENDPOINT=
-EMAIL_PROVIDER_TOKEN=
+EMAIL_PROVIDER=console
+SMTP_HOST=""
+SMTP_PORT="587"
+SMTP_USER=""
+SMTP_PASSWORD=""
+SMTP_FROM="Culturando <noreply@culturando.app>"
+SMTP_SECURE="false"
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
+
+In sviluppo locale `EMAIL_PROVIDER=console` evita l'invio SMTP e stampa il link di verifica nei log del server.
 
 ### 7.4 Validazione Zod
 
@@ -1289,7 +1293,7 @@ Stato dei primi step:
 30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato;
 31. introdurre design system responsive con primitive pagina, Wizard, Poppins/Lora e dark mode toggle — completato;
 32. introdurre package `@culturando/assets` per centralizzare i path degli asset pubblici — completato;
-33. introdurre conferma email account con token Prisma, pagina di attivazione e provider Resend — completato;
+33. introdurre conferma email account con token Prisma, pagina di attivazione e invio SMTP con Nodemailer — completato;
 34. introdurre preferenza di saluto utente e titolo dashboard personalizzato — completato;
 35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato;
 36. completare CRUD libri con modifica/cancellazione protette da ownership e conferma cancellazione tramite notifica Sonner centrale — completato;

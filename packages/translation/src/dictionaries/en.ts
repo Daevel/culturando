@@ -137,6 +137,13 @@ export const en = {
         cardTitle: "Registration completed",
         cardDescription: "Your account has been verified and is ready to be used on the portal.",
       },
+      missing: {
+        title: "Missing confirmation token",
+        description: "Open the full link you received by email to confirm your account.",
+        cardTitle: "Incomplete link",
+        cardDescription:
+          "The confirmation link must include a valid token. Check the email you received after signup.",
+      },
       invalid: {
         title: "Invalid confirmation link",
         description: "The link may have expired, already been used, or been copied incorrectly.",
@@ -144,6 +151,22 @@ export const en = {
         cardDescription:
           "To sign in, you must use the confirmation link received by email after signup.",
       },
+      expired: {
+        title: "Confirmation link expired",
+        description:
+          "The confirmation link is no longer valid because it has passed its time limit.",
+        cardTitle: "Request a new signup",
+        cardDescription:
+          "Sign up again with the same email address to receive a new confirmation link.",
+      },
+    },
+    checkEmail: {
+      title: "Check your email",
+      description: "We sent you a confirmation link. Open it to activate your Culturando account.",
+      cardTitle: "Confirmation required",
+      cardDescription:
+        "If you cannot find the email, check your spam or junk folder too. For security, this page does not show secret tokens or links.",
+      loginLabel: "Go to login",
     },
   },
   dashboard: {

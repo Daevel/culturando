@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
@@ -35,6 +36,7 @@ const stepFields: SignupField[][] = [["name", "email"], ["password", "confirmPas
 
 export function SignupForm() {
   const [state, formAction, isPending] = useActionState(signupAction, initialState);
+  const router = useRouter();
   const {
     handleSubmit,
     register,
@@ -88,8 +90,9 @@ export function SignupForm() {
       toast.success(t("auth.signup.toast.title"), {
         description: t(state.messageKey),
       });
+      router.push(routes.checkEmail);
     }
-  }, [state.messageKey, state.success, t]);
+  }, [router, state.messageKey, state.success, t]);
 
   useEffect(() => {
     const email = String(emailValue ?? "")

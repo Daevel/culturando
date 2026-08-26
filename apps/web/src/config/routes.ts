@@ -3,6 +3,8 @@ export const routes = {
   auth: "/auth",
   login: "/auth/login",
   signup: "/auth/signup",
+  checkEmail: "/auth/check-email",
+  verifyEmail: "/auth/verify-email",
   dashboard: "/dashboard",
   dashboardAdmin: "/dashboard/admin",
   dashboardProfile: "/dashboard/profile",

@@ -139,6 +139,13 @@ export const it = {
         cardDescription:
           "Il tuo account è stato verificato ed è pronto per essere utilizzato sul portale.",
       },
+      missing: {
+        title: "Token di conferma mancante",
+        description: "Apri il link completo che hai ricevuto via email per confermare l'account.",
+        cardTitle: "Link incompleto",
+        cardDescription:
+          "Il link di conferma deve includere un token valido. Controlla la mail ricevuta dopo la registrazione.",
+      },
       invalid: {
         title: "Link di conferma non valido",
         description:
@@ -147,6 +154,22 @@ export const it = {
         cardDescription:
           "Per accedere devi usare il link di conferma ricevuto via email dopo la registrazione.",
       },
+      expired: {
+        title: "Link di conferma scaduto",
+        description: "Il link di conferma non è più valido perché ha superato il tempo previsto.",
+        cardTitle: "Richiedi una nuova registrazione",
+        cardDescription:
+          "Registrati di nuovo con lo stesso indirizzo email per ricevere un nuovo link di conferma.",
+      },
+    },
+    checkEmail: {
+      title: "Controlla la tua email",
+      description:
+        "Ti abbiamo inviato un link di conferma. Aprilo per attivare il tuo account Culturando.",
+      cardTitle: "Conferma richiesta",
+      cardDescription:
+        "Se non trovi la mail, controlla anche spam o posta indesiderata. Per sicurezza non mostriamo token o link segreti in questa pagina.",
+      loginLabel: "Vai al login",
     },
   },
   dashboard: {

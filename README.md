@@ -60,7 +60,7 @@ Il rapporto tecnico della tesi è mantenuto come file separato fuori dal README.
 - Geoapify opzionale per geocoding e autocomplete indirizzi;
 - Cloudflare R2 opzionale per storage immagini;
 - Sharp per generazione miniature WebP;
-- Resend opzionale per email transazionali;
+- Nodemailer con SMTP per email transazionali;
 - Sonner per notifiche applicative;
 - Biome;
 - package condivisi per config, tipi, database, geolocalizzazione, AI, asset e traduzioni.
@@ -245,7 +245,7 @@ pnpm db:reset
 pnpm db:studio
 ```
 
-Le variabili `R2_*`, `RESEND_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali e servono per storage cloud, invio email reale, OCR esterno e geocoding/autocomplete più accurato.
+Le variabili `R2_*`, `SMTP_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali o ambientali e servono per storage cloud, invio email reale via SMTP, OCR esterno e geocoding/autocomplete più accurato.
 
 ## Script
 
