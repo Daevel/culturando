@@ -1,49 +1,58 @@
-# Culturando
+# Culturando <img src="./apps/web/public/logo/favicon-light.svg" alt="Culturando Favicon" width="24" style="vertical-align: middle; margin-bottom: 0.15em;" />
 
-**Culturando** è una piattaforma web geolocalizzata per pubblicare, cercare e valorizzare patrimoni librari privati.
+![React](https://img.shields.io/badge/React-19-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-Il progetto nasce come Project Work per il CdS Informatica per le Aziende Digitali (L-31), traccia **"Sviluppo di un software di geolocalizzazione culturale per condividere il patrimonio librario degli utenti privati"**.
+**Culturando** is a geolocated web platform for publishing, searching and showcasing private book collections.
 
-## Obiettivo
+The project started as a Project Work for the Digital Business Computer Science (L-31) degree program, on the topic **"Development of a cultural geolocation software to share the book collections of private users"**.
 
-Il prototipo permette a utenti privati di creare un profilo, pubblicare libri della propria raccolta, associare i contenuti a una posizione approssimata, cercare libri per testo o distanza e inviare richieste di consultazione o prestito.
+<p align="center">
+  <img src="./apps/web/public/logo/logo-full-light.svg" alt="Culturando Hero" width="100%" />
+</p>
 
-Il sistema privilegia:
+## Goal
 
-- usabilità e accessibilità dell'interfaccia;
-- protezione dei dati personali;
-- geolocalizzazione privacy-safe;
-- gestione di copertine, miniature e anteprime;
-- statistiche d'uso semplici;
-- architettura modulare e documentabile.
+The prototype allows private users to create a profile, publish books from their collection, associate content with an approximate location, search for books by text or distance, and send consultation or loan requests.
 
-## Requisiti Del Project Work
+The system prioritizes:
 
-Il template ufficiale del Project Work è conservato in:
+- usability and accessibility of the interface;
+- protection of personal data;
+- privacy-safe geolocation;
+- management of covers, thumbnails and previews;
+- simple usage statistics;
+- modular and documentable architecture.
+
+## Project Work Requirements
+
+The official Project Work template is kept at:
 
 ```txt
 thesis/Project Work - Luigi Avitabile.docx.pdf
 ```
 
-Il repository copre i principali artefatti richiesti:
+The repository covers the main requested artifacts:
 
-- applicazione web prototipo;
-- registrazione, login, conferma email e profilo utente;
-- pubblicazione del patrimonio librario;
-- inserimento metadati libro: titolo, autore, anno, categorie, ISBN, editore, lingua e descrizione;
-- upload immagini di copertina con anteprime e URL thumbnail persistite;
-- ricerca testuale nel catalogo;
-- ricerca spaziale per area e distanza;
-- visualizzazione su mappa MapLibre;
-- dettaglio libro con immagini e richiesta prestito/consultazione simulata;
-- dashboard utente con metriche e grafici base;
-- dashboard amministrativa con metriche aggregate;
-- database PostgreSQL/PostGIS con schema Prisma e seed demo;
-- componenti front-end strutturati e commenti mirati sulle scelte meno ovvie.
+- prototype web application;
+- registration, login, email confirmation and user profile;
+- publication of the book collection;
+- book metadata entry: title, author, year, categories, ISBN, publisher, language and description;
+- cover image upload with previews and persisted thumbnail URLs;
+- textual search in the catalog;
+- spatial search by area and distance;
+- MapLibre map display;
+- book detail with images and simulated loan/consultation request;
+- user dashboard with metrics and basic charts;
+- administrative dashboard with aggregate metrics;
+- PostgreSQL/PostGIS database with Prisma schema and demo seed;
+- structured front-end components and targeted comments on the less obvious choices.
 
-Il rapporto tecnico della tesi è mantenuto come file separato fuori dal README.
+The technical thesis report is maintained as a separate file outside the README.
 
-## Stack Tecnologico
+## Technology Stack
 
 - Nx monorepo;
 - pnpm;
@@ -51,106 +60,106 @@ Il rapporto tecnico della tesi è mantenuto come file separato fuori dal README.
 - React;
 - TypeScript;
 - Tailwind CSS;
-- componenti UI shadcn-like;
+- shadcn-like UI components;
 - Auth.js;
 - Zod;
 - Prisma;
-- PostgreSQL con PostGIS;
+- PostgreSQL with PostGIS;
 - MapLibre GL JS;
-- Geoapify opzionale per geocoding e autocomplete indirizzi;
-- Cloudflare R2 opzionale per storage immagini;
-- Sharp per generazione miniature WebP;
-- Nodemailer con SMTP per email transazionali;
-- Sonner per notifiche applicative;
+- optional Geoapify for geocoding and address autocomplete;
+- optional Cloudflare R2 for image storage;
+- Sharp for WebP thumbnail generation;
+- Nodemailer with SMTP for transactional emails;
+- Sonner for application notifications;
 - Biome;
-- package condivisi per config, tipi, database, geolocalizzazione, AI, asset e traduzioni.
+- shared packages for config, types, database, geolocation, AI, assets and translations.
 
-## Struttura
+## Structure
 
 ```txt
 culturando/
 ├── apps/
-│   └── web/                  # applicazione Next.js
+│   └── web/                  # Next.js application
 ├── packages/
-│   ├── ai/                   # OCR, ISBN e metadati libro
-│   ├── assets/               # path asset pubblici
-│   ├── config/               # configurazioni condivise
+│   ├── ai/                   # OCR, ISBN and book metadata
+│   ├── assets/               # public asset paths
+│   ├── config/               # shared configurations
 │   ├── db/                   # Prisma schema/client/seed
-│   ├── geo/                  # geocoding e coordinate privacy-safe
-│   ├── translation/          # dizionari i18n
-│   └── types/                # tipi di dominio condivisi
-├── thesis/                   # materiali del Project Work
+│   ├── geo/                  # geocoding and privacy-safe coordinates
+│   ├── translation/          # i18n dictionaries
+│   └── types/                # shared domain types
+├── thesis/                   # Project Work materials
 ├── docker-compose.yml
 ├── nx.json
 ├── package.json
 └── pnpm-workspace.yaml
 ```
 
-## Funzionalità Implementate
+## Implemented Features
 
-### Utenti
+### Users
 
-- registrazione e login;
-- conferma email tramite token;
-- profilo personale modificabile;
-- preferenza di saluto;
-- gestione visibilità profilo;
-- dashboard protetta;
-- ruolo admin.
+- registration and login;
+- email confirmation via token;
+- editable personal profile;
+- greeting preference;
+- profile visibility management;
+- protected dashboard;
+- admin role.
 
-### Libri
+### Books
 
-- creazione libro da area privata;
-- validazione form con Zod;
-- metadati bibliografici principali;
-- upload copertine e immagini multiple;
-- salvataggio immagini locale o su Cloudflare R2;
-- URL thumbnail persistita per miniature e anteprime;
-- ricerca copertina e metadati da Open Library;
-- catalogazione assistita da OCR/ISBN;
-- catalogo pubblico;
-- dettaglio libro;
-- conteggio visualizzazioni.
+- book creation from the private area;
+- form validation with Zod;
+- main bibliographic metadata;
+- cover and multiple image upload;
+- local or Cloudflare R2 image storage;
+- persisted thumbnail URL for thumbnails and previews;
+- cover and metadata search from Open Library;
+- OCR/ISBN-assisted cataloging;
+- public catalog;
+- book detail;
+- view counter.
 
-### Ricerca E Geolocalizzazione
+### Search And Geolocation
 
-- ricerca testuale per titolo, autore, ISBN, editore, città, categoria e descrizione;
-- filtri per disponibilità e visibilità;
-- geocoding indirizzo tramite adapter in `@culturando/geo`;
-- Geoapify come provider principale quando configurato, con fallback Nominatim/OpenStreetMap;
-- normalizzazione indirizzi nel formato `via/corso civico, città, provincia`;
-- coordinate private salvate separatamente dalle coordinate pubbliche approssimate;
-- ricerca libri vicini per raggio;
-- query geospaziali PostGIS con `ST_DWithin` e `ST_Distance`;
-- mappa MapLibre con marker, cluster, popup, legenda e vista 2D/3D.
+- textual search by title, author, ISBN, publisher, city, category and description;
+- filters by availability and visibility;
+- address geocoding through the adapter in `@culturando/geo`;
+- Geoapify as the main provider when configured, with Nominatim/OpenStreetMap fallback;
+- address normalization in the `street/civic number, city, province` format;
+- private coordinates stored separately from approximate public coordinates;
+- nearby book search by radius;
+- PostGIS geospatial queries with `ST_DWithin` and `ST_Distance`;
+- MapLibre map with markers, clustering, popups, legend and 2D/3D view.
 
-### Richieste
+### Requests
 
-- richiesta di consultazione, prestito o informazioni;
-- blocco richieste non valide o verso libri non disponibili;
-- gestione richieste ricevute;
-- accettazione/rifiuto da parte del proprietario;
-- storico richieste inviate;
-- annullamento richieste ancora in attesa.
+- consultation, loan or information request;
+- blocking of invalid requests or requests toward unavailable books;
+- management of received requests;
+- acceptance/rejection by the owner;
+- history of sent requests;
+- cancellation of requests still pending.
 
-### Statistiche
+### Statistics
 
-- visualizzazioni libro;
-- conteggio libri pubblici/privati;
-- richieste ricevute e in attesa;
-- libri più visualizzati;
-- dashboard admin con utenti, libri, richieste e visualizzazioni;
-- grafici base tramite barre CSS responsive.
+- book views;
+- count of public/private books;
+- received and pending requests;
+- most viewed books;
+- admin dashboard with users, books, requests and views;
+- basic charts via responsive CSS bars.
 
 ## Database
 
-Il database usa PostgreSQL con estensione PostGIS. Lo schema vive in:
+The database uses PostgreSQL with the PostGIS extension. The schema lives at:
 
 ```txt
 packages/db/prisma/schema.prisma
 ```
 
-Entità principali:
+Main entities:
 
 - `User`;
 - `EmailVerificationToken`;
@@ -160,19 +169,19 @@ Entità principali:
 - `BookStats`;
 - `LoanRequest`.
 
-Il seed demo vive in:
+The demo seed lives at:
 
 ```txt
 packages/db/prisma/seed.mjs
 ```
 
-Credenziali demo:
+Demo credentials:
 
 ```txt
 admin@culturando.local / Culturando123!
 ```
 
-Gli utenti demo condividono la password:
+Demo users share the password:
 
 ```txt
 Culturando123!
@@ -245,48 +254,48 @@ pnpm db:reset
 pnpm db:studio
 ```
 
-Le variabili `R2_*`, `SMTP_*`, `CLOUDFLARE_OCR_*` e `GEOAPIFY_API_KEY` sono opzionali o ambientali e servono per storage cloud, invio email reale via SMTP, OCR esterno e geocoding/autocomplete più accurato.
+The variables `R2_*`, `SMTP_*`, `CLOUDFLARE_OCR_*` and `GEOAPIFY_API_KEY` are optional or environment-specific and are used for cloud storage, real email sending via SMTP, external OCR and more accurate geocoding/autocomplete.
 
-## Script
+## Scripts
 
 ```bash
-pnpm dev:fresh        # setup completo e avvio web app
-pnpm setup:dev        # prepara ambiente, database e Prisma senza avviare l'app
-pnpm dev              # avvia database, PostGIS e web app
-pnpm build            # build web app
-pnpm lint             # lint Nx per web
-pnpm biome:check      # controllo Biome
+pnpm dev:fresh        # full setup and web app startup
+pnpm setup:dev        # prepares environment, database and Prisma without starting the app
+pnpm dev              # starts database, PostGIS and web app
+pnpm build            # build the web app
+pnpm lint             # Nx lint for web
+pnpm biome:check      # Biome check
 pnpm biome:write      # format/lint auto-fix
-pnpm docker:up        # avvia PostgreSQL/PostGIS
-pnpm docker:down      # ferma i container
-pnpm docker:reset     # ferma i container e rimuove i volumi
-pnpm db:generate      # genera Prisma Client
-pnpm db:migrate       # applica migration Prisma locali
-pnpm db:push          # sincronizza schema Prisma
-pnpm db:seed          # popola dati demo
-pnpm db:reset         # reset completo database locale
-pnpm db:studio        # apre Prisma Studio
+pnpm docker:up        # starts PostgreSQL/PostGIS
+pnpm docker:down      # stops the containers
+pnpm docker:reset     # stops the containers and removes the volumes
+pnpm db:generate      # generates Prisma Client
+pnpm db:migrate       # applies local Prisma migrations
+pnpm db:push          # syncs Prisma schema
+pnpm db:seed          # populates demo data
+pnpm db:reset         # full local database reset
+pnpm db:studio        # opens Prisma Studio
 ```
 
 ## Privacy
 
-Culturando non mostra pubblicamente coordinate precise.
+Culturando does not publicly display precise coordinates.
 
-La strategia adottata è:
+The adopted strategy is:
 
-- salvataggio interno di coordinate precise quando disponibili;
-- generazione di coordinate pubbliche approssimate;
-- uso delle coordinate pubbliche per mappa e ricerca spaziale;
-- nessuna email pubblica nel flusso di contatto;
-- richieste interne per consultazione o prestito;
-- visibilità profilo configurabile.
+- internal storage of precise coordinates when available;
+- generation of approximate public coordinates;
+- use of public coordinates for map and spatial search;
+- no public email in the contact flow;
+- internal requests for consultation or loan;
+- configurable profile visibility.
 
-## Stato
+## Status
 
-Il progetto è un prototipo funzionale coerente con la traccia del Project Work. Le estensioni naturali post-MVP sono modifica/eliminazione avanzata dei libri, profili pubblici dedicati, notifiche, chat interna, integrazione con cataloghi bibliotecari reali e applicazione mobile.
+The project is a functional prototype consistent with the Project Work topic. Natural post-MVP extensions are advanced book editing/deletion, dedicated public profiles, notifications, internal chat, integration with real library catalogs and a mobile application.
 
-## Autore
+## Author
 
 Luigi Avitabile
 
-Project Work - CdS Informatica per le Aziende Digitali (L-31)
+Project Work - Digital Business Computer Science degree program (L-31)
