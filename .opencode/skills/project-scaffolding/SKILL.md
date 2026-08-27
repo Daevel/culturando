@@ -5,30 +5,30 @@ description: Defines the required project structure, scaffolding rules and archi
 
 # Project Scaffolding — Culturando
 
-## Scopo della skill
+## Purpose of the skill
 
-Questa skill definisce le regole di struttura, organizzazione e scaffolding del progetto **Culturando**.
+This skill defines the structure, organization and scaffolding rules of the **Culturando** project.
 
-Ogni agente che lavora sul progetto deve rispettare queste regole quando:
+Every agent working on the project must respect these rules when it:
 
-* crea nuove pagine;
-* crea nuove feature;
-* crea nuovi componenti;
-* crea nuovi hook;
-* crea nuovi package condivisi;
-* effettua refactor architetturali;
-* sposta file tra `apps/web` e `packages/*`;
-* introduce nuove convenzioni strutturali.
+* creates new pages;
+* creates new features;
+* creates new components;
+* creates new hooks;
+* creates new shared packages;
+* performs architectural refactors;
+* moves files between `apps/web` and `packages/*`;
+* introduces new structural conventions.
 
-L’obiettivo è mantenere il progetto pulito, leggibile, scalabile e coerente con l’architettura scelta.
+The goal is to keep the project clean, readable, scalable and consistent with the chosen architecture.
 
-Culturando usa un monorepo Nx con una web app Next.js in `apps/web` e package condivisi sotto `packages/*`.
+Culturando uses an Nx monorepo with a Next.js web app in `apps/web` and shared packages under `packages/*`.
 
 ---
 
-## Struttura generale del progetto
+## General project structure
 
-La struttura principale del repository deve seguire questo schema:
+The main repository structure must follow this scheme:
 
 ```txt
 culturando/
@@ -53,19 +53,19 @@ culturando/
 └── biome.json
 ```
 
-Responsabilità principali:
+Main responsibilities:
 
 ```txt
-apps/web        → applicazione Next.js principale
-packages/*      → codice condivisibile tra web, mobile, backend o script
-.opencode       → skill operative per agenti OpenCode
+apps/web        → main Next.js application
+packages/*      → code shareable across web, mobile, backend or scripts
+.opencode       → operational skills for OpenCode agents
 ```
 
 ---
 
-## Struttura obbligatoria di `apps/web/src`
+## Mandatory structure of `apps/web/src`
 
-La struttura di `apps/web/src` deve seguire questo schema:
+The structure of `apps/web/src` must follow this scheme:
 
 ```txt
 apps/web/src/
@@ -77,18 +77,18 @@ apps/web/src/
 └── lib/
 ```
 
-Ogni cartella ha una responsabilità precisa.
+Each folder has a precise responsibility.
 
 ```txt
-app/          → routing Next.js App Router
-components/   → componenti condivisi a livello app
-config/       → configurazioni specifiche della web app
-features/     → feature applicative
-hooks/        → hook React condivisi a livello app
-lib/          → utility tecniche specifiche della web app
+app/          → Next.js App Router routing
+components/   → app-level shared components
+config/       → web app-specific configurations
+features/     → application features
+hooks/        → app-level shared React hooks
+lib/          → web app-specific technical utilities
 ```
 
-Non creare cartelle parallele non previste come:
+Do not create unexpected parallel folders such as:
 
 ```txt
 views/
@@ -100,22 +100,22 @@ common/
 utils/
 ```
 
-salvo esplicita richiesta dell’utente o refactor architetturale motivato.
+unless explicitly requested by the user or justified by an architectural refactor.
 
 ---
 
-## Regola fondamentale: separazione tra `apps/web` e `packages/*`
+## Fundamental rule: separation between `apps/web` and `packages/*`
 
-La distinzione più importante del progetto è questa:
+The most important distinction of the project is this:
 
 ```txt
-apps/web    → codice specifico della web app
-packages/*  → codice puro, condivisibile e indipendente dalla web app
+apps/web    → web app-specific code
+packages/*  → pure, shareable code independent of the web app
 ```
 
-### Deve stare in `apps/web`
+### Must be in `apps/web`
 
-Mettere in `apps/web` tutto ciò che dipende da:
+Put in `apps/web` everything that depends on:
 
 ```txt
 - React;
@@ -123,16 +123,16 @@ Mettere in `apps/web` tutto ciò che dipende da:
 - App Router;
 - DOM;
 - Tailwind CSS;
-- componenti UI;
-- hook React;
-- route web;
-- form web;
-- layout web;
-- middleware Next;
-- server actions specifiche della web app.
+- UI components;
+- React hooks;
+- web routes;
+- web forms;
+- web layouts;
+- Next middleware;
+- web app-specific server actions.
 ```
 
-Esempi:
+Examples:
 
 ```txt
 LoginForm
@@ -146,47 +146,47 @@ features/auth
 features/books
 ```
 
-### Deve stare in `packages/*`
+### Must be in `packages/*`
 
-Mettere in `packages/*` solo codice condivisibile, possibilmente puro e indipendente dalla singola app.
+Put in `packages/*` only code that is shareable, possibly pure and independent of the single app.
 
-Esempi:
+Examples:
 
 ```txt
 appConfig
 authConfig
-tipi User/Book/Loan
-funzioni geografiche pure
-dizionari di traduzione
-client database
-funzioni AI pure
+User/Book/Loan types
+pure geographic functions
+translation dictionaries
+database client
+pure AI functions
 ```
 
-### Regola pratica
+### Practical rule
 
-Quando l’agente crea un file deve chiedersi:
+When the agent creates a file, it must ask itself:
 
 ```txt
-Questo file può essere usato anche da mobile, backend o script?
+Can this file also be used by mobile, backend or scripts?
 ```
 
-Se sì, può stare in `packages/*`.
+If yes, it may stay in `packages/*`.
 
-Se no, deve stare in `apps/web`.
+If no, it must stay in `apps/web`.
 
 ---
 
-## Struttura di `app/`
+## Structure of `app/`
 
-La cartella:
+The folder:
 
 ```txt
 apps/web/src/app/
 ```
 
-è riservata al routing Next.js App Router.
+is reserved for Next.js App Router routing.
 
-Esempio:
+Example:
 
 ```txt
 apps/web/src/app/
@@ -203,20 +203,20 @@ apps/web/src/app/
     └── page.tsx
 ```
 
-### Regola delle pagine sottili
+### Thin pages rule
 
-I file `page.tsx` devono rimanere sottili.
+The `page.tsx` files must remain thin.
 
-Devono occuparsi principalmente di:
+They must mainly take care of:
 
 ```txt
-- comporre componenti;
-- applicare layout di pagina;
-- gestire metadata quando necessario;
-- delegare la logica alle feature.
+- composing components;
+- applying the page layout;
+- managing metadata when necessary;
+- delegating the logic to the features.
 ```
 
-Esempio corretto:
+Correct example:
 
 ```tsx
 import { LoginForm } from "@/features/auth/components/LoginForm";
@@ -230,31 +230,31 @@ export default function LoginPage() {
 }
 ```
 
-Esempio sbagliato:
+Wrong example:
 
 ```tsx
 export default function LoginPage() {
-  // 300 righe di form
-  // validazione
-  // stati React
-  // chiamate API
-  // markup complesso
+  // 300 lines of form
+  // validation
+  // React states
+  // API calls
+  // complex markup
 }
 ```
 
-Se una pagina diventa complessa, la logica deve essere spostata dentro la feature corrispondente.
+If a page becomes complex, the logic must be moved inside the corresponding feature.
 
 ---
 
-## Struttura di `features/`
+## Structure of `features/`
 
-Le feature devono stare sotto:
+Features must be under:
 
 ```txt
 apps/web/src/features/
 ```
 
-Schema consigliato:
+Recommended scheme:
 
 ```txt
 features/<feature>/
@@ -268,21 +268,21 @@ features/<feature>/
 └── index.ts
 ```
 
-Le cartelle non sono tutte obbligatorie.
+The folders are not all mandatory.
 
-Creare una cartella solo quando serve davvero.
+Create a folder only when it is really needed.
 
-Non creare folder vuote.
+Do not create empty folders.
 
 ---
 
-## Responsabilità delle cartelle feature
+## Responsibility of the feature folders
 
 ### `components/`
 
-Contiene componenti specifici della feature.
+Contains feature-specific components.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/components/LoginForm.tsx
@@ -293,9 +293,9 @@ features/books/components/BookGrid.tsx
 
 ### `actions/`
 
-Contiene azioni asincrone, server actions o funzioni operative legate alla feature.
+Contains asynchronous actions, server actions or operational functions related to the feature.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/actions/login.action.ts
@@ -305,9 +305,9 @@ features/books/actions/create-book.action.ts
 
 ### `schemas/`
 
-Contiene schema Zod specifici della feature.
+Contains feature-specific Zod schemas.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/schemas/login.schema.ts
@@ -317,9 +317,9 @@ features/books/schemas/book.schema.ts
 
 ### `hooks/`
 
-Contiene hook React specifici della feature.
+Contains feature-specific React hooks.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/hooks/useLoginForm.ts
@@ -328,16 +328,16 @@ features/books/hooks/useBookFilters.ts
 
 ### `types/`
 
-Contiene tipi specifici della feature, non condivisi globalmente.
+Contains feature-specific types, not globally shared.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/types/auth-form.types.ts
 features/books/types/book-form.types.ts
 ```
 
-Se un tipo è di dominio ed è utile anche fuori dalla web app, deve essere promosso in:
+If a type is a domain type and is useful also outside the web app, it must be promoted to:
 
 ```txt
 packages/types
@@ -345,22 +345,22 @@ packages/types
 
 ### `constants/`
 
-Contiene costanti specifiche della feature.
+Contains feature-specific constants.
 
-Esempi:
+Examples:
 
 ```txt
 features/auth/constants/auth-copy.ts
 features/books/constants/book-filters.ts
 ```
 
-Quando è attivo il package `packages/translation`, i testi UI non devono essere hardcoded qui, ma spostati nei dizionari.
+When the `packages/translation` package is active, UI texts must not be hardcoded here, but moved into the dictionaries.
 
 ### `mocks/`
 
-Contiene mock data specifici della feature.
+Contains feature-specific mock data.
 
-Esempi:
+Examples:
 
 ```txt
 features/books/mocks/books.mock.ts
@@ -369,15 +369,15 @@ features/nearby/mocks/nearby.mock.ts
 
 ---
 
-## Feature attuali e previste
+## Current and planned features
 
-Feature attuali:
+Current features:
 
 ```txt
 features/auth
 ```
 
-Feature previste:
+Planned features:
 
 ```txt
 features/dashboard
@@ -387,47 +387,47 @@ features/profile
 features/cataloging
 ```
 
-Ogni nuova feature deve essere creata dentro:
+Every new feature must be created inside:
 
 ```txt
 apps/web/src/features/<feature>
 ```
 
-Non creare feature direttamente dentro `src/`.
+Do not create features directly inside `src/`.
 
 ---
 
-## Struttura di `components/`
+## Structure of `components/`
 
-La cartella:
+The folder:
 
 ```txt
 apps/web/src/components/
 ```
 
-contiene componenti condivisi a livello web app.
+contains components shared at the web app level.
 
-Schema:
+Scheme:
 
 ```txt
 components/
 ├── ui/
-└── <eventuali componenti app-level>
+└── <any app-level components>
 ```
 
 ---
 
-## Regola per `components/ui`
+## Rule for `components/ui`
 
-La cartella:
+The folder:
 
 ```txt
 apps/web/src/components/ui/
 ```
 
-contiene solo componenti primitivi, generici e riutilizzabili, ispirati a shadcn/ui.
+contains only primitive, generic and reusable components, inspired by shadcn/ui.
 
-Esempi corretti:
+Correct examples:
 
 ```txt
 button.tsx
@@ -442,9 +442,9 @@ select.tsx
 form-message.tsx
 ```
 
-Questi componenti non devono conoscere il dominio Culturando.
+These components must not know the Culturando domain.
 
-Non inserire in `components/ui` componenti come:
+Do not put components such as these in `components/ui`:
 
 ```txt
 LoginForm
@@ -456,19 +456,19 @@ NearbyMap
 DashboardHeader
 ```
 
-Questi componenti devono stare dentro la feature di appartenenza.
+These components must stay inside their own feature.
 
 ---
 
-## Regola per componenti app-level
+## Rule for app-level components
 
-Se un componente è condiviso tra più feature ma non è un primitivo UI, può stare in:
+If a component is shared between several features but is not a UI primitive, it may stay in:
 
 ```txt
 apps/web/src/components/
 ```
 
-Esempi:
+Examples:
 
 ```txt
 AppHeader
@@ -478,88 +478,88 @@ ThemeToggle
 UserMenu
 ```
 
-Non metterli dentro `components/ui`, perché non sono primitivi UI.
+Do not put them inside `components/ui`, because they are not UI primitives.
 
 ---
 
-## Regola di promozione
+## Promotion rule
 
-Quando un componente, hook o utility viene usato da più consumer, deve essere promosso al livello corretto.
+When a component, hook or utility is used by more consumers, it must be promoted to the proper level.
 
-Schema:
+Scheme:
 
 ```txt
 page/local → feature → app → packages
 ```
 
-### Esempio componente
+### Component example
 
 ```txt
-Usato solo da LoginForm
+Used only by LoginForm
 → features/auth/components
 
-Usato da LoginForm e SignupForm
+Used by LoginForm and SignupForm
 → features/auth/components
 
-Usato da auth e books
+Used by auth and books
 → apps/web/src/components
 
-È un primitivo UI generico
+It is a generic UI primitive
 → apps/web/src/components/ui
 ```
 
-### Esempio hook
+### Hook example
 
 ```txt
-Usato solo dalla feature books
+Used only by the books feature
 → features/books/hooks
 
-Usato da più feature web
+Used by several web features
 → apps/web/src/hooks
 
-È una funzione pura senza React
+It is a pure function without React
 → packages/*
 ```
 
-### Esempio tipo
+### Type example
 
 ```txt
-Tipo specifico di LoginForm
+LoginForm-specific type
 → features/auth/types
 
-Tipo Book, User, Loan, Location
+Book, User, Loan, Location type
 → packages/types
 ```
 
-### Esempio traduzione
+### Translation example
 
 ```txt
-Dizionari e funzione pura getTranslation
+Dictionaries and the pure getTranslation function
 → packages/translation
 
-Hook React useTranslation
+React hook useTranslation
 → apps/web/src/hooks/useTranslation.ts
 ```
 
 ---
 
-## Divieto di import trasversali tra feature
+## Ban on cross-feature imports
 
-Una feature non deve importare direttamente file interni di un’altra feature.
+A feature must not import internal files of another feature directly.
 
-Esempio sbagliato:
+Wrong example:
 
 ```ts
 import { Something } from "@/features/books/components/BookCard";
 ```
 
-dentro:
+inside:
 
 ```txt
 features/auth
 ```
 
-Se un componente o una funzione serve a più feature, deve essere promosso a:
+If a component or a function is needed by several features, it must be promoted to:
 
 ```txt
 apps/web/src/components
@@ -568,13 +568,13 @@ apps/web/src/lib
 packages/*
 ```
 
-a seconda del caso.
+depending on the case.
 
 ---
 
-## Regola sugli import
+## Import rule
 
-Usare preferibilmente gli alias configurati della web app:
+Prefer the configured aliases of the web app:
 
 ```ts
 import { Button } from "@/components/ui/button";
@@ -582,23 +582,23 @@ import { LoginForm } from "@/features/auth/components/LoginForm";
 import { routes } from "@/config/routes";
 ```
 
-Evitare import relativi lunghi:
+Avoid long relative imports:
 
 ```ts
 import { Button } from "../../../../components/ui/button";
 ```
 
-Gli import relativi sono accettabili solo tra file molto vicini nella stessa feature.
+Relative imports are acceptable only between very close files in the same feature.
 
 ---
 
-## Regola sui barrel `index.ts`
+## Rule on `index.ts` barrels
 
-I barrel `index.ts` sono consentiti, ma non obbligatori ovunque.
+`index.ts` barrels are allowed, but not mandatory everywhere.
 
-Usarli quando migliorano la leggibilità degli import.
+Use them when they improve import readability.
 
-### Barrel consigliati
+### Recommended barrels
 
 ```txt
 features/<feature>/components/index.ts
@@ -606,7 +606,7 @@ features/<feature>/hooks/index.ts
 packages/<package>/src/index.ts
 ```
 
-### Barrel opzionali
+### Optional barrels
 
 ```txt
 features/<feature>/index.ts
@@ -614,23 +614,23 @@ apps/web/src/components/index.ts
 apps/web/src/hooks/index.ts
 ```
 
-### Barrel da evitare se inutili
+### Barrels to avoid if useless
 
-Non creare `index.ts` vuoti o usati solo per rispettare una forma astratta.
+Do not create empty `index.ts` files or ones used only to satisfy an abstract convention.
 
-Non creare barrel che generano import circolari.
+Do not create barrels that generate circular imports.
 
-Non creare barrel se la feature ha un solo file e l’import diretto è più chiaro.
+Do not create barrels if the feature has a single file and the direct import is clearer.
 
 ---
 
-## Regola sulle cartelle vuote
+## Rule on empty folders
 
-Non creare cartelle vuote.
+Do not create empty folders.
 
-Non creare barrel orfani.
+Do not create orphan barrels.
 
-Esempio sbagliato:
+Wrong example:
 
 ```txt
 features/books/
@@ -641,23 +641,23 @@ features/books/
 └── schemas/
 ```
 
-se non esistono ancora componenti, hook o schema reali.
+if real components, hooks or schemas do not exist yet.
 
-Creare le cartelle solo quando contengono almeno un file utile.
+Create the folders only when they contain at least one useful file.
 
 ---
 
-## Regola su `config/`
+## Rule on `config/`
 
-La cartella:
+The folder:
 
 ```txt
 apps/web/src/config/
 ```
 
-contiene configurazioni specifiche della web app.
+contains web app-specific configurations.
 
-Esempi:
+Examples:
 
 ```txt
 routes.ts
@@ -665,33 +665,33 @@ navigation.ts
 metadata.ts
 ```
 
-Le route web devono stare qui:
+The web routes must be here:
 
 ```txt
 apps/web/src/config/routes.ts
 ```
 
-Non metterle in:
+Do not put them in:
 
 ```txt
 packages/config
 ```
 
-perché sono specifiche di Next.js e della web app.
+because they are specific to Next.js and to the web app.
 
 ---
 
-## Regola su `packages/config`
+## Rule on `packages/config`
 
-Il package:
+The package:
 
 ```txt
 packages/config
 ```
 
-contiene configurazioni generali condivisibili.
+contains general, shareable configurations.
 
-Esempi:
+Examples:
 
 ```txt
 app.config.ts
@@ -699,43 +699,43 @@ auth.config.ts
 constants.ts
 ```
 
-Contenuti corretti:
+Correct contents:
 
 ```txt
-nome app
-descrizione app
-lingua di default
-autori
+app name
+app description
+default language
+authors
 publisher
-lunghezza minima password
-costanti condivise
+minimum password length
+shared constants
 ```
 
-Contenuti sbagliati:
+Wrong contents:
 
 ```txt
-route Next.js
-metadata tipizzati con Metadata di next
-classi Tailwind
-hook React
-componenti UI
+Next.js routes
+metadata typed with Next's Metadata
+Tailwind classes
+React hooks
+UI components
 ```
 
-`packages/config` non deve dipendere da Next.js.
+`packages/config` must not depend on Next.js.
 
 ---
 
-## Regola su `packages/types`
+## Rule on `packages/types`
 
-Il package:
+The package:
 
 ```txt
 packages/types
 ```
 
-contiene tipi di dominio condivisi.
+contains shared domain types.
 
-Esempi corretti:
+Correct examples:
 
 ```txt
 User
@@ -748,7 +748,7 @@ BookVisibility
 BookStatus
 ```
 
-Esempi sbagliati:
+Wrong examples:
 
 ```txt
 LoginFormValues
@@ -756,21 +756,21 @@ SignupFormValues
 AuthFormState
 ```
 
-I tipi dei form restano nella feature web finché non diventano realmente condivisi.
+The form types remain in the web feature until they actually become shared.
 
 ---
 
-## Regola su `packages/translation`
+## Rule on `packages/translation`
 
-Il package:
+The package:
 
 ```txt
 packages/translation
 ```
 
-contiene i dizionari di traduzione condivisi.
+contains the shared translation dictionaries.
 
-Struttura attesa:
+Expected structure:
 
 ```txt
 packages/translation/
@@ -783,18 +783,18 @@ packages/translation/
     └── index.ts
 ```
 
-Regole:
+Rules:
 
 ```txt
-it.ts è la fonte di verità.
-en.ts deve mantenere la stessa struttura di it.ts.
-Le chiavi non devono essere tradotte.
-Solo i valori testuali devono essere tradotti.
+it.ts is the source of truth.
+en.ts must keep the same structure as it.ts.
+Keys must not be translated.
+Only textual values must be translated.
 ```
 
-La logica React di traduzione non deve stare nel package.
+The React translation logic must not live in the package.
 
-Esempio:
+Example:
 
 ```txt
 packages/translation/src/dictionaries/it.ts
@@ -804,43 +804,43 @@ apps/web/src/hooks/useTranslation.ts
 
 ---
 
-## Regola su `packages/db`
+## Rule on `packages/db`
 
-Il package:
+The package:
 
 ```txt
 packages/db
 ```
 
-conterrà la logica database.
+will contain the database logic.
 
-Responsabilità previste:
+Expected responsibilities:
 
 ```txt
 Prisma Client
-schema Prisma
-query condivise
+Prisma schema
+shared queries
 seed
-migrazioni
-accesso a PostgreSQL
-supporto PostGIS
+migrations
+PostgreSQL access
+PostGIS support
 ```
 
-Non introdurre database logic dentro feature React se è riutilizzabile.
+Do not introduce database logic inside React features if it is reusable.
 
 ---
 
-## Regola su `packages/geo`
+## Rule on `packages/geo`
 
-Il package:
+The package:
 
 ```txt
 packages/geo
 ```
 
-contiene logiche geospaziali pure.
+contains pure geospatial logic.
 
-Esempi:
+Examples:
 
 ```txt
 calculateDistance
@@ -849,15 +849,15 @@ toGeoJsonFeature
 normalizeCoordinates
 ```
 
-Non deve contenere componenti mappa React.
+It must not contain React map components.
 
-Componenti React con MapLibre devono stare in:
+React components with MapLibre must be in:
 
 ```txt
 apps/web/src/features/nearby/components
 ```
 
-oppure, se app-level:
+or, if app-level:
 
 ```txt
 apps/web/src/components
@@ -865,17 +865,17 @@ apps/web/src/components
 
 ---
 
-## Regola su `packages/ai`
+## Rule on `packages/ai`
 
-Il package:
+The package:
 
 ```txt
 packages/ai
 ```
 
-contiene codice AI reale del progetto.
+contains the real AI code of the project.
 
-Esempi futuri:
+Future examples:
 
 ```txt
 extractIsbnFromText
@@ -884,9 +884,9 @@ rankBookResults
 suggestBookTags
 ```
 
-Le skill OpenCode non devono stare in `packages/ai`.
+OpenCode skills must not be in `packages/ai`.
 
-Le skill devono stare in:
+Skills must be in:
 
 ```txt
 .opencode/skills/<skill-name>/SKILL.md
@@ -894,15 +894,15 @@ Le skill devono stare in:
 
 ---
 
-## Regola sulle skill OpenCode
+## Rule on OpenCode skills
 
-Le skill operative degli agenti devono stare in:
+The operational skills of the agents must be in:
 
 ```txt
 .opencode/skills/
 ```
 
-Schema:
+Scheme:
 
 ```txt
 .opencode/skills/
@@ -918,7 +918,7 @@ Schema:
     └── SKILL.md
 ```
 
-Ogni skill deve avere frontmatter:
+Every skill must have frontmatter:
 
 ```md
 ---
@@ -927,13 +927,13 @@ description: Defines the required project structure and scaffolding rules for th
 ---
 ```
 
-Il campo `name` deve coincidere con il nome della cartella.
+The `name` field must match the name of the folder.
 
 ---
 
-## Regola per nuovi package
+## Rule for new packages
 
-Quando viene creato un nuovo package sotto `packages/*`, deve avere almeno:
+When a new package is created under `packages/*`, it must have at least:
 
 ```txt
 packages/<name>/
@@ -942,7 +942,7 @@ packages/<name>/
     └── index.ts
 ```
 
-Il `package.json` deve usare naming coerente:
+The `package.json` must use consistent naming:
 
 ```json
 {
@@ -964,49 +964,49 @@ Il `package.json` deve usare naming coerente:
 
 ---
 
-## Regola sulle dipendenze tra package
+## Rule on dependencies between packages
 
-Le dipendenze tra package devono rimanere chiare.
+The dependencies between packages must remain clear.
 
-Esempi accettabili:
+Acceptable examples:
 
 ```txt
-packages/ai       → può dipendere da packages/types e packages/config
-packages/geo      → può dipendere da packages/types
-packages/db       → può dipendere da packages/types e packages/config
-apps/web          → può dipendere da tutti i package necessari
+packages/ai       → may depend on packages/types and packages/config
+packages/geo      → may depend on packages/types
+packages/db       → may depend on packages/types and packages/config
+apps/web          → may depend on all the packages it needs
 ```
 
-Evitare dipendenze inverse:
+Avoid inverse dependencies:
 
 ```txt
-packages/types    → non deve dipendere da apps/web
-packages/config   → non deve dipendere da Next.js
-packages/geo      → non deve dipendere da componenti React
-packages/ai       → non deve dipendere da components/ui
+packages/types    → must not depend on apps/web
+packages/config   → must not depend on Next.js
+packages/geo      → must not depend on React components
+packages/ai       → must not depend on components/ui
 ```
 
 ---
 
-## Regola su hook React
+## Rule on React hooks
 
-Gli hook React devono stare in:
+React hooks must be in:
 
 ```txt
 apps/web/src/hooks
 ```
 
-se sono condivisi tra più feature.
+if they are shared between several features.
 
-Devono stare in:
+They must be in:
 
 ```txt
 apps/web/src/features/<feature>/hooks
 ```
 
-se sono specifici di una feature.
+if they are specific to a feature.
 
-Esempi:
+Examples:
 
 ```txt
 apps/web/src/hooks/useTranslation.ts
@@ -1014,19 +1014,19 @@ features/books/hooks/useBookFilters.ts
 features/auth/hooks/useLoginForm.ts
 ```
 
-Non mettere hook React in `packages/*`, salvo creazione esplicita di un package React dedicato.
+Do not put React hooks in `packages/*`, unless a dedicated React package is explicitly created.
 
 ---
 
-## Regola su utility
+## Rule on utilities
 
-Le utility specifiche della web app vanno in:
+The web app-specific utilities go in:
 
 ```txt
 apps/web/src/lib
 ```
 
-Esempi:
+Examples:
 
 ```txt
 cn
@@ -1034,13 +1034,13 @@ formatClassName
 client-side helpers
 ```
 
-Le utility pure e condivisibili vanno in:
+The pure and shareable utilities go in:
 
 ```txt
 packages/*
 ```
 
-Esempi:
+Examples:
 
 ```txt
 calculateDistance      → packages/geo
@@ -1048,33 +1048,33 @@ getTranslation         → packages/translation
 normalizeBookMetadata  → packages/ai
 ```
 
-Non creare cartelle `utils/` sparse senza motivo.
+Do not create scattered `utils/` folders without reason.
 
 ---
 
-## Regola su testi hardcoded
+## Rule on hardcoded texts
 
-Finché il package `packages/translation` non è attivo, i testi temporanei possono stare in:
+As long as the `packages/translation` package is not active, temporary texts may stay in:
 
 ```txt
 features/<feature>/constants
 ```
 
-Esempio:
+Example:
 
 ```txt
 features/auth/constants/auth-copy.ts
 ```
 
-Dopo l’introduzione di `packages/translation`, i testi UI devono essere spostati nei dizionari.
+After the introduction of `packages/translation`, the UI texts must be moved into the dictionaries.
 
-I componenti dovranno usare un hook come:
+The components will have to use a hook such as:
 
 ```ts
 const t = useTranslation();
 ```
 
-e chiavi come:
+and keys such as:
 
 ```ts
 t("auth.login.title")
@@ -1082,38 +1082,38 @@ t("auth.login.title")
 
 ---
 
-## Regola sui refactor
+## Rule on refactors
 
-Gli agenti non devono riorganizzare strutture esistenti senza richiesta esplicita dell’utente.
+Agents must not reorganize existing structures without an explicit request from the user.
 
-È consentito spostare file solo se:
+Moving files is allowed only if:
 
 ```txt
-- l’utente ha chiesto un refactor;
-- il task corrente lo richiede chiaramente;
-- il file è nel posto sbagliato secondo questa skill;
-- la modifica è piccola, sicura e motivata.
+- the user requested a refactor;
+- the current task clearly requires it;
+- the file is in the wrong place according to this skill;
+- the change is small, safe and justified.
 ```
 
-Non effettuare refactor architetturali ampi “di iniziativa”.
+Do not perform broad architectural refactors "on your own initiative".
 
-Se il repo contiene una struttura legacy, rispettarla finché l’utente non chiede esplicitamente di migrarla.
+If the repo contains a legacy structure, respect it until the user explicitly asks to migrate it.
 
 ---
 
-## Regola per nuove feature
+## Rule for new features
 
-Quando viene creata una nuova feature, usare questo schema minimo:
+When a new feature is created, use this minimal scheme:
 
 ```txt
 features/<feature>/
 ├── components/
-└── index.ts    # opzionale
+└── index.ts    # optional
 ```
 
-Aggiungere altre cartelle solo quando servono.
+Add other folders only when needed.
 
-Esempio per `books`:
+Example for `books`:
 
 ```txt
 features/books/
@@ -1131,41 +1131,41 @@ features/books/
 
 ---
 
-## Regola per nuove route
+## Rule for new routes
 
-Quando viene creata una nuova route Next.js:
+When a new Next.js route is created:
 
 ```txt
 apps/web/src/app/<route>/page.tsx
 ```
 
-la pagina deve importare componenti dalla feature.
+the page must import components from the feature.
 
-Esempio:
+Example:
 
 ```txt
 apps/web/src/app/books/page.tsx
 apps/web/src/features/books/components/BookGrid.tsx
 ```
 
-La route non deve diventare il contenitore principale della logica.
+The route must not become the main container of the logic.
 
 ---
 
-## Regola per dashboard
+## Rule for the dashboard
 
-La dashboard sarà una feature e una route privata.
+The dashboard will be a feature and a private route.
 
-Struttura prevista:
+Expected structure:
 
 ```txt
 apps/web/src/app/dashboard/page.tsx
 apps/web/src/features/dashboard/
 ```
 
-La route `/dashboard` deve restare sottile.
+The `/dashboard` route must remain thin.
 
-La logica dashboard deve stare in:
+The dashboard logic must be in:
 
 ```txt
 features/dashboard
@@ -1173,15 +1173,15 @@ features/dashboard
 
 ---
 
-## Regola per books
+## Rule for books
 
-La feature books deve stare in:
+The books feature must be in:
 
 ```txt
 apps/web/src/features/books
 ```
 
-Route previste:
+Expected routes:
 
 ```txt
 apps/web/src/app/books/page.tsx
@@ -1189,7 +1189,7 @@ apps/web/src/app/books/[slug]/page.tsx
 apps/web/src/app/dashboard/books/new/page.tsx
 ```
 
-Componenti previsti:
+Expected components:
 
 ```txt
 BookCard
@@ -1197,13 +1197,13 @@ BookGrid
 BookForm
 ```
 
-Tipi di dominio come `Book` devono stare in:
+Domain types such as `Book` must be in:
 
 ```txt
 packages/types
 ```
 
-Tipi di form come `BookFormValues` devono stare in:
+Form types such as `BookFormValues` must be in:
 
 ```txt
 features/books/types
@@ -1211,27 +1211,27 @@ features/books/types
 
 ---
 
-## Regola per nearby e mappe
+## Rule for nearby and maps
 
-La feature nearby deve stare in:
+The nearby feature must be in:
 
 ```txt
 apps/web/src/features/nearby
 ```
 
-Componenti React legati a MapLibre:
+React components related to MapLibre:
 
 ```txt
 features/nearby/components
 ```
 
-Funzioni pure geografiche:
+Pure geographic functions:
 
 ```txt
 packages/geo
 ```
 
-Esempi:
+Examples:
 
 ```txt
 NearbyAvailabilityMap       → features/nearby/components
@@ -1241,21 +1241,21 @@ approximateCoordinates      → packages/geo
 
 ---
 
-## Regola per AI catalogazione
+## Rule for AI cataloging
 
-La feature UI di catalogazione assistita deve stare in:
+The UI feature for assisted cataloging must be in:
 
 ```txt
 apps/web/src/features/cataloging
 ```
 
-La logica AI pura deve stare in:
+The pure AI logic must be in:
 
 ```txt
 packages/ai
 ```
 
-Esempi:
+Examples:
 
 ```txt
 CatalogingUploadForm        → features/cataloging/components
@@ -1265,60 +1265,60 @@ normalizeBookMetadata       → packages/ai
 
 ---
 
-## Schema decisionale rapido
+## Quick decision scheme
 
-Quando devi creare un file, usa questa logica:
+When you must create a file, use this logic:
 
 ```txt
-È una route Next.js?
+Is it a Next.js route?
 → apps/web/src/app
 
-È un componente generico UI?
+Is it a generic UI component?
 → apps/web/src/components/ui
 
-È un componente condiviso tra più feature ma non primitivo?
+Is it a component shared between several features but not primitives?
 → apps/web/src/components
 
-È un componente specifico di una feature?
+Is it a feature-specific component?
 → apps/web/src/features/<feature>/components
 
-È un hook React condiviso tra più feature?
+Is it a React hook shared between several features?
 → apps/web/src/hooks
 
-È un hook React specifico di una feature?
+Is it a React hook specific to a feature?
 → apps/web/src/features/<feature>/hooks
 
-È una route web o configurazione web-specific?
+Is it a web route or web-specific configuration?
 → apps/web/src/config
 
-È una utility tecnica web-specific?
+Is it a web-specific technical utility?
 → apps/web/src/lib
 
-È un tipo di dominio condiviso?
+Is it a shared domain type?
 → packages/types
 
-È una configurazione condivisa?
+Is it a shared configuration?
 → packages/config
 
-È una traduzione?
+Is it a translation?
 → packages/translation
 
-È una funzione geografica pura?
+Is it a pure geographic function?
 → packages/geo
 
-È logica database?
+Is it database logic?
 → packages/db
 
-È logica AI pura?
+Is it pure AI logic?
 → packages/ai
 
-È una skill OpenCode?
+Is it an OpenCode skill?
 → .opencode/skills/<name>/SKILL.md
 ```
 
 ---
 
-## Esempi corretti
+## Correct examples
 
 ### Auth
 
@@ -1361,7 +1361,7 @@ features/auth/types/auth-form.types.ts
 
 ---
 
-## Esempi sbagliati
+## Wrong examples
 
 ```txt
 apps/web/src/features/LoginForm.tsx
@@ -1373,36 +1373,36 @@ apps/web/src/utils/format.ts
 apps/web/src/pages/auth/login.tsx
 ```
 
-Motivi:
+Reasons:
 
 ```txt
-LoginForm deve stare in features/auth/components
-BookCard è dominio books, non UI primitiva
-routes.ts è specifico web, non config condivisa
-login-form.types.ts è specifico web/form
-skill OpenCode devono stare in .opencode/skills
-utils generico parallelo non previsto
-Next App Router usa app/, non pages/
+LoginForm must be in features/auth/components
+BookCard is a books domain item, not a UI primitive
+routes.ts is web-specific, not shared config
+login-form.types.ts is web/form-specific
+OpenCode skills must be in .opencode/skills
+generic parallel utils is not expected
+Next App Router uses app/, not pages/
 ```
 
 ---
 
-## Regola finale
+## Final rule
 
-Ogni modifica strutturale deve mantenere chiara questa separazione:
+Every structural change must keep this separation clear:
 
 ```txt
-app/           → route Next.js
-features/      → funzionalità applicative
-components/ui  → primitivi UI generici
-components/    → componenti condivisi web app
-hooks/         → hook React condivisi web app
-lib/           → utility web app
-config/        → configurazione web app
-packages/*     → codice condivisibile
-.opencode/     → skill operative per agenti
+app/           → Next.js routes
+features/      → application functionality
+components/ui  → generic UI primitives
+components/    → web app shared components
+hooks/         → web app shared React hooks
+lib/           → web app utilities
+config/        → web app configuration
+packages/*     → shareable code
+.opencode/     → operational skills for agents
 ```
 
-Se una nuova struttura non rientra chiaramente in queste regole, l’agente deve fermarsi e proporre la scelta architetturale prima di creare file o spostare codice.
+If a new structure does not clearly fit into these rules, the agent must stop and propose the architectural choice before creating files or moving code.
 
-Il progetto deve restare semplice, prevedibile e scalabile.
+The project must remain simple, predictable and scalable.

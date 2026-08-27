@@ -3,75 +3,75 @@ name: project-context
 description: Culturando project context, architecture, stack, packages, product behavior. Use when needing technical or functional context for this repository.
 ---
 
-# Culturando — Contesto tecnico e funzionale del progetto
+# Culturando — Technical and functional project context
 
-## 1. Descrizione generale del progetto
+## 1. General project description
 
-Culturando è una piattaforma web geolocalizzata pensata per valorizzare, catalogare e rendere consultabile il patrimonio librario privato degli utenti. L’obiettivo principale del progetto è permettere a una persona di pubblicare la propria collezione di libri, renderla ricercabile da altri utenti e favorire consultazioni, scambi, prestiti o semplicemente la scoperta di volumi presenti nelle vicinanze.
+Culturando is a geolocated web platform designed to enhance, catalog and make consultable the private book collections of users. The main goal of the project is to allow a person to publish their own book collection, make it searchable by other users and foster consultations, exchanges, loans or simply the discovery of volumes located nearby.
 
-Il progetto nasce come applicazione per tesi triennale in Informatica, ma viene progettato con un’impostazione tecnica realistica, modulare e scalabile. Culturando non vuole essere soltanto un catalogo digitale, ma un sistema che unisce gestione libraria, geolocalizzazione, privacy, ricerca territoriale e, in futuro, funzioni di catalogazione assistita tramite AI.
+The project started as a bachelor's thesis application in Computer Science, but it is designed with a realistic, modular and scalable technical approach. Culturando does not want to be only a digital catalog, but a system that combines book management, geolocation, privacy, territorial search and, in the future, AI-assisted cataloging features.
 
-L’idea centrale è trasformare biblioteche domestiche, collezioni personali e piccoli patrimoni librari privati in risorse culturali consultabili e valorizzabili, mantenendo al centro la tutela dell’utente e della sua posizione.
+The central idea is to turn home libraries, personal collections and small private book collections into consultable and valuable cultural resources, while keeping the protection of the user and their location at the center.
 
-## 2. Obiettivi principali
+## 2. Main goals
 
-Gli obiettivi principali di Culturando sono:
+The main goals of Culturando are:
 
-- consentire agli utenti di registrarsi e gestire un profilo personale;
-- permettere la pubblicazione di libri e collezioni private;
-- creare schede libro complete, ordinate e ricercabili;
-- visualizzare libri, utenti o punti culturali su una mappa;
-- trovare disponibilità librarie vicine a una determinata zona;
-- favorire richieste di consultazione, prestito o contatto tra utenti;
-- proteggere la privacy evitando di mostrare coordinate precise;
-- introdurre in futuro catalogazione assistita tramite OCR, ISBN e AI;
-- predisporre una base tecnica riutilizzabile anche per una futura app mobile.
+- allow users to register and manage a personal profile;
+- allow the publication of private books and collections;
+- create complete, organized and searchable book records;
+- display books, users or cultural points on a map;
+- find book availability near a given area;
+- foster consultation, loan or contact requests between users;
+- protect privacy by not showing precise coordinates;
+- introduce assisted cataloging via OCR, ISBN and AI in the future;
+- prepare a technical base that is reusable also for a future mobile app.
 
-## 3. Stack tecnico attuale
+## 3. Current technical stack
 
-Il progetto utilizza una struttura monorepo basata su Nx e pnpm.
+The project uses a monorepo structure based on Nx and pnpm.
 
-Stack principale:
+Main stack:
 
 - Nx Monorepo;
-- pnpm come package manager;
-- Next.js come framework web principale;
+- pnpm as the package manager;
+- Next.js as the main web framework;
 - React;
 - TypeScript;
 - Tailwind CSS v3;
-- componenti UI ispirati a shadcn/ui;
-- `embla-carousel-react` per il primitivo UI Carousel in stile shadcn;
-- tema grafico generato tramite tweakcn;
-- Auth.js tramite `next-auth` beta;
-- Zod per validazione form;
-- Prisma come ORM e schema database locale;
-- PostgreSQL con estensione PostGIS per persistenza e query geospaziali;
-- MapLibre GL JS per mappe interattive 2D/3D;
-- Geoapify opzionale come provider principale di geocoding/autocomplete indirizzi, con fallback Nominatim/OpenStreetMap;
-- Cloudflare R2, tramite client S3 compatibile, per storage persistente delle copertine;
-- Nodemailer con SMTP per invio email transazionali di conferma account;
-- Sonner per notifiche applicative e conferme interattive;
-- `@culturando/assets` per centralizzare i path degli asset pubblici condivisi;
-- `@culturando/translation` per dizionari e chiavi testuali condivise;
-- Biome per linting e formatting;
-- package condivisi sotto `packages/*`.
+- UI components inspired by shadcn/ui;
+- `embla-carousel-react` for the shadcn-style UI Carousel primitive;
+- graphical theme generated through tweakcn;
+- Auth.js through the `next-auth` beta;
+- Zod for form validation;
+- Prisma as ORM and local database schema;
+- PostgreSQL with the PostGIS extension for persistence and geospatial queries;
+- MapLibre GL JS for interactive 2D/3D maps;
+- optional Geoapify as the main address geocoding/autocomplete provider, with Nominatim/OpenStreetMap fallback;
+- Cloudflare R2, through an S3-compatible client, for persistent cover storage;
+- Nodemailer with SMTP for sending transactional account confirmation emails;
+- Sonner for application notifications and interactive confirmations;
+- `@culturando/assets` to centralize the shared public asset paths;
+- `@culturando/translation` for shared dictionaries and textual keys;
+- Biome for linting and formatting;
+- shared packages under `packages/*`.
 
-Stack previsto nelle fasi successive:
+Stack planned for the following phases:
 
-- eventuale pipeline AI/OCR per catalogazione assistita;
-- futura app mobile React Native/Expo, non inclusa nell’MVP iniziale.
+- possible AI/OCR pipeline for assisted cataloging;
+- future React Native/Expo mobile app, not included in the initial MVP.
 
-## 4. Architettura generale
+## 4. General architecture
 
-Culturando segue un’architettura monorepo con separazione tra applicazioni e package condivisi.
+Culturando follows a monorepo architecture with separation between applications and shared packages.
 
-La struttura concettuale è:
+The conceptual structure is:
 
 ```txt
 culturando/
 ├── apps/
 │   └── web/
-│       └── applicazione Next.js principale
+│       └── main Next.js application
 │
 ├── packages/
 │   ├── config/
@@ -89,18 +89,18 @@ culturando/
 └── biome.json
 ```
 
-La regola architetturale principale è:
+The main architectural rule is:
 
-- `apps/web` contiene codice specifico della web app: pagine, route, componenti React, feature UI, form, layout e interazioni.
-- `packages/*` contiene codice condivisibile e indipendente dalla singola app: tipi, configurazioni, utility geografiche, accesso database, funzioni AI, traduzioni.
+- `apps/web` contains web app-specific code: pages, routes, React components, UI features, forms, layouts and interactions.
+- `packages/*` contains code that is shareable and independent of the single app: types, configurations, geographic utilities, database access, AI functions, translations.
 
-Questa distinzione permette di evitare duplicazione e prepara il progetto a una futura estensione mobile.
+This distinction helps avoid duplication and prepares the project for a future mobile extension.
 
-## 5. Applicazione web: `apps/web`
+## 5. Web application: `apps/web`
 
-La web app è sviluppata con Next.js e usa App Router.
+The web app is developed with Next.js and uses the App Router.
 
-La struttura consigliata e attuale è basata su feature:
+The recommended and current structure is feature-based:
 
 ```txt
 apps/web/src/
@@ -115,9 +115,9 @@ apps/web/src/
 
 ### 5.1 `app/`
 
-La cartella `app/` contiene esclusivamente il routing Next.js.
+The `app/` folder contains exclusively the Next.js routing.
 
-Esempio:
+Example:
 
 ```txt
 apps/web/src/app/
@@ -136,9 +136,9 @@ apps/web/src/app/
         └── page.tsx
 ```
 
-Le pagine dentro `app/` devono rimanere sottili. Non devono contenere logica complessa, validazioni, form lunghi o business logic. Devono comporre layout e richiamare componenti dalle feature.
+The pages inside `app/` must remain thin. They must not contain complex logic, validations, long forms or business logic. They must compose layouts and call components from the features.
 
-Esempio corretto:
+Correct example:
 
 ```tsx
 import { LoginForm } from "@/features/auth/components/LoginForm";
@@ -154,9 +154,9 @@ export default function LoginPage() {
 
 ### 5.2 `components/ui`
 
-La cartella `components/ui` contiene componenti generici e riutilizzabili, ispirati al pattern shadcn/ui.
+The `components/ui` folder contains generic and reusable components, inspired by the shadcn/ui pattern.
 
-Esempi:
+Examples:
 
 ```txt
 apps/web/src/components/ui/
@@ -178,44 +178,44 @@ apps/web/src/components/ui/
 └── label.tsx
 ```
 
-Questi componenti non devono conoscere il dominio Culturando. Devono essere generici.
+These components must not know the Culturando domain. They must be generic.
 
-Corretto:
+Correct:
 
 - `Button`;
 - `Input`;
 - `Label`;
 - `Card`;
-- `Carousel`, basato su `embla-carousel-react`, per slider accessibili di immagini/contenuti;
+- `Carousel`, based on `embla-carousel-react`, for accessible image/content sliders;
 - `Badge`;
 - `Checkbox`;
-- `DropdownMenu` e `DropdownSelect` per menu e dropdown accessibili basati su Radix/shadcn;
-- `PageShell`, `PageContainer`, `PageHeader`, `PageTitle` e primitive pagina responsive;
-- `Pagination` e primitive correlate per paginazione stile shadcn;
+- `DropdownMenu` and `DropdownSelect` for accessible menus and dropdowns based on Radix/shadcn;
+- `PageShell`, `PageContainer`, `PageHeader`, `PageTitle` and responsive page primitives;
+- `Pagination` and related primitives for shadcn-style pagination;
 - `Progress`;
 - `RadioGroup`;
 - `ThemeToggle`;
 - `Tooltip`;
-- `Wizard` per flussi guidati con stepper e progress bar;
-- futuro `Textarea`;
-- futuro `Dialog`.
+- `Wizard` for guided flows with stepper and progress bar;
+- future `Textarea`;
+- future `Dialog`.
 
-Non corretto:
+Not correct:
 
 - `LoginForm`;
 - `BookCard`;
 - `NearbyAvailabilityMap`;
 - `UserLibraryCard`.
 
-I componenti di dominio devono stare dentro le rispettive feature.
+The domain components must stay inside their respective features.
 
-I componenti condivisi specifici della web app, ma non appartenenti al set generico shadcn-like, possono stare direttamente in `apps/web/src/components`. Esempio attuale: `BrandLogo`, che renderizza le varianti light/dark del logo Culturando usando i path centralizzati in `@culturando/assets`.
+The web app-specific shared components that do not belong to the generic shadcn-like set may stay directly in `apps/web/src/components`. Current example: `BrandLogo`, which renders the light/dark variants of the Culturando logo using the paths centralized in `@culturando/assets`.
 
 ### 5.3 `features/`
 
-La cartella `features/` contiene le funzionalità applicative della web app.
+The `features/` folder contains the application functionality of the web app.
 
-Feature attuali:
+Current features:
 
 ```txt
 apps/web/src/features/auth/
@@ -275,28 +275,28 @@ apps/web/src/features/requests/
     └── loan-request-form.types.ts
 ```
 
-Questa suddivisione permette di isolare UI, validazione, azioni e tipi relativi alla stessa feature.
-I testi riutilizzabili non devono essere duplicati nelle feature: quando esiste una chiave, devono passare da `@culturando/translation` e dall'hook web `useTranslation`.
+This subdivision allows isolating UI, validation, actions and types related to the same feature.
+The reusable texts must not be duplicated in the features: when a key exists, they must go through `@culturando/translation` and the web `useTranslation` hook.
 
-La feature `location` contiene una server action wrapper verso `@culturando/geo` per suggerimenti indirizzo/autocomplete. Il provider principale è Geoapify quando `GEOAPIFY_API_KEY` è configurata, con fallback Nominatim/OpenStreetMap; la action è riutilizzata da profilo e pubblicazione libro senza import trasversali tra feature.
+The `location` feature contains a server action wrapper towards `@culturando/geo` for address/autocomplete suggestions. The main provider is Geoapify when `GEOAPIFY_API_KEY` is configured, with Nominatim/OpenStreetMap fallback; the action is reused by the profile and by book publishing without cross-imports between features.
 
-In futuro saranno previste feature come:
+In the future, features such as the following will be planned:
 
 ```txt
 features/cataloging/
 ```
 
-Ogni feature deve contenere solo il codice specifico della funzionalità.
+Every feature must contain only the code specific to the functionality.
 
 ### 5.4 `config/routes.ts`
 
-Le route della web app sono centralizzate in:
+The routes of the web app are centralized in:
 
 ```txt
 apps/web/src/config/routes.ts
 ```
 
-Esempio:
+Example:
 
 ```ts
 export const routes = {
@@ -313,13 +313,13 @@ export const routes = {
 } as const;
 ```
 
-Le route restano dentro `apps/web` perché sono specifiche della web app Next.js. Non devono essere spostate in `packages/config`, perché una futura app mobile non userà necessariamente gli stessi path.
+The routes remain inside `apps/web` because they are specific to the Next.js web app. They must not be moved to `packages/config`, because a future mobile app will not necessarily use the same paths.
 
 ### 5.5 `lib/utils.ts`
 
-Contiene utility tecniche condivise nella web app.
+Contains technical utilities shared in the web app.
 
-Esempio tipico:
+Typical example:
 
 ```ts
 export function cn(...inputs: ClassValue[]) {
@@ -327,23 +327,23 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
-Questa utility viene usata dai componenti UI per comporre classi Tailwind.
+This utility is used by the UI components to compose Tailwind classes.
 
-## 6. Package condivisi
+## 6. Shared packages
 
-I package condivisi si trovano sotto:
+The shared packages are located under:
 
 ```txt
 packages/
 ```
 
-L’obiettivo è scrivere una sola volta logiche e definizioni riutilizzabili in più contesti.
+The goal is to write once the logic and definitions reusable in several contexts.
 
 ### 6.1 `packages/config`
 
-Contiene configurazioni generali e costanti condivise.
+Contains general configurations and shared constants.
 
-Struttura:
+Structure:
 
 ```txt
 packages/config/
@@ -355,17 +355,17 @@ packages/config/
     └── index.ts
 ```
 
-Responsabilità:
+Responsibilities:
 
-- nome applicazione;
-- descrizione applicazione;
-- lingua di default;
-- autori;
+- application name;
+- application description;
+- default language;
+- authors;
 - publisher;
-- regole generiche auth, come lunghezza minima password;
-- costanti condivise.
+- generic auth rules, such as minimum password length;
+- shared constants.
 
-Esempio:
+Example:
 
 ```ts
 export const appConfig = {
@@ -382,13 +382,13 @@ export const appConfig = {
 } as const;
 ```
 
-Il package `config` non deve dipendere da Next.js. Non deve importare `Metadata` da `next`. I metadata Next vengono costruiti nel layout della web app usando i valori di `appConfig`.
+The `config` package must not depend on Next.js. It must not import `Metadata` from `next`. The Next metadata are built in the web app layout using the `appConfig` values.
 
 ### 6.2 `packages/types`
 
-Contiene tipi TypeScript condivisi di dominio.
+Contains shared TypeScript domain types.
 
-Struttura:
+Structure:
 
 ```txt
 packages/types/
@@ -402,16 +402,16 @@ packages/types/
     └── index.ts
 ```
 
-Responsabilità:
+Responsibilities:
 
-- tipi utente;
-- tipi sessione;
-- tipi libro;
-- tipi coordinate;
-- tipi richieste prestito/consultazione;
-- tipi riutilizzabili anche da web app, mobile, database, API o script.
+- user types;
+- session types;
+- book types;
+- coordinate types;
+- loan/consultation request types;
+- types reusable also by the web app, mobile, database, API or scripts.
 
-Esempi:
+Examples:
 
 ```ts
 export type UserRole = "user" | "admin";
@@ -424,7 +424,7 @@ export type SessionUser = {
 };
 ```
 
-Non devono stare qui tipi specifici dei form React, come:
+React form-specific types must not stay here, such as:
 
 ```ts
 LoginFormValues
@@ -432,28 +432,28 @@ SignupFormValues
 LoginFormState
 ```
 
-Questi restano nella feature auth della web app.
+These remain in the auth feature of the web app.
 
 ### 6.3 `packages/db`
 
-Package condiviso per la gestione database.
+Shared package for database management.
 
-Responsabilità attuali:
+Current responsibilities:
 
 - Prisma Client;
-- schema Prisma;
-- client condiviso esportato come `prisma`;
-- PostgreSQL locale tramite Docker Compose con immagine PostGIS;
-- estensione PostGIS inizializzata tramite script root `db:postgis`;
-- script root per `db:up`, `db:down`, `db:logs`, `db:postgis`, `db:generate`, `db:push`, `db:migrate:dev` e `db:studio`.
+- Prisma schema;
+- shared client exported as `prisma`;
+- local PostgreSQL through Docker Compose with the PostGIS image;
+- PostGIS extension initialized through the root `db:postgis` script;
+- root scripts for `db:up`, `db:down`, `db:logs`, `db:postgis`, `db:generate`, `db:push`, `db:migrate:dev` and `db:studio`.
 
-Responsabilità future:
+Future responsibilities:
 
-- query condivise;
+- shared queries;
 - seed;
-- migrazioni.
+- migrations.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 packages/db/
@@ -465,28 +465,28 @@ packages/db/
     └── index.ts
 ```
 
-Lo schema Prisma attuale modella `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` e `LoanRequest`, con enum per ruolo utente, preferenza di saluto, disponibilità, visibilità, condizione fisica e sorgente immagine. `User.emailVerifiedAt` abilita il blocco login per account non confermati; `User.salutationPreference` salva la preferenza grammaticale di saluto (`masculine`, `feminine`, `neutral`) usata dalla dashboard per mostrare `Benvenuto`, `Benvenuta` o `Benvenuto` senza raccogliere dati sensibili non necessari. `EmailVerificationToken` salva hash del token e scadenza per il link email. La web app usa Prisma per la persistenza reale dei libri: la feature books salva e legge `Book`, `BookLocation` e `BookImage` dal database PostgreSQL locale. In sviluppo PostgreSQL/PostGIS gira tramite Docker sulla porta host `5433`, per evitare conflitti con eventuali database locali già attivi su `5432`. Lo script `pnpm dev` avvia il container PostgreSQL/PostGIS, crea l'estensione PostGIS se necessario e poi avvia la web app.
+The current Prisma schema models `User`, `EmailVerificationToken`, `Book`, `BookStats`, `BookLocation`, `BookImage` and `LoanRequest`, with enums for user role, greeting preference, availability, visibility, physical condition and image source. `User.emailVerifiedAt` enables blocking login for unconfirmed accounts; `User.salutationPreference` stores the grammatical greeting preference (`masculine`, `feminine`, `neutral`) used by the dashboard to show `Benvenuto`, `Benvenuta` or `Benvenuto` without collecting unnecessary sensitive data. `EmailVerificationToken` stores the token hash and the expiry for the email link. The web app uses Prisma for the real persistence of the books: the books feature saves and reads `Book`, `BookLocation` and `BookImage` from the local PostgreSQL database. In development, PostgreSQL/PostGIS runs through Docker on the host port `5433`, to avoid conflicts with any local databases already active on `5432`. The `pnpm dev` script starts the PostgreSQL/PostGIS container, creates the PostGIS extension if needed and then starts the web app.
 
 ### 6.4 `packages/geo`
 
-Package condiviso per logiche geospaziali pure.
+Shared package for pure geospatial logic.
 
-Responsabilità attuali:
+Current responsibilities:
 
-- normalizzazione coordinate;
-- approssimazione coordinate per privacy;
-- geocoding indirizzo -> coordinate tramite adapter Geoapify quando `GEOAPIFY_API_KEY` è configurata, con fallback Nominatim/OpenStreetMap;
-- autocomplete indirizzi condiviso tramite `searchAddressSuggestions`, usato da profilo e form libro;
-- normalizzazione degli indirizzi nel formato `via/corso civico, città, provincia` tramite `formatStructuredAddress`;
-- funzioni riutilizzabili da web, API e mobile.
+- coordinate normalization;
+- coordinate approximation for privacy;
+- address -> coordinate geocoding through the Geoapify adapter when `GEOAPIFY_API_KEY` is configured, with Nominatim/OpenStreetMap fallback;
+- shared address autocomplete through `searchAddressSuggestions`, used by the profile and the book form;
+- address normalization in the `via/corso civico, città, provincia` format through `formatStructuredAddress`;
+- functions reusable by the web, API and mobile.
 
-Responsabilità future:
+Future responsibilities:
 
-- calcolo distanza;
-- conversione in GeoJSON;
-- sostituzione o affiancamento di Nominatim con provider più stabile, cloud o self-hosted.
+- distance calculation;
+- GeoJSON conversion;
+- replacement or pairing of Nominatim with a more stable provider, cloud or self-hosted.
 
-Esempi attuali/futuri:
+Current/future examples:
 
 ```ts
 geocodeAddress()
@@ -497,28 +497,28 @@ generatePublicLocation()
 toGeoJsonFeature()
 ```
 
-Nominatim è una scelta temporanea e pragmatica per l'MVP: il codice deve restare isolato dietro l'adapter `geocodeAddress`, così la web app non dipende direttamente dal provider e potrà passare a un geocoder cloud, commerciale o self-hosted senza cambiare il dominio applicativo.
+Nominatim is a temporary and pragmatic choice for the MVP: the code must remain isolated behind the `geocodeAddress` adapter, so the web app does not depend directly on the provider and will be able to switch to a cloud, commercial or self-hosted geocoder without changing the application domain.
 
 ### 6.5 `packages/ai`
 
-Package condiviso per catalogazione assistita e funzioni AI.
+Shared package for assisted cataloging and AI functions.
 
-Responsabilità attuali:
+Current responsibilities:
 
-- lookup metadati libro da ISBN o titolo tramite adapter Open Library;
-- estrazione ISBN da testo con validazione ISBN-10/ISBN-13 tramite check digit;
-- adapter OCR provider-agnostic `extractTextFromImage` per inviare immagini a un endpoint esterno;
-- supporto al flusso OCR Cloudflare tramite Worker configurabile dalla web app;
-- file di riferimento versionato `packages/ai/cloudflare-ocr-worker.js`, da mantenere allineato al Worker Cloudflare deployato quando cambia il prompt o il contratto di risposta OCR.
+- book metadata lookup by ISBN or title through the Open Library adapter;
+- ISBN extraction from text with ISBN-10/ISBN-13 validation via check digit;
+- provider-agnostic OCR adapter `extractTextFromImage` to send images to an external endpoint;
+- support for the Cloudflare OCR flow through a Worker configurable by the web app;
+- versioned reference file `packages/ai/cloudflare-ocr-worker.js`, to be kept aligned with the deployed Cloudflare Worker when the prompt or the OCR response contract changes.
 
-Responsabilità future:
+Future responsibilities:
 
-- normalizzazione avanzata metadati libro;
-- suggerimento categorie e tag;
-- ranking risultati;
-- eventuale supporto a provider OCR alternativi o OCR locale.
+- advanced book metadata normalization;
+- categories and tags suggestion;
+- results ranking;
+- possible support for alternative OCR providers or local OCR.
 
-Esempi attuali/futuri:
+Current/future examples:
 
 ```ts
 extractIsbnFromText()
@@ -533,9 +533,9 @@ suggestBookTags()
 
 ### 6.6 `packages/assets`
 
-Package condiviso per centralizzare i path pubblici degli asset statici e degli upload serviti dalla web app.
+Shared package to centralize the public paths of the static assets and uploads served by the web app.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 packages/assets/
@@ -544,29 +544,29 @@ packages/assets/
     └── index.ts
 ```
 
-Responsabilità attuali:
+Current responsibilities:
 
-- esporre `assets.favicon`;
-- esporre `assets.logo` con varianti full e mark per tema light/dark;
-- esporre `assets.icons` con favicon SVG light/dark basate su `prefers-color-scheme`, apple touch icon, manifest e icone PWA;
-- esporre immagini statiche, come `assets.images.loginPage`;
-- esporre builder URL per upload pubblici locali, come `assets.uploads.bookCover(fileName)`.
+- expose `assets.favicon`;
+- expose `assets.logo` with full and mark variants for the light/dark theme;
+- expose `assets.icons` with light/dark SVG favicons based on `prefers-color-scheme`, apple touch icon, manifest and PWA icons;
+- expose static images, such as `assets.images.loginPage`;
+- expose URL builders for local public uploads, such as `assets.uploads.bookCover(fileName)`.
 
-Il package non contiene i file binari: gli asset statici continuano a vivere sotto `apps/web/public`, mentre il package centralizza solo riferimenti e path riusabili.
+The package does not contain the binary files: the static assets continue to live under `apps/web/public`, while the package centralizes only reusable references and paths.
 
 ### 6.7 `packages/translation`
 
-Package condiviso per la gestione i18n.
+Shared package for i18n management.
 
-Motivazioni:
+Motivations:
 
-- evitare testi hardcoded nei componenti;
-- centralizzare le traduzioni;
-- preparare riuso futuro in app mobile;
-- migliorare pulizia e manutenibilità;
-- rendere più semplice aggiungere inglese o altre lingue.
+- avoid hardcoded texts in the components;
+- centralize translations;
+- prepare future reuse in the mobile app;
+- improve cleanliness and maintainability;
+- make it easier to add English or other languages.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 packages/translation/
@@ -580,43 +580,43 @@ packages/translation/
     └── index.ts
 ```
 
-Il package deve contenere dizionari e funzioni pure. L’hook React `useTranslation` non dovrebbe stare nel package condiviso, ma nella web app:
+The package must contain dictionaries and pure functions. The React hook `useTranslation` should not stay in the shared package, but in the web app:
 
 ```txt
 apps/web/src/hooks/useTranslation.ts
 ```
 
-Motivo: `useTranslation` è React-specific, mentre `packages/translation` deve restare indipendente dalla UI.
+Reason: `useTranslation` is React-specific, while `packages/translation` must remain independent of the UI.
 
-Responsabilità attuali:
+Current responsibilities:
 
-- centralizzare i dizionari `it` ed `en`;
-- esporre il tipo `Locale`;
-- esporre il tipo `TranslationKey` derivato dal dizionario italiano;
-- esporre `getTranslation(key, locale)` come funzione pura;
-- usare fallback su italiano quando serve.
+- centralize the `it` and `en` dictionaries;
+- expose the `Locale` type;
+- expose the `TranslationKey` type derived from the Italian dictionary;
+- expose `getTranslation(key, locale)` as a pure function;
+- fall back to Italian when needed.
 
-La web app consuma le traduzioni tramite:
+The web app consumes the translations through:
 
 ```txt
 apps/web/src/hooks/useTranslation.ts
 ```
 
-I componenti React devono usare:
+The React components must use:
 
 ```tsx
 const t = useTranslation();
 ```
 
-e poi chiavi come:
+and then keys such as:
 
 ```tsx
 t("auth.login.title")
 ```
 
-In questo modo una futura app mobile potrà riutilizzare gli stessi dizionari e la stessa funzione pura, mantenendo un hook React-specific separato.
+This way a future mobile app will be able to reuse the same dictionaries and the same pure function, keeping a separate React-specific hook.
 
-Uso desiderato:
+Desired usage:
 
 ```tsx
 const t = useTranslation();
@@ -625,13 +625,13 @@ const t = useTranslation();
 <Button>{t("auth.login.submitLabel")}</Button>
 ```
 
-## 7. Feature Auth
+## 7. Auth feature
 
-La feature auth è la prima feature concreta del progetto.
+The auth feature is the first concrete feature of the project.
 
-### 7.1 Route
+### 7.1 Routes
 
-Le route sono:
+The routes are:
 
 ```txt
 /api/auth/[...nextauth]
@@ -641,32 +641,32 @@ Le route sono:
 /auth/signup
 ```
 
-La route `/auth` può reindirizzare a `/auth/login`.
+The `/auth` route may redirect to `/auth/login`.
 
-Auth.js è configurato in:
+Auth.js is configured in:
 
 ```txt
 apps/web/src/config/auth.ts
 ```
 
-La route API Auth.js espone gli handler in:
+The Auth.js API route exposes the handlers in:
 
 ```txt
 apps/web/src/app/api/auth/[...nextauth]/route.ts
 ```
 
-Configurazione attuale:
+Current configuration:
 
 - `next-auth` beta;
-- session strategy JWT;
-- pagina custom di login su `/auth/login`;
-- Credentials provider collegato agli utenti reali nel database PostgreSQL tramite Prisma;
-- login consentito solo agli utenti con `emailVerifiedAt` valorizzato;
-- sessione arricchita con `session.user.id`, corrispondente all'id reale della tabella `User`;
-- sessione arricchita con `session.user.salutationPreference`, derivata da `User.salutationPreference`;
-- password salvate come hash `scrypt` con salt, tramite utility server-side in `apps/web/src/lib/password.ts`.
+- JWT session strategy;
+- custom login page on `/auth/login`;
+- Credentials provider connected to the real users in the PostgreSQL database through Prisma;
+- login allowed only for users with a populated `emailVerifiedAt`;
+- session enriched with `session.user.id`, matching the real id of the `User` table;
+- session enriched with `session.user.salutationPreference`, derived from `User.salutationPreference`;
+- passwords stored as `scrypt` hashes with salt, through the server-side utility in `apps/web/src/lib/password.ts`.
 
-Variabili richieste per Auth.js:
+Variables required by Auth.js:
 
 ```txt
 AUTH_SECRET=
@@ -675,7 +675,7 @@ AUTH_URL=http://localhost:3000
 
 ### 7.2 Login
 
-La pagina login è composta da:
+The login page is composed of:
 
 ```txt
 apps/web/src/app/auth/login/page.tsx
@@ -684,18 +684,18 @@ apps/web/src/features/auth/schemas/login.schema.ts
 apps/web/src/features/auth/actions/login.action.ts
 ```
 
-Responsabilità:
+Responsibilities:
 
-- mostrare form email/password;
-- gestire remember me;
-- validare input con Zod;
-- chiamare Auth.js tramite `signIn("credentials")`;
-- mostrare errore tradotto quando le credenziali non sono valide;
-- linkare alla signup.
+- show the email/password form;
+- handle remember me;
+- validate input with Zod;
+- call Auth.js through `signIn("credentials")`;
+- show a translated error when the credentials are not valid;
+- link to the signup.
 
 ### 7.3 Signup
 
-La pagina signup è composta da:
+The signup page is composed of:
 
 ```txt
 apps/web/src/app/auth/signup/page.tsx
@@ -704,27 +704,27 @@ apps/web/src/features/auth/schemas/signup.schema.ts
 apps/web/src/features/auth/actions/signup.action.ts
 ```
 
-Responsabilità:
+Responsibilities:
 
-- mostrare form nome/email/password/conferma password;
-- raccogliere la preferenza grammaticale di saluto tramite `RadioGroup` (`masculine`, `feminine`, `neutral`);
-- guidare l’utente tramite `Wizard` con step dati account, sicurezza e riepilogo;
-- controllare disponibilità email mentre l’utente digita e bloccare il proseguimento se già usata;
-- validare input con Zod;
-- verificare corrispondenza password;
-- creare un utente reale non ancora verificato in PostgreSQL tramite Prisma;
-- salvare `salutationPreference` sul record utente;
-- generare un token di conferma email salvato come hash in `EmailVerificationToken`;
-- inviare email di conferma tramite Nodemailer e SMTP;
-- mostrare notifica Sonner di conferma invio email;
-- salvare la password come hash, mai in chiaro;
-- linkare alla login.
+- show the name/email/password/confirm password form;
+- collect the grammatical greeting preference through `RadioGroup` (`masculine`, `feminine`, `neutral`);
+- guide the user through a `Wizard` with account data, security and summary steps;
+- check email availability while the user types and block proceeding if it is already used;
+- validate input with Zod;
+- verify password match;
+- create a real, not yet verified user in PostgreSQL through Prisma;
+- save `salutationPreference` on the user record;
+- generate an email confirmation token saved as a hash in `EmailVerificationToken`;
+- send the confirmation email through Nodemailer and SMTP;
+- show a Sonner notification confirming the email sending;
+- save the password as a hash, never in clear text;
+- link to the login.
 
-La dashboard usa `session.user.salutationPreference` per scegliere la forma del titolo di benvenuto. Questa informazione va trattata come preferenza di UI/linguaggio, non come orientamento sessuale o dato sensibile.
+The dashboard uses `session.user.salutationPreference` to choose the form of the welcome title. This information must be treated as a UI/language preference, not as sexual orientation or sensitive data.
 
-La route `/auth/verify-email?token=...` conferma il token, valorizza `User.emailVerifiedAt`, elimina i token residui dell’utente e mostra una pagina di ringraziamento con CTA verso la login. Senza token valido mostra uno stato dedicato per token mancante, non valido o scaduto, quindi la pagina di successo è raggiungibile solo passando dal link email.
+The `/auth/verify-email?token=...` route confirms the token, populates `User.emailVerifiedAt`, deletes the residual tokens of the user and shows a thank-you page with a CTA towards the login. Without a valid token it shows a dedicated state for missing, invalid or expired token, so the success page is reachable only by going through the email link.
 
-Variabili email supportate:
+Supported email variables:
 
 ```txt
 EMAIL_PROVIDER=console
@@ -737,56 +737,56 @@ SMTP_SECURE="false"
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-In sviluppo locale `EMAIL_PROVIDER=console` evita l'invio SMTP e stampa il link di verifica nei log del server.
+In local development `EMAIL_PROVIDER=console` avoids SMTP sending and prints the verification link in the server logs.
 
-### 7.4 Validazione Zod
+### 7.4 Zod validation
 
-Zod viene usato per validare login e signup.
+Zod is used to validate login and signup.
 
 Login:
 
-- email obbligatoria;
-- email valida;
-- password obbligatoria;
-- password con lunghezza minima da `authConfig`;
-- rememberMe convertito tramite `z.coerce.boolean()`.
+- email required;
+- valid email;
+- password required;
+- password with minimum length from `authConfig`;
+- rememberMe converted through `z.coerce.boolean()`.
 
 Signup:
 
-- nome obbligatorio;
-- email obbligatoria e valida;
-- password obbligatoria;
-- password con lunghezza minima e massima da `authConfig`;
-- conferma password obbligatoria;
-- controllo password/confirmPassword tramite `.refine()`.
+- name required;
+- email required and valid;
+- password required;
+- password with minimum and maximum length from `authConfig`;
+- confirm password required;
+- password/confirmPassword check through `.refine()`.
 
-Gli schema restano nella feature auth perché oggi sono schema di form web. In futuro, se alcune regole diventeranno condivise tra web, mobile e backend, potranno essere spostate in un package dedicato come `packages/validators`.
+The schemas remain in the auth feature because today they are web form schemas. In the future, if some rules become shared between web, mobile and backend, they may be moved into a dedicated package such as `packages/validators`.
 
-## 8. Layout globale e metadata
+## 8. Global layout and metadata
 
-Il layout globale si trova in:
+The global layout is located in:
 
 ```txt
 apps/web/src/app/layout.tsx
 ```
 
-Responsabilità:
+Responsibilities:
 
-- importare `global.css`;
-- registrare font globali con `next/font/google`;
-- costruire i metadata Next a partire da `appConfig`;
-- impostare la lingua HTML usando `appConfig.defaultLocale`;
-- renderizzare il body dell’app.
+- import `global.css`;
+- register global fonts with `next/font/google`;
+- build the Next metadata starting from `appConfig`;
+- set the HTML language using `appConfig.defaultLocale`;
+- render the app body.
 
-Il layout deve importare il tipo:
+The layout must import the type:
 
 ```ts
 import type { Metadata } from "next";
 ```
 
-I metadata devono essere costruiti nella web app, non nel package config.
+The metadata must be built in the web app, not in the config package.
 
-Esempio corretto:
+Correct example:
 
 ```ts
 export const metadata: Metadata = {
@@ -800,65 +800,65 @@ export const metadata: Metadata = {
 };
 ```
 
-## 9. Styling e UI
+## 9. Styling and UI
 
-Il progetto usa Tailwind CSS v3.
+The project uses Tailwind CSS v3.
 
-Il file globale è:
+The global file is:
 
 ```txt
 apps/web/src/app/global.css
 ```
 
-Contiene:
+It contains:
 
-- direttive Tailwind;
-- variabili CSS del tema;
-- supporto dark mode;
-- colori generati da tweakcn;
-- font variables, con Poppins come sans-serif e Lora come serif;
-- token responsive globali `--page-padding-x`, `--page-padding-y` e `--section-gap`;
+- Tailwind directives;
+- theme CSS variables;
+- dark mode support;
+- colors generated by tweakcn;
+- font variables, with Poppins as sans-serif and Lora as serif;
+- global responsive tokens `--page-padding-x`, `--page-padding-y` and `--section-gap`;
 - radius;
 - shadow tokens;
-- layer base.
+- base layer.
 
-Il tema usa variabili HSL compatibili con Tailwind v3 e shadcn-like components. La homepage espone un `ThemeToggle` che applica/rimuove la classe `.dark` su `document.documentElement`, persiste la scelta in `localStorage` e usa la preferenza di sistema quando non esiste una scelta salvata.
+The theme uses HSL variables compatible with Tailwind v3 and shadcn-like components. The homepage exposes a `ThemeToggle` that applies/removes the `.dark` class on `document.documentElement`, persists the choice in `localStorage` and uses the system preference when no saved choice exists.
 
-I layout pagina devono preferire le primitive responsive in `components/ui/page.tsx` (`PageShell`, `PageContainer`, `PageHeader`, `PageTitle`, `ResponsiveActions`) invece di duplicare padding, max-width e heading nelle singole feature.
+The page layouts must prefer the responsive primitives in `components/ui/page.tsx` (`PageShell`, `PageContainer`, `PageHeader`, `PageTitle`, `ResponsiveActions`) instead of duplicating padding, max-width and headings in the single features.
 
-La configurazione Tailwind è:
+The Tailwind configuration is:
 
 ```txt
 apps/web/tailwind.config.js
 ```
 
-Deve includere:
+It must include:
 
 - `darkMode: ["class"]`;
-- `content` che punta a `src/app`, `src/components`, `src/features`, `src/lib`;
-- colori basati su `hsl(var(--...))`;
-- radius basati su `--radius`;
-- font family basate su `--font-sans`, `--font-serif`, `--font-mono`;
-- eventuali shadow tokens;
-- plugin `tailwindcss-animate`, se installato.
+- `content` pointing to `src/app`, `src/components`, `src/features`, `src/lib`;
+- colors based on `hsl(var(--...))`;
+- radius based on `--radius`;
+- font families based on `--font-sans`, `--font-serif`, `--font-mono`;
+- any shadow tokens;
+- the `tailwindcss-animate` plugin, if installed.
 
-## 10. Convenzioni architetturali
+## 10. Architectural conventions
 
-### 10.1 Regola `app/`
+### 10.1 `app/` rule
 
-`app/` deve contenere solo route, layout, metadata, loading/error/not-found e composizione di pagina.
+`app/` must contain only routes, layouts, metadata, loading/error/not-found and page composition.
 
-Non deve contenere:
+It must not contain:
 
-- form complessi;
+- complex forms;
 - business logic;
-- validazioni;
-- utility;
-- componenti lunghi di feature.
+- validations;
+- utilities;
+- long feature components.
 
-### 10.2 Regola `features/`
+### 10.2 `features/` rule
 
-Ogni feature contiene la propria logica applicativa:
+Every feature contains its own application logic:
 
 ```txt
 components/
@@ -869,29 +869,29 @@ constants/
 mocks/
 ```
 
-Le feature devono essere autonome e leggibili.
+The features must be autonomous and readable.
 
-### 10.3 Regola `components/ui`
+### 10.3 `components/ui` rule
 
-Contiene solo componenti UI generici.
+It contains only generic UI components.
 
-Se un componente conosce il dominio Culturando, non va in `components/ui`.
+If a component knows the Culturando domain, it must not go in `components/ui`.
 
-### 10.4 Regola `packages/*`
+### 10.4 `packages/*` rule
 
-I package contengono codice condivisibile, non specifico della singola app.
+The packages contain shareable code, not specific to the single app.
 
-Se una cosa può servire a web, mobile, API o script, può stare in `packages`.
+If something can be useful to the web, mobile, API or scripts, it may stay in `packages`.
 
-Se serve solo alla web app, resta in `apps/web`.
+If it is only useful to the web app, it remains in `apps/web`.
 
-## 11. Feature future principali
+## 11. Main future features
 
 ### 11.1 Dashboard
 
-La dashboard è l’area privata dell’utente ed è protetta tramite sessione Auth.js.
+The dashboard is the private area of the user and is protected through the Auth.js session.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 apps/web/src/app/dashboard/page.tsx
@@ -901,41 +901,41 @@ apps/web/src/features/dashboard/components/DashboardOverview.tsx
 apps/web/src/features/dashboard/actions/dashboard-stats.repository.ts
 ```
 
-La route `/dashboard` usa `auth()` lato server. Se non esiste una sessione valida, reindirizza a `/auth/login`.
+The `/dashboard` route uses `auth()` on the server side. If a valid session does not exist, it redirects to `/auth/login`.
 
-Responsabilità attuali:
+Current responsibilities:
 
-- verificare il flusso `login -> sessione -> dashboard -> logout`;
-- mostrare i dati base della sessione Auth.js;
-- esporre una CTA verso la creazione libro;
-- esporre logout tramite `logoutAction`;
-- mostrare le richieste ricevute sui libri dell'utente;
-- permettere al proprietario di accettare o rifiutare richieste ancora `pending`;
-- mostrare statistiche d'uso personali sui libri dell'utente, incluse visualizzazioni, richieste ricevute, richieste in attesa e libri più visualizzati;
-- mostrare i libri pubblicati dall'utente nella dashboard usando le stesse card formato copertina del catalogo;
-- esporre accesso alla modifica del profilo;
-- esporre accesso alla dashboard amministrativa solo quando `session.user.role` è `admin`.
+- verify the `login -> session -> dashboard -> logout` flow;
+- show the base data of the Auth.js session;
+- expose a CTA towards book creation;
+- expose logout through `logoutAction`;
+- show the requests received on the user's books;
+- allow the owner to accept or reject requests still `pending`;
+- show personal usage statistics on the user's books, including views, received requests, pending requests and most viewed books;
+- show the books published by the user in the dashboard using the same cover-format cards as the catalog;
+- expose access to profile editing;
+- expose access to the administrative dashboard only when `session.user.role` is `admin`.
 
-Funzionalità previste:
+Planned functionality:
 
-- aggiunta nuovi libri;
-- accesso rapido alle funzioni di catalogazione.
+- adding new books;
+- quick access to the cataloging functions.
 
-Route previste/attuali:
+Planned/current routes:
 
 ```txt
-/dashboard                # attuale, placeholder protetto
-/dashboard/books/new      # attuale, form libro protetto
-/dashboard/profile        # attuale, profilo utente MVP
-/dashboard/admin          # attuale, dashboard amministrativa protetta per admin
-/dashboard/books          # previsto
+/dashboard                # current, protected placeholder
+/dashboard/books/new      # current, protected book form
+/dashboard/profile        # current, MVP user profile
+/dashboard/admin          # current, protected administrative dashboard for admins
+/dashboard/books          # planned
 ```
 
-### 11.1.1 Profilo utente
+### 11.1.1 User profile
 
-La feature profile permette all'utente autenticato di gestire i dati descrittivi del proprio profilo senza esporre informazioni sensibili o coordinate precise.
+The profile feature allows the authenticated user to manage the descriptive data of their own profile without exposing sensitive information or precise coordinates.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 apps/web/src/app/dashboard/profile/page.tsx
@@ -954,36 +954,36 @@ apps/web/src/features/profile/
     └── profile-form.types.ts
 ```
 
-Funzionalità attuali:
+Current functionality:
 
-- route protetta `/dashboard/profile`;
-- lettura profilo tramite `getUserProfile`;
-- aggiornamento tramite server action `updateProfileAction`;
-- validazione Zod di nome completo, nickname, avatar, biografia, domicilio e visibilità profilo;
-- upload avatar dal dispositivo tramite `profile-avatar-storage`, con R2 quando configurato e fallback locale in `apps/web/public/uploads/profile-avatars`;
-- nickname univoco a livello DB, controllato live dal form e modificabile ogni 90 giorni;
-- domicilio gestito tramite autocomplete condiviso `@culturando/geo` su un solo input, con Geoapify quando configurato e fallback Nominatim, salvando `addressLabel`, `postalCode`, `city`, `province` e `region`;
-- campi profilo salvati direttamente sul modello `User`: `name`, `nickname`, `nicknameUpdatedAt`, `avatarUrl`, `bio`, `addressLabel`, `postalCode`, `city`, `province`, `region`, `isProfilePublic`;
-- email mostrata come dato account non modificabile dal form profilo;
-- testi UI centralizzati in `@culturando/translation`.
+- protected route `/dashboard/profile`;
+- profile reading through `getUserProfile`;
+- update through the `updateProfileAction` server action;
+- Zod validation of full name, nickname, avatar, biography, domicile and profile visibility;
+- avatar upload from the device through `profile-avatar-storage`, with R2 when configured and local fallback in `apps/web/public/uploads/profile-avatars`;
+- nickname unique at the DB level, checked live by the form and changeable every 90 days;
+- domicile managed through the shared `@culturando/geo` autocomplete on a single input, with Geoapify when configured and Nominatim fallback, saving `addressLabel`, `postalCode`, `city`, `province` and `region`;
+- profile fields saved directly on the `User` model: `name`, `nickname`, `nicknameUpdatedAt`, `avatarUrl`, `bio`, `addressLabel`, `postalCode`, `city`, `province`, `region`, `isProfilePublic`;
+- email shown as an account data field not editable from the profile form;
+- UI texts centralized in `@culturando/translation`.
 
-### 11.1.2 Impostazioni utente
+### 11.1.2 User settings
 
-La route protetta `/dashboard/settings` contiene preferenze applicative dell'utente.
+The protected route `/dashboard/settings` contains the application preferences of the user.
 
-Funzionalità attuali:
+Current functionality:
 
-- pagina impostazioni raggiungibile dalla dropdown utente nella floating bar;
-- selezione lingua app tra italiano e inglese;
-- persistenza lingua in `localStorage` e cookie `culturando-locale`;
-- aggiornamento reattivo dei testi client tramite `LocaleProvider` e `useTranslation`;
-- notifica Sonner di conferma al cambio lingua.
+- settings page reachable from the user dropdown in the floating bar;
+- app language selection between Italian and English;
+- language persistence in `localStorage` and in the `culturando-locale` cookie;
+- reactive update of the client texts through `LocaleProvider` and `useTranslation`;
+- Sonner confirmation notification when the language changes.
 
-### 11.1.3 Dashboard amministrativa
+### 11.1.3 Administrative dashboard
 
-La dashboard amministrativa copre il requisito della traccia relativo a dashboard e metriche aggregate del prototipo.
+The administrative dashboard covers the requirement of the topic related to dashboard and aggregate metrics of the prototype.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 apps/web/src/app/dashboard/admin/page.tsx
@@ -994,85 +994,85 @@ apps/web/src/features/admin/
     └── AdminDashboard.tsx
 ```
 
-Funzionalità attuali:
+Current functionality:
 
-- route protetta `/dashboard/admin`;
-- accesso consentito solo a utenti con ruolo `admin` nella sessione Auth.js;
-- `session.user.role` viene popolato tramite JWT callback in `apps/web/src/config/auth.ts`;
-- statistiche globali su utenti, libri, richieste e visualizzazioni;
-- conteggio libri pubblici e privati;
-- conteggio richieste `pending`, `accepted`, `rejected` e `cancelled`;
-- lista ultimi utenti registrati;
-- lista ultimi libri pubblicati con link al dettaglio.
+- protected route `/dashboard/admin`;
+- access allowed only to users with role `admin` in the Auth.js session;
+- `session.user.role` is populated through the JWT callback in `apps/web/src/config/auth.ts`;
+- global statistics on users, books, requests and views;
+- count of public and private books;
+- count of `pending`, `accepted`, `rejected` and `cancelled` requests;
+- list of the most recently registered users;
+- list of the most recently published books with a link to the detail.
 
-### 11.1.4 Requests / richieste contatto-prestito
+### 11.1.4 Requests / contact-loan requests
 
-La feature requests completa il primo flusso interattivo dell'MVP: un utente autenticato può inviare una richiesta per un libro pubblico disponibile e il proprietario può gestirla dalla dashboard.
+The requests feature completes the first interactive flow of the MVP: an authenticated user can send a request for an available public book and the owner can manage it from the dashboard.
 
-Funzionalità attuali:
+Current functionality:
 
-- form `LoanRequestForm` nel dettaglio libro `/books/[bookId]`;
-- tipi richiesta `consultation`, `loan`, `info`;
-- messaggio opzionale fino a 800 caratteri;
-- server action `createLoanRequestAction` con controllo sessione;
-- blocco invio se l'utente non è autenticato, se il libro non è pubblico/richiedibile o se l'utente è proprietario del libro;
-- persistenza reale tramite modello Prisma `LoanRequest`;
-- lista `ReceivedLoanRequests` nella dashboard;
-- azioni proprietario `Accetta` e `Rifiuta` tramite `updateLoanRequestStatusAction`;
-- aggiornamento stato consentito solo al proprietario e solo per richieste `pending`;
-- pagina protetta `/dashboard/requests` per visualizzare le richieste inviate dal richiedente;
-- lista `SentLoanRequests` con libro, proprietario, stato, tipo richiesta e messaggio inviato;
-- annullamento delle richieste inviate ancora `pending` tramite `cancelLoanRequestAction`;
-- testi UI centralizzati in `@culturando/translation`.
+- `LoanRequestForm` form in the book detail `/books/[bookId]`;
+- request types `consultation`, `loan`, `info`;
+- optional message up to 800 characters;
+- `createLoanRequestAction` server action with session check;
+- sending blocked if the user is not authenticated, if the book is not public/requestable or if the user owns the book;
+- real persistence through the Prisma `LoanRequest` model;
+- `ReceivedLoanRequests` list in the dashboard;
+- owner actions `Accetta` and `Rifiuta` through `updateLoanRequestStatusAction`;
+- status update allowed only to the owner and only for `pending` requests;
+- protected page `/dashboard/requests` to view the requests sent by the requester;
+- `SentLoanRequests` list with book, owner, status, request type and sent message;
+- cancellation of the sent requests still `pending` through `cancelLoanRequestAction`;
+- UI texts centralized in `@culturando/translation`.
 
-Funzionalità ancora previste:
+Still planned functionality:
 
-- notifiche/email;
-- messaggistica o scambio contatti dopo accettazione.
+- notifications/emails;
+- messaging or contact exchange after acceptance.
 
 ### 11.2 Books
 
-La feature books è stata introdotta come primo flusso funzionale dopo auth e dashboard.
+The books feature was introduced as the first functional flow after auth and dashboard.
 
-Funzionalità attuali:
+Current functionality:
 
-- catalogo pubblico `/books`;
-- loading route `/books/loading.tsx` con griglia skeleton di copertine libro;
-- dettaglio libro pubblico `/books/[bookId]`;
-- ricerca client-side nel catalogo per titolo, autore, ISBN, editore, città, categoria e descrizione;
-- filtri client-side per stato e visibilità;
-- card libro con titolo, autore, descrizione, ISBN, stato, visibilità, lingua e immagine principale quando presente;
-- mock data iniziali in `features/books/mocks/books.mock.ts`;
-- form nuovo libro protetto in `/dashboard/books/new`;
-- validazione Zod in `features/books/schemas/book.schema.ts`;
-- server action `createBookAction`;
-- recupero singolo libro tramite `getBookById`;
-- persistenza reale dei libri tramite Prisma e PostgreSQL in `features/books/actions/books.repository.ts`;
-- associazione dei nuovi libri a `session.user.id`, cioè all'utente reale autenticato;
-- geocoding dell'indirizzo durante il salvataggio tramite `@culturando/geo`;
-- salvataggio di coordinate private (`latitude`, `longitude`) e coordinate pubbliche approssimate (`publicLatitude`, `publicLongitude`);
-- revalidazione della route `/books` dopo il salvataggio;
-- route `/books` dinamica per leggere il catalogo aggiornato dal database;
-- testi UI centralizzati in `@culturando/translation`;
-- dominio `Book` MVP consolidato con campi bibliografici, indirizzo leggibile e immagini multiple;
-- l'utente inserisce un indirizzo, non coordinate manuali; il sistema geocodifica automaticamente quando possibile e mantiene fallback silenzioso se il provider non risponde;
-- upload copertina e immagini fronte/retro dal form nuovo libro tramite adapter `book-cover-storage`, con salvataggio su Cloudflare R2 quando le variabili `R2_*` sono configurate e fallback locale in `apps/web/public/uploads/book-covers`; la prima immagine caricata resta l'immagine primaria;
-- supporto a URL immagini aggiuntive nel form libro;
-- ricerca copertina da ISBN tramite Open Library direttamente nel form, con anteprima client-side e copia della cover trovata nello storage configurato quando possibile;
-- fallback server-side verso Open Library durante il salvataggio quando l'utente non carica immagini ma fornisce un ISBN;
-- URL immagini aggiuntive manuali mantenuti come riferimenti esterni, senza copia automatica nello storage;
-- catalogazione assistita nel form nuovo libro tramite lookup metadati Open Library da ISBN o titolo OCR, con proposta dati e applicazione esplicita/manuale quando richiesta;
-- estrazione ISBN da testo incollato o testo OCR, tramite `@culturando/ai`;
-- upload di una o due immagini per OCR nel form nuovo libro, tramite server action che chiama un endpoint Cloudflare OCR opzionale; il primo step resta bloccato finché il servizio esterno non termina il riconoscimento.
-- conteggio visualizzazioni tramite `BookStats` quando viene aperta la pagina dettaglio `/books/[bookId]`;
-- visualizzazione del numero di viste nella scheda dettaglio libro.
+- public catalog `/books`;
+- loading route `/books/loading.tsx` with a skeleton grid of book covers;
+- public book detail `/books/[bookId]`;
+- client-side search in the catalog by title, author, ISBN, publisher, city, category and description;
+- client-side filters by status and visibility;
+- book card with title, author, description, ISBN, status, visibility, language and main image when present;
+- initial mock data in `features/books/mocks/books.mock.ts`;
+- protected new book form in `/dashboard/books/new`;
+- Zod validation in `features/books/schemas/book.schema.ts`;
+- `createBookAction` server action;
+- single book fetch through `getBookById`;
+- real persistence of the books through Prisma and PostgreSQL in `features/books/actions/books.repository.ts`;
+- association of the new books to `session.user.id`, that is to the real authenticated user;
+- address geocoding during saving through `@culturando/geo`;
+- saving of private coordinates (`latitude`, `longitude`) and approximate public coordinates (`publicLatitude`, `publicLongitude`);
+- revalidation of the `/books` route after saving;
+- dynamic `/books` route to read the updated catalog from the database;
+- UI texts centralized in `@culturando/translation`;
+- consolidated `Book` MVP domain with bibliographic fields, readable address and multiple images;
+- the user enters an address, not manual coordinates; the system geocodes automatically when possible and keeps a silent fallback if the provider does not respond;
+- cover and front/back image upload from the new book form through the `book-cover-storage` adapter, saving on Cloudflare R2 when the `R2_*` variables are configured and local fallback in `apps/web/public/uploads/book-covers`; the first uploaded image remains the primary image;
+- support for additional image URLs in the book form;
+- cover search by ISBN through Open Library directly in the form, with client-side preview and copy of the found cover into the configured storage when possible;
+- server-side fallback towards Open Library during saving when the user does not upload images but provides an ISBN;
+- additional manual image URLs kept as external references, without automatic copy into the storage;
+- assisted cataloging in the new book form through Open Library metadata lookup by ISBN or OCR title, with data proposal and explicit/manual application when requested;
+- ISBN extraction from pasted text or OCR text, through `@culturando/ai`;
+- upload of one or two images for OCR in the new book form, through a server action that calls an optional Cloudflare OCR endpoint; the first step remains blocked until the external service finishes the recognition;
+- view counter through `BookStats` when the detail page `/books/[bookId]` is opened;
+- display of the number of views in the book detail card.
 
-Funzionalità ancora previste:
+Still planned functionality:
 
-- gestione avanzata stato disponibilità;
-- integrazione con geolocalizzazione e disponibilità vicine.
+- advanced availability status management;
+- integration with geolocation and nearby availability.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 features/books/
@@ -1095,73 +1095,73 @@ features/books/
     └── book-form.types.ts
 ```
 
-### 11.3 Nearby / disponibilità vicine
+### 11.3 Nearby / nearby availability
 
-La feature nearby permette di cercare libri pubblici vicini a una zona o a un libro specifico, usando solo coordinate pubbliche approssimate per proteggere la privacy degli utenti.
+The nearby feature allows searching for public books near an area or a specific book, using only approximate public coordinates to protect user privacy.
 
-Funzionalità attuali:
+Current functionality:
 
-- route pubblica `/nearby` con form di ricerca per città o indirizzo;
-- geocoding della zona cercata tramite `@culturando/geo`, con Geoapify quando configurato e fallback Nominatim/OpenStreetMap;
-- selezione raggio ricerca: 5 km, 10 km, 25 km, 50 km;
-- route `/books/[bookId]/nearby` per trovare libri vicini a un libro specifico;
-- lista testuale accessibile ordinata per distanza approssimata;
-- mappa interattiva MapLibre condivisa tra ricerca territoriale e dettaglio libro;
-- marker distinti per area cercata/libro di partenza e libri disponibili;
-- libri vicini renderizzati come source GeoJSON clusterizzata;
-- cluster cliccabili con zoom di espansione;
-- popup dei libri vicini con CTA verso il dettaglio;
-- legenda, popup e controlli mappa ottimizzati anche per mobile;
-- rispetto della privacy tramite `publicLatitude` e `publicLongitude`.
+- public route `/nearby` with a search form by city or address;
+- geocoding of the searched area through `@culturando/geo`, with Geoapify when configured and Nominatim/OpenStreetMap fallback;
+- search radius selection: 5 km, 10 km, 25 km, 50 km;
+- `/books/[bookId]/nearby` route to find books near a specific book;
+- accessible textual list ordered by approximate distance;
+- interactive MapLibre map shared between territorial search and book detail;
+- distinct markers for the searched area/starting book and the available books;
+- nearby books rendered as a clustered GeoJSON source;
+- clickable clusters with expansion zoom;
+- nearby book popups with a CTA towards the detail;
+- legend, popups and map controls optimized also for mobile;
+- privacy respect through `publicLatitude` and `publicLongitude`.
 
-Route attuali:
+Current routes:
 
 ```txt
 /nearby
 /books/[bookId]/nearby
 ```
 
-### 11.4 MapLibre e geolocalizzazione
+### 11.4 MapLibre and geolocation
 
-La mappa è basata su MapLibre GL JS e viene implementata nel componente `NearbyMap` dentro `features/books/components`, perché viene riutilizzata sia dalla feature books sia dalla feature nearby.
+The map is based on MapLibre GL JS and is implemented in the `NearbyMap` component inside `features/books/components`, because it is reused both by the books feature and the nearby feature.
 
-Funzioni attuali:
+Current functions:
 
-- rendering WebGL;
-- zoom e pan;
-- vista urbana 3D con pitch, bearing e zoom alto;
-- stile vettoriale OpenFreeMap Liberty;
-- edifici 3D tramite layer `fill-extrusion` quando lo stile espone layer building compatibili;
-- rotazione automatica della camera attorno al punto cercato o al libro di partenza;
-- stop della rotazione quando l'utente interagisce con la mappa;
-- controlli UI per pausa/riprendi rotazione, ripristino vista e toggle 2D/3D;
-- marker interattivi;
-- legenda integrata;
-- popup con titolo, distanza/contesto e link al dettaglio libro;
-- source GeoJSON clusterizzata per i libri vicini;
-- comportamento mobile più leggero: partenza in 2D, rotazione automatica disabilitata su viewport compatti e rispetto di `prefers-reduced-motion`.
+- WebGL rendering;
+- zoom and pan;
+- urban 3D view with pitch, bearing and high zoom;
+- OpenFreeMap Liberty vector style;
+- 3D buildings through the `fill-extrusion` layer when the style exposes compatible building layers;
+- automatic camera rotation around the searched point or the starting book;
+- rotation stop when the user interacts with the map;
+- UI controls for pausing/resuming rotation, restoring the view and toggling 2D/3D;
+- interactive markers;
+- integrated legend;
+- popups with title, distance/context and link to the book detail;
+- clustered GeoJSON source for the nearby books;
+- lighter mobile behavior: start in 2D, automatic rotation disabled on compact viewports and respect of `prefers-reduced-motion`.
 
-Funzioni previste:
+Planned functions:
 
-- integrazione futura con OpenStreetMap/Overpass per biblioteche, librerie e cartolerie;
-- eventuali ottimizzazioni ulteriori per clustering e performance su dataset più grandi.
+- future integration with OpenStreetMap/Overpass for libraries, bookstores and stationery shops;
+- possible further optimizations for clustering and performance on larger datasets.
 
-La disponibilità verificata sarà solo quella proveniente dagli utenti Culturando. I luoghi esterni saranno luoghi potenzialmente rilevanti, ma non garantiranno la disponibilità reale del libro.
+The verified availability will only be the one coming from Culturando users. External places will be potentially relevant places, but they will not guarantee the real availability of the book.
 
 ### 11.5 Database
 
-Il database attuale è PostgreSQL con estensione PostGIS, gestito in locale tramite Docker Compose. Prisma è l'ORM usato dall'applicazione e lo schema vive in `packages/db/prisma/schema.prisma`.
+The current database is PostgreSQL with the PostGIS extension, managed locally through Docker Compose. Prisma is the ORM used by the application and the schema lives in `packages/db/prisma/schema.prisma`.
 
-Motivazioni:
+Motivations:
 
-- dominio relazionale: utenti, libri, richieste, posizioni, statistiche;
-- necessità di query consistenti;
-- supporto geospaziale tramite PostGIS;
-- possibilità di usare JSONB per metadati AI o risposte da API esterne.
+- relational domain: users, books, requests, locations, statistics;
+- need for consistent queries;
+- geospatial support through PostGIS;
+- possibility of using JSONB for AI metadata or responses from external APIs.
 
-La ricerca territoriale usa query SQL raw tramite Prisma con funzioni PostGIS come `ST_DWithin` e `ST_Distance`, perché Prisma non espone nativamente tutti i tipi e operatori geospaziali necessari. I mock demo restano supportati con calcolo distanza in TypeScript come fallback, ma i libri persistiti vengono filtrati e ordinati dal database.
+The territorial search uses raw SQL queries through Prisma with PostGIS functions such as `ST_DWithin` and `ST_Distance`, because Prisma does not natively expose all the necessary geospatial types and operators. The demo mocks remain supported with distance calculation in TypeScript as a fallback, but the persisted books are filtered and ordered by the database.
 
-Entità attuali:
+Current entities:
 
 - User;
 - EmailVerificationToken;
@@ -1171,74 +1171,74 @@ Entità attuali:
 - BookImage;
 - LoanRequest.
 
-Entità previste:
+Planned entities:
 
-- Location geospaziale avanzata;
+- advanced geospatial Location;
 - BookView;
 - UserProfile.
 
-Seed demo:
+Demo seed:
 
-- script `pnpm db:seed`, definito nel `package.json` root;
-- file seed in `packages/db/prisma/seed.mjs`;
-- crea 1 utente admin, 3 utenti normali già verificati, libri demo con coordinate private/pubbliche approssimate, immagini, statistiche e richieste in stati diversi;
-- credenziali demo: `admin@culturando.local` / `Culturando123!`;
-- gli utenti demo condividono la password `Culturando123!`.
+- `pnpm db:seed` script, defined in the root `package.json`;
+- seed file in `packages/db/prisma/seed.mjs`;
+- creates 1 admin user, 3 already verified normal users, demo books with private/approximate public coordinates, images, statistics and requests in different states;
+- demo credentials: `admin@culturando.local` / `Culturando123!`;
+- the demo users share the password `Culturando123!`.
 
-### 11.6 AI catalogazione
+### 11.6 AI cataloging
 
-La catalogazione assistita aiuta l’utente a compilare una scheda libro senza salvare automaticamente dati non confermati.
+Assisted cataloging helps the user fill in a book record without automatically saving unconfirmed data.
 
-Funzionalità attuali:
+Current functionality:
 
-- lookup metadati da ISBN tramite server action `lookupBookMetadataAction` e `@culturando/ai`;
-- lookup metadati da titolo OCR quando l'immagine non contiene un ISBN riconoscibile ma permette di inferire un titolo utile;
-- proposta di titolo, autori, editore, anno, lingua, categorie, descrizione e copertina;
-- applicazione selettiva al form tramite checkbox, con campi vuoti preselezionati e campi già compilati non selezionati di default; i dati recuperati dal flusso OCR vengono applicati automaticamente solo sui campi vuoti;
-- estrazione ISBN da testo incollato o testo OCR tramite funzione pura `extractIsbnFromText`;
-- upload di una o due immagini fronte/retro per OCR tramite `extractIsbnFromImageAction`, con merge del testo riconosciuto e dei metadati;
-- fallback metadati da OCR: se la Worker restituisce `metadata`, JSON incorporato nel testo OCR o un elenco testuale/Markdown con campi come ISBN, titolo, autore, editore, anno, lingua, categorie e descrizione, il form può proporre i dati anche quando Open Library non trova l'ISBN;
-- diagnostica OCR più specifica per timeout, errore HTTP Worker, rete, risposta vuota e formato non valido;
-- integrazione opzionale con Worker Cloudflare OCR usando `CLOUDFLARE_OCR_ENDPOINT` e `CLOUDFLARE_OCR_TOKEN`;
-- supporto a `CLOUDFLARE_OCR_MOCK_TEXT` per test locali senza Worker reale.
+- metadata lookup by ISBN through the `lookupBookMetadataAction` server action and `@culturando/ai`;
+- metadata lookup by OCR title when the image does not contain a recognizable ISBN but allows inferring a useful title;
+- proposal of title, authors, publisher, year, language, categories, description and cover;
+- selective application to the form through checkboxes, with empty fields preselected and already filled fields not selected by default; the data retrieved from the OCR flow are applied automatically only to the empty fields;
+- ISBN extraction from pasted text or OCR text through the pure `extractIsbnFromText` function;
+- upload of one or two front/back images for OCR through `extractIsbnFromImageAction`, with merging of the recognized text and metadata;
+- OCR metadata fallback: if the Worker returns `metadata`, JSON embedded in the OCR text or a textual/Markdown list with fields such as ISBN, title, author, publisher, year, language, categories and description, the form can propose the data even when Open Library does not find the ISBN;
+- more specific OCR diagnostics for timeout, HTTP Worker error, network, empty response and invalid format;
+- optional integration with the Cloudflare OCR Worker using `CLOUDFLARE_OCR_ENDPOINT` and `CLOUDFLARE_OCR_TOKEN`;
+- support for `CLOUDFLARE_OCR_MOCK_TEXT` for local tests without a real Worker.
 
-Pipeline prevista:
+Planned pipeline:
 
 ```txt
-upload una o due immagini copertina/retro
+upload one or two cover/back images
 → OCR
-→ estrazione testo
-→ estrazione ISBN o inferenza titolo
-→ lookup metadati libro da ISBN o titolo
-→ ranking risultati
-→ precompilazione form
-→ conferma utente
+→ text extraction
+→ ISBN extraction or title inference
+→ book metadata lookup by ISBN or title
+→ results ranking
+→ form pre-fill
+→ user confirmation
 ```
 
-Fonti possibili:
+Possible sources:
 
-- Cloudflare Workers AI tramite Worker OCR;
+- Cloudflare Workers AI through the OCR Worker;
 - Google Books API;
 - Open Library API;
-- OCR locale o altri servizi esterni alternativi.
+- local OCR or other alternative external services.
 
-Principio importante:
+Important principle:
 
-L’AI deve assistere, ma non deve salvare automaticamente dati senza conferma dell’utente.
+The AI must assist, but it must not save data automatically without user confirmation.
 
 ### 11.7 i18n / translation package
 
-Dopo aver finalizzato login e signup, è stato introdotto un modulo di traduzione condiviso.
+After finalizing login and signup, a shared translation module was introduced.
 
-Obiettivi:
+Goals:
 
-- eliminare hardcoded text;
-- centralizzare testi;
-- facilitare futura app mobile;
-- usare chiavi tipo `auth.login.title`;
-- mantenere la logica React separata dal package condiviso.
+- eliminate hardcoded text;
+- centralize texts;
+- facilitate the future mobile app;
+- use keys such as `auth.login.title`;
+- keep the React logic separate from the shared package.
 
-Struttura attuale:
+Current structure:
 
 ```txt
 packages/translation/
@@ -1251,79 +1251,79 @@ packages/translation/
     └── index.ts
 ```
 
-Hook web:
+Web hook:
 
 ```txt
 apps/web/src/hooks/useTranslation.ts
 ```
 
-## 12. Roadmap consigliata
+## 12. Recommended roadmap
 
-Stato dei primi step:
+Status of the first steps:
 
-1. finalizzare login/signup con Zod, action e visualizzazione errori — completato;
-2. aggiungere componenti UI mancanti, soprattutto Checkbox — completato;
-3. creare `packages/translation` — completato;
-4. creare `useTranslation` nella web app — completato;
-5. sostituire `auth-copy.ts` con dizionari condivisi — completato;
-6. configurare Auth.js con Credentials provider demo — completato;
-7. creare dashboard placeholder protetta — completato;
-8. iniziare feature books con mock data — completato;
-9. trasformare il form nuovo libro in `BookForm` reale con Zod, server action e persistenza mock JSON — completato;
-10. completare la prima esperienza catalogo con dettaglio libro, ricerca e filtri — completato;
-11. consolidare il dominio `Book` MVP con indirizzo e immagini — completato;
-12. introdurre schema Prisma locale in `packages/db` — completato;
-13. aggiungere PostgreSQL locale tramite Docker — completato;
-14. eseguire `db:push` e generare Prisma Client — completato;
-15. migrare la persistenza mock JSON dei libri verso CRUD reale con Prisma — completato;
-16. collegare Auth.js a utenti reali tramite database — completato;
-17. introdurre geocoding indirizzo -> coordinate private/pubbliche approssimate — completato;
-18. introdurre feature nearby con lista disponibilità vicine — completato;
-19. introdurre MapLibre con mappa 3D, marker, controlli e rotazione camera — completato;
-20. introdurre query geospaziali con PostGIS e filtro raggio — completato;
-21. introdurre upload copertina locale e lookup copertina Open Library da ISBN — completato;
-22. introdurre richieste di contatto/prestito con gestione accetta/rifiuta — completato;
-23. mostrare al richiedente le richieste inviate e consentire annullamento delle richieste `pending` — completato;
-24. sostituire lo storage locale delle copertine con storage persistente/cloud tramite Cloudflare R2 — completato;
-25. migliorare la mappa con cluster/layer GeoJSON e ottimizzazioni mobile — completato;
-26. introdurre catalogazione assistita da ISBN, estrazione ISBN da testo e OCR immagine provider-agnostic — completato;
-27. introdurre statistiche d'uso con `BookStats`, visualizzazioni libro e riepilogo dashboard — completato;
-28. introdurre profilo utente MVP modificabile da dashboard — completato;
-29. introdurre dashboard amministrativa protetta per utenti `admin` — completato;
-30. aggiungere seed demo con utenti, libri, posizioni, statistiche e richieste — completato;
-31. introdurre design system responsive con primitive pagina, Wizard, Poppins/Lora e dark mode toggle — completato;
-32. introdurre package `@culturando/assets` per centralizzare i path degli asset pubblici — completato;
-33. introdurre conferma email account con token Prisma, pagina di attivazione e invio SMTP con Nodemailer — completato;
-34. introdurre preferenza di saluto utente e titolo dashboard personalizzato — completato;
-35. rifinire dashboard e catalogo libri con floating bar responsive, pagination, card libro tipo copertina e azioni rapide prioritarizzate — completato;
-36. completare CRUD libri con modifica/cancellazione protette da ownership e conferma cancellazione tramite notifica Sonner centrale — completato;
-37. aggiungere miniature reali WebP con Sharp e `BookImage.thumbnailUrl` — completato;
-38. proteggere ricerca nearby e disponibilità vicine dietro login, mantenendo pubblico il catalogo libri — completato;
-39. introdurre breadcrumb e navigazione precedente/successiva nel dettaglio libro — completato.
+1. finalize login/signup with Zod, actions and error display — completed;
+2. add the missing UI components, especially Checkbox — completed;
+3. create `packages/translation` — completed;
+4. create `useTranslation` in the web app — completed;
+5. replace `auth-copy.ts` with shared dictionaries — completed;
+6. configure Auth.js with a demo Credentials provider — completed;
+7. create a protected dashboard placeholder — completed;
+8. start the books feature with mock data — completed;
+9. transform the new book form into a real `BookForm` with Zod, server action and mock JSON persistence — completed;
+10. complete the first catalog experience with book detail, search and filters — completed;
+11. consolidate the `Book` MVP domain with address and images — completed;
+12. introduce the local Prisma schema in `packages/db` — completed;
+13. add local PostgreSQL through Docker — completed;
+14. run `db:push` and generate the Prisma Client — completed;
+15. migrate the mock JSON persistence of the books towards real CRUD with Prisma — completed;
+16. connect Auth.js to real users through the database — completed;
+17. introduce address -> private/approximate public coordinates geocoding — completed;
+18. introduce the nearby feature with a nearby availability list — completed;
+19. introduce MapLibre with 3D map, markers, controls and camera rotation — completed;
+20. introduce geospatial queries with PostGIS and radius filter — completed;
+21. introduce local cover upload and Open Library cover lookup by ISBN — completed;
+22. introduce contact/loan requests with accept/reject management — completed;
+23. show the requester the sent requests and allow cancelling `pending` requests — completed;
+24. replace the local cover storage with persistent/cloud storage through Cloudflare R2 — completed;
+25. improve the map with GeoJSON clusters/layers and mobile optimizations — completed;
+26. introduce ISBN-assisted cataloging, ISBN extraction from text and provider-agnostic image OCR — completed;
+27. introduce usage statistics with `BookStats`, book views and dashboard summary — completed;
+28. introduce an editable MVP user profile from the dashboard — completed;
+29. introduce a protected administrative dashboard for `admin` users — completed;
+30. add a demo seed with users, books, locations, statistics and requests — completed;
+31. introduce a responsive design system with page primitives, Wizard, Poppins/Lora and dark mode toggle — completed;
+32. introduce the `@culturando/assets` package to centralize the public asset paths — completed;
+33. introduce account email confirmation with Prisma token, activation page and SMTP sending with Nodemailer — completed;
+34. introduce the user greeting preference and the personalized dashboard title — completed;
+35. refine the dashboard and the book catalog with responsive floating bar, pagination, cover-type book card and prioritized quick actions — completed;
+36. complete the books CRUD with ownership-protected edit/delete and deletion confirmation through the central Sonner notification — completed;
+37. add real WebP thumbnails with Sharp and `BookImage.thumbnailUrl` — completed;
+38. protect the nearby search and the nearby availability behind login, keeping the book catalog public — completed;
+39. introduce breadcrumbs and previous/next navigation in the book detail — completed.
 
-Ordine dei prossimi step:
+Order of the next steps:
 
-1. rifinire SEO pubblica avanzata se richiesta dalla relazione;
-2. valutare pagina profilo pubblico del proprietario come rifinitura post-MVP;
-3. documentare nella relazione tecnica i flussi CRUD, privacy geospaziale e gestione immagini/thumbnail.
+1. refine advanced public SEO if required by the report;
+2. evaluate the public profile page of the owner as a post-MVP refinement;
+3. document in the technical report the CRUD flows, geospatial privacy and image/thumbnail management.
 
-## 13. Principi da rispettare durante lo sviluppo
+## 13. Principles to respect during development
 
-Ogni agente o sviluppatore che lavora su Culturando deve rispettare questi principi:
+Every agent or developer working on Culturando must respect these principles:
 
-- mantenere `app/` leggero;
-- non inserire testi hardcoded quando esiste una chiave in `@culturando/translation`;
-- non spostare in `packages` codice specifico della web app;
-- non mettere componenti di dominio dentro `components/ui`;
-- usare TypeScript in modo esplicito;
-- usare Zod per validazione input;
-- centralizzare configurazioni condivise in `@culturando/config`;
-- centralizzare tipi di dominio in `@culturando/types`;
-- proteggere la privacy degli utenti, soprattutto sulla posizione;
-- preferire mock data prima di introdurre database complessi;
-- introdurre astrazioni solo quando servono realmente;
-- mantenere il progetto leggibile e scalabile.
+- keep `app/` light;
+- do not insert hardcoded texts when a key exists in `@culturando/translation`;
+- do not move web app-specific code into `packages`;
+- do not put domain components inside `components/ui`;
+- use TypeScript explicitly;
+- use Zod for input validation;
+- centralize shared configurations in `@culturando/config`;
+- centralize domain types in `@culturando/types`;
+- protect user privacy, especially regarding location;
+- prefer mock data before introducing complex databases;
+- introduce abstractions only when they are really needed;
+- keep the project readable and scalable.
 
-## 14. Descrizione breve finale
+## 14. Final brief description
 
-Culturando è una web app geolocalizzata per condividere, scoprire e valorizzare patrimoni librari privati. Il progetto usa un monorepo Nx con Next.js per la web app e package condivisi per configurazioni, tipi, traduzioni, geolocalizzazione, database e AI. L’architettura è feature-based: le route restano in `app/`, le funzionalità in `features/`, i componenti generici in `components/ui` e il codice riusabile in `packages/*`. L’obiettivo tecnico è costruire una piattaforma pulita, scalabile, pronta per autenticazione, catalogazione libri, mappe geolocalizzate, privacy della posizione, i18n e futura estensione mobile.
+Culturando is a geolocated web app to share, discover and enhance private book collections. The project uses an Nx monorepo with Next.js for the web app and shared packages for configurations, types, translations, geolocation, database and AI. The architecture is feature-based: the routes remain in `app/`, the functionality in `features/`, the generic components in `components/ui` and the reusable code in `packages/*`. The technical goal is to build a clean, scalable platform, ready for authentication, book cataloging, geolocated maps, location privacy, i18n and future mobile extension.

@@ -5,127 +5,127 @@ description: Git push, pre-push, project knowledge, internal documentation. Use 
 
 # Pre-Push Knowledge Sync Skill — Culturando
 
-## Scopo della skill
+## Purpose of the skill
 
-Questa skill definisce il comportamento che ogni agente deve seguire **prima di lanciare una push** nel progetto **Culturando**.
+This skill defines the behavior that every agent must follow **before launching a push** in the **Culturando** project.
 
-L’obiettivo non è soltanto verificare che il commit sia corretto, ma anche mantenere aggiornate le skill e i documenti di contesto del progetto, in modo che ogni agente futuro possa conoscere lo stato reale dell’applicazione, delle librerie installate, delle feature introdotte e delle decisioni architetturali prese.
+The goal is not only to verify that the commit is correct, but also to keep the project skills and context documents up to date, so that every future agent is aware of the real state of the application, the installed libraries, the introduced features and the architectural decisions that were made.
 
-Questa skill va eseguita dopo che:
+This skill must be executed after:
 
-- l’agente ha già letto `git status`;
-- l’agente ha già analizzato i file modificati;
-- l’agente ha già costruito uno o più commit secondo la skill `git-commits`;
-- l’agente sta per suggerire o lanciare una `git push`.
+- the agent has already read `git status`;
+- the agent has already analyzed the modified files;
+- the agent has already built one or more commits according to the `git-commits` skill;
+- the agent is about to suggest or launch a `git push`.
 
-Prima della push, l’agente deve chiedersi:
+Before the push, the agent must ask itself:
 
-> Le modifiche appena committate cambiano qualcosa che gli agenti futuri devono sapere?
+> Do the changes just committed change anything that future agents need to know?
 
-Se la risposta è sì, deve aggiornare la skill o il documento di contesto competente prima della push.
+If the answer is yes, it must update the relevant skill or context document before the push.
 
 ---
 
-## Principio fondamentale
+## Fundamental principle
 
-Il codice e la conoscenza del progetto devono rimanere sincronizzati.
+The code and the project knowledge must remain synchronized.
 
-Ogni volta che il progetto evolve, anche la documentazione interna per gli agenti deve evolvere.
+Every time the project evolves, the internal documentation for the agents must evolve too.
 
-Esempio:
+Example:
 
 ```txt
-Se viene introdotto Auth.js nel codice,
-la skill di contesto del progetto deve riportare che l’autenticazione è gestita tramite Auth.js.
+If Auth.js is introduced in the code,
+the project context skill must state that authentication is handled through Auth.js.
 
-Se viene creato packages/translation,
-la skill di contesto deve spiegare che il progetto usa un package condiviso per i testi e i dizionari i18n.
+If packages/translation is created,
+the context skill must explain that the project uses a shared package for texts and i18n dictionaries.
 
-Se vengono aggiunti nuovi componenti UI,
-la skill deve aggiornare l’elenco o la descrizione dell’area components/ui.
+If new UI components are added,
+the skill must update the list or the description of the components/ui area.
 
-Se viene installata una nuova libreria importante,
-la skill deve riportarne il ruolo architetturale.
+If an important new library is installed,
+the skill must state its architectural role.
 ```
 
 ---
 
-## Quando eseguire questa skill
+## When to run this skill
 
-Questa skill deve essere eseguita:
+This skill must be executed:
 
-- prima di ogni push;
-- dopo aver creato uno o più commit;
-- dopo aver modificato architettura, feature, package, dipendenze, pagine, componenti o configurazioni importanti;
-- prima di inviare codice che cambia il contesto tecnico del progetto.
+- before every push;
+- after creating one or more commits;
+- after modifying important architecture, features, packages, dependencies, pages, components or configurations;
+- before sending code that changes the technical context of the project.
 
-Non è necessario aggiornare le skill se il commit riguarda solo:
+It is not necessary to update the skills if the commit only concerns:
 
-- refusi minori;
-- piccoli fix visuali non strutturali;
-- modifiche temporanee;
-- formattazione automatica;
-- rimozione di codice morto non rilevante;
-- modifiche già completamente descritte nelle skill esistenti.
+- minor typos;
+- small non-structural visual fixes;
+- temporary changes;
+- automatic formatting;
+- removal of irrelevant dead code;
+- changes already fully described in the existing skills.
 
 ---
 
-## Checklist obbligatoria pre-push
+## Mandatory pre-push checklist
 
-Prima di proporre o lanciare:
+Before proposing or launching:
 
 ```bash
 git push
 ```
 
-l’agente deve verificare:
+the agent must verify:
 
 ```txt
-1. Ho controllato git status?
-2. Ho capito quali file sono stati modificati?
-3. Ho creato commit coerenti e separati per area?
-4. Le modifiche introducono nuove conoscenze di progetto?
-5. Le skill/documentazioni interne sono ancora aggiornate?
-6. Se necessario, ho aggiornato la skill competente?
-7. Ho committato anche l’aggiornamento della skill/documentazione?
-8. Ho eseguito o suggerito i check tecnici adeguati?
+1. Have I checked git status?
+2. Have I understood which files were modified?
+3. Have I created coherent commits separated by area?
+4. Do the changes introduce new project knowledge?
+5. Are the internal skills/documents still up to date?
+6. If necessary, have I updated the relevant skill?
+7. Have I also committed the skill/documentation update?
+8. Have I run or suggested the appropriate technical checks?
 ```
 
 ---
 
-## Comandi da usare prima della push
+## Commands to use before the push
 
-L’agente deve sempre partire da:
+The agent must always start from:
 
 ```bash
 git status
 ```
 
-Poi, se serve, deve controllare gli ultimi commit:
+Then, if needed, it must check the most recent commits:
 
 ```bash
 git log --oneline -5
 ```
 
-Per vedere cosa è incluso nel commit più recente:
+To see what is included in the most recent commit:
 
 ```bash
 git show --stat HEAD
 ```
 
-Per controllare più commit prima della push:
+To check multiple commits before the push:
 
 ```bash
 git log --oneline origin/main..HEAD
 ```
 
-Oppure, se il branch remoto non è `main`, adattare il riferimento:
+Or, if the remote branch is not `main`, adapt the reference:
 
 ```bash
 git log --oneline origin/<branch>..HEAD
 ```
 
-Per controllare i file modificati rispetto al remoto:
+To check the files modified compared to the remote:
 
 ```bash
 git diff --name-only origin/main..HEAD
@@ -133,166 +133,166 @@ git diff --name-only origin/main..HEAD
 
 ---
 
-## Cosa deve cercare l’agente
+## What the agent must look for
 
-L’agente deve identificare se i commit introducono:
+The agent must identify whether the commits introduce:
 
 ```txt
-- nuove librerie;
-- nuove feature;
-- nuove pagine;
-- nuovi componenti;
-- nuovi package;
-- nuove configurazioni;
-- nuove regole architetturali;
-- nuove cartelle strutturali;
-- nuovi pattern di sviluppo;
-- nuove scelte tecniche;
-- modifiche al sistema auth;
-- modifiche al sistema i18n;
-- modifiche al database;
-- modifiche alla geolocalizzazione;
-- modifiche alla UI foundation;
-- modifiche alla roadmap;
-- modifiche allo stack tecnico;
-- modifiche alla gestione dei commit;
-- modifiche ai workflow di sviluppo.
+- new libraries;
+- new features;
+- new pages;
+- new components;
+- new packages;
+- new configurations;
+- new architectural rules;
+- new structural folders;
+- new development patterns;
+- new technical choices;
+- changes to the auth system;
+- changes to the i18n system;
+- changes to the database;
+- changes to geolocation;
+- changes to the UI foundation;
+- changes to the roadmap;
+- changes to the technical stack;
+- changes to commit management;
+- changes to the development workflows.
 ```
 
-Se una di queste cose è presente, la documentazione/skill deve essere valutata.
+If one of these is present, the documentation/skill must be evaluated.
 
 ---
 
-## Documenti e skill da aggiornare
+## Documents and skills to update
 
-I file di conoscenza del progetto possono includere, ad esempio:
+The project knowledge files may include, for example:
 
 ```txt
 .opencode/skills/project-context/SKILL.md
 .opencode/skills/git-commits/SKILL.md
 .opencode/skills/pre-push-sync-knowledge/SKILL.md
-altre skill future del progetto
+other future project skills
 README.md
 docs/*
 ```
 
-La skill principale di contesto progetto è:
+The main project context skill is:
 
 ```txt
 .opencode/skills/project-context/SKILL.md
 ```
 
-Questa deve essere aggiornata quando cambiano:
+This must be updated when the following change:
 
-- stack tecnico;
-- architettura;
-- feature principali;
-- struttura cartelle;
-- package condivisi;
+- technical stack;
+- architecture;
+- main features;
+- folder structure;
+- shared packages;
 - roadmap;
-- convenzioni progettuali;
-- librerie fondamentali;
-- scelte tecniche rilevanti.
+- project conventions;
+- fundamental libraries;
+- relevant technical choices.
 
-La skill dei commit è:
+The commits skill is:
 
 ```txt
 .opencode/skills/git-commits/SKILL.md
 ```
 
-Questa deve essere aggiornata quando cambiano:
+This must be updated when the following change:
 
-- convenzioni dei commit;
-- scope ammessi;
-- regole di staging;
-- regole di naming;
-- procedure Git;
-- workflow branch/push.
+- commit conventions;
+- allowed scopes;
+- staging rules;
+- naming rules;
+- Git procedures;
+- branch/push workflow.
 
-Questa skill è:
+This skill is:
 
 ```txt
 .opencode/skills/pre-push-sync-knowledge/SKILL.md
 ```
 
-Questa deve essere aggiornata quando cambiano:
+This must be updated when the following change:
 
-- regole pre-push;
-- criteri di aggiornamento delle skill;
-- checklist obbligatorie;
-- criteri per decidere se aggiornare o meno la knowledge base.
+- pre-push rules;
+- skill update criteria;
+- mandatory checklists;
+- criteria for deciding whether to update the knowledge base or not.
 
 ---
 
-## Regola “se necessario”
+## "If necessary" rule
 
-L’agente non deve aggiornare le skill in modo meccanico per ogni commit.
+The agent must not update the skills mechanically for every commit.
 
-Deve farlo **solo se la modifica cambia la conoscenza utile del progetto**.
+It must do so **only if the change alters the useful knowledge of the project**.
 
-### Esempi in cui aggiornare la skill
+### Examples where the skill must be updated
 
 #### Auth.js
 
-Se viene installato e configurato Auth.js:
+If Auth.js is installed and configured:
 
 ```txt
-packages installati:
-- next-auth oppure @auth/*
-file creati:
+installed packages:
+- next-auth or @auth/*
+created files:
 - apps/web/src/config/auth.ts
 - apps/web/src/app/api/auth/[...nextauth]/route.ts
 - middleware.ts
 ```
 
-Allora aggiornare `.opencode/skills/project-context/SKILL.md` nelle sezioni:
+Then update `.opencode/skills/project-context/SKILL.md` in the sections:
 
 ```txt
-- Stack tecnico
-- Feature Auth
+- Technical stack
+- Auth feature
 - Roadmap
-- Architettura applicazione web
+- Web application architecture
 ```
 
-Aggiungere che:
+Add that:
 
 ```txt
-L’autenticazione è gestita tramite Auth.js.
-La feature auth usa Credentials Provider o provider configurati.
-Le route protette passeranno da middleware/sessione Auth.js.
+Authentication is handled through Auth.js.
+The auth feature uses the Credentials Provider or configured providers.
+Protected routes will go through Auth.js middleware/session.
 ```
 
 ---
 
-#### Nuovo package `packages/translation`
+#### New package `packages/translation`
 
-Se viene creato:
+If the following is created:
 
 ```txt
 packages/translation
 ```
 
-Allora aggiornare `.opencode/skills/project-context/SKILL.md` nelle sezioni:
+Then update `.opencode/skills/project-context/SKILL.md` in the sections:
 
 ```txt
-- Package condivisi
+- Shared packages
 - i18n / translation package
-- Convenzioni architetturali
+- Architectural conventions
 ```
 
-Aggiungere che:
+Add that:
 
 ```txt
-Il progetto usa @culturando/translation per centralizzare dizionari e chiavi testuali.
-La web app consuma le traduzioni tramite useTranslation.
-I testi hardcoded devono essere evitati dove esiste una chiave di traduzione.
+The project uses @culturando/translation to centralize dictionaries and textual keys.
+The web app consumes the translations through useTranslation.
+Hardcoded texts must be avoided where a translation key exists.
 ```
 
 ---
 
-#### Nuovi componenti UI
+#### New UI components
 
-Se vengono creati componenti come:
+If components such as the following are created:
 
 ```txt
 Checkbox
@@ -302,21 +302,21 @@ Select
 FormMessage
 ```
 
-Allora aggiornare la sezione UI della skill di contesto.
+Then update the UI section of the context skill.
 
-Esempio:
+Example:
 
 ```txt
-components/ui include componenti base riutilizzabili come Button, Input, Label, Card, Badge, Checkbox e FormMessage.
+components/ui includes reusable base components such as Button, Input, Label, Card, Badge, Checkbox and FormMessage.
 ```
 
-Non serve aggiornare la skill per piccoli aggiustamenti di classi CSS.
+There is no need to update the skill for small CSS class adjustments.
 
 ---
 
-#### Nuove pagine
+#### New pages
 
-Se vengono create route importanti:
+If important routes are created:
 
 ```txt
 /dashboard
@@ -325,25 +325,25 @@ Se vengono create route importanti:
 /dashboard/books/new
 ```
 
-Allora aggiornare:
+Then update:
 
 ```txt
-- struttura app router
-- feature interessata
-- roadmap, se una parte passa da futura ad attuale
+- app router structure
+- the affected feature
+- the roadmap, if a part moves from future to current
 ```
 
-Esempio:
+Example:
 
 ```txt
-La dashboard è stata introdotta come area privata utente e rappresenta la destinazione post-login.
+The dashboard has been introduced as the user private area and represents the post-login destination.
 ```
 
 ---
 
-#### Nuove librerie
+#### New libraries
 
-Se viene installata una libreria architetturalmente rilevante:
+If an architecturally relevant library is installed:
 
 ```txt
 zod
@@ -355,120 +355,120 @@ react-map-gl
 lucide-react
 ```
 
-Allora aggiornare lo stack tecnico e spiegare il ruolo della libreria.
+Then update the technical stack and explain the role of the library.
 
-Esempio:
+Example:
 
 ```txt
-Zod viene usato per la validazione type-safe dei form e degli input utente.
+Zod is used for the type-safe validation of forms and user inputs.
 ```
 
-Non serve aggiornare la skill per dipendenze indirette o librerie minori non usate direttamente nel progetto.
+There is no need to update the skill for indirect dependencies or minor libraries not used directly in the project.
 
 ---
 
 #### Database
 
-Se viene introdotto Prisma/PostgreSQL/PostGIS:
+If Prisma/PostgreSQL/PostGIS is introduced:
 
-Aggiornare:
+Update:
 
 ```txt
-- Stack tecnico
+- Technical stack
 - packages/db
 - Database
-- Feature Books/Nearby, se impattate
+- Books/Nearby features, if affected
 ```
 
-Aggiungere:
+Add:
 
 ```txt
-Il database è gestito tramite Prisma.
-PostgreSQL è il database relazionale principale.
-PostGIS viene usato per query geospaziali e ricerche di prossimità.
+The database is managed through Prisma.
+PostgreSQL is the main relational database.
+PostGIS is used for geospatial queries and proximity searches.
 ```
 
 ---
 
 #### MapLibre
 
-Se viene introdotto MapLibre:
+If MapLibre is introduced:
 
-Aggiornare:
+Update:
 
 ```txt
-- Stack tecnico
+- Technical stack
 - packages/geo
 - Nearby / MapLibre
-- Feature geolocalizzazione
+- Geolocation feature
 ```
 
-Aggiungere:
+Add:
 
 ```txt
-MapLibre GL JS gestisce il rendering delle mappe interattive.
-I dati dinamici vengono rappresentati tramite layer GeoJSON.
+MapLibre GL JS handles the rendering of the interactive maps.
+Dynamic data is represented through GeoJSON layers.
 ```
 
 ---
 
-#### AI catalogazione
+#### AI cataloging
 
-Se viene introdotto codice in `packages/ai` o feature catalogazione:
+If code is introduced in `packages/ai` or in the cataloging feature:
 
-Aggiornare:
+Update:
 
 ```txt
 - packages/ai
-- AI catalogazione
+- AI cataloging
 - roadmap
 ```
 
-Aggiungere:
+Add:
 
 ```txt
-La catalogazione assistita supporta estrazione ISBN, normalizzazione metadati e suggerimenti per la scheda libro.
+Assisted cataloging supports ISBN extraction, metadata normalization and suggestions for the book record.
 ```
 
 ---
 
-## Quando non aggiornare la skill
+## When not to update the skill
 
-Non aggiornare le skill se il commit riguarda solo:
+Do not update the skills if the commit only concerns:
 
 ```txt
-- correzioni di typo in un componente;
-- cambio di classi Tailwind marginale;
-- rename locale non architetturale;
-- formattazione Biome;
-- refactor interno senza nuove regole o pattern;
-- piccoli fix che non cambiano la conoscenza del progetto;
-- modifiche temporanee o sperimentali non ancora consolidate.
+- typo fixes in a component;
+- marginal Tailwind class changes;
+- local non-architectural renames;
+- Biome formatting;
+- internal refactors without new rules or patterns;
+- small fixes that do not change the project knowledge;
+- temporary or experimental changes not yet consolidated.
 ```
 
-Esempio:
+Example:
 
 ```txt
 style(auth): adjust login form spacing
 ```
 
-Non richiede aggiornamento skill.
+Does not require a skill update.
 
-Esempio:
+Example:
 
 ```txt
 fix(auth): correct label htmlFor attribute
 ```
 
-Non richiede aggiornamento skill, salvo che il fix introduca un nuovo pattern da rispettare.
+Does not require a skill update, unless the fix introduces a new pattern to follow.
 
 ---
 
-## Regola sul commit delle skill aggiornate
+## Rule on committing the updated skills
 
-Se l’agente aggiorna una skill o un documento di contesto, deve creare un commit dedicato oppure includerlo in un commit `docs(...)` coerente.
+If the agent updates a skill or a context document, it must create a dedicated commit or include it in a coherent `docs(...)` commit.
 
-Esempi:
+Examples:
 
 ```bash
 git add .opencode/skills/project-context/SKILL.md
@@ -485,39 +485,39 @@ git add .opencode/skills/pre-push-sync-knowledge/SKILL.md
 git commit -m "docs(workflow): add pre-push knowledge sync skill"
 ```
 
-Non mischiare aggiornamenti di documentazione di contesto con feature code complesse, salvo che siano parte dello stesso cambiamento e il team preferisca un commit unico.
+Do not mix context documentation updates with complex feature code, unless they are part of the same change and the team prefers a single commit.
 
-Preferenza consigliata:
+Recommended preference:
 
 ```txt
-1 commit per il codice
-1 commit per aggiornamento skill/documentazione
+1 commit for the code
+1 commit for the skill/documentation update
 ```
 
 ---
 
-## Ordine operativo completo
+## Complete operating order
 
-Quando un agente sta per fare push, deve seguire questo ordine:
+When an agent is about to push, it must follow this order:
 
 ```txt
-1. Leggere git status.
-2. Controllare i commit locali non ancora pushati.
-3. Analizzare i file inclusi nei commit.
-4. Capire se i commit cambiano stack, architettura, feature o convenzioni.
-5. Se non serve aggiornare skill, procedere ai check pre-push.
-6. Se serve aggiornare skill, modificare il file competente.
-7. Committare la modifica alla skill con commit docs(...).
-8. Eseguire o suggerire i check tecnici.
-9. Ricontrollare git status.
-10. Procedere con git push.
+1. Read git status.
+2. Check the local commits not yet pushed.
+3. Analyze the files included in the commits.
+4. Understand whether the commits change the stack, architecture, features or conventions.
+5. If no skill update is needed, proceed to the pre-push checks.
+6. If a skill update is needed, modify the relevant file.
+7. Commit the skill change with a docs(...) commit.
+8. Run or suggest the technical checks.
+9. Re-check git status.
+10. Proceed with git push.
 ```
 
 ---
 
-## Template di analisi pre-push
+## Pre-push analysis template
 
-L’agente deve ragionare con questo schema:
+The agent must reason with this scheme:
 
 ```txt
 Pre-push analysis
@@ -549,15 +549,15 @@ Action:
 
 ---
 
-## Esempio completo: introduzione Auth.js
+## Complete example: introducing Auth.js
 
-### Commit già creato
+### Commit already created
 
 ```txt
 feat(auth): setup Auth.js credentials authentication
 ```
 
-### File modificati
+### Modified files
 
 ```txt
 apps/web/src/config/auth.ts
@@ -568,29 +568,29 @@ package.json
 pnpm-lock.yaml
 ```
 
-### Analisi
+### Analysis
 
 ```txt
-La modifica introduce Auth.js come sistema di autenticazione.
-Cambia lo stack tecnico.
-Cambia il comportamento della feature auth.
-Introduce route API e middleware.
+The change introduces Auth.js as the authentication system.
+It changes the technical stack.
+It changes the behavior of the auth feature.
+It introduces API routes and middleware.
 ```
 
-### Skill da aggiornare
+### Skills to update
 
 ```txt
 .opencode/skills/project-context/SKILL.md
 ```
 
-### Commit documentazione
+### Documentation commit
 
 ```bash
 git add .opencode/skills/project-context/SKILL.md
 git commit -m "docs(project): update auth architecture context"
 ```
 
-### Poi push
+### Then push
 
 ```bash
 git push
@@ -598,15 +598,15 @@ git push
 
 ---
 
-## Esempio completo: nuovo package translation
+## Complete example: new translation package
 
-### Commit già creato
+### Commit already created
 
 ```txt
 feat(translation): add shared translation package
 ```
 
-### File modificati
+### Modified files
 
 ```txt
 packages/translation/package.json
@@ -619,30 +619,30 @@ apps/web/src/features/auth/components/LoginForm.tsx
 apps/web/src/features/auth/components/SignupForm.tsx
 ```
 
-### Analisi
+### Analysis
 
 ```txt
-La modifica introduce un nuovo package condiviso.
-Elimina o riduce testi hardcoded.
-Aggiunge un pattern di traduzione riusabile.
-Cambia le convenzioni di scrittura dei testi nei componenti.
+The change introduces a new shared package.
+It removes or reduces hardcoded texts.
+It adds a reusable translation pattern.
+It changes the conventions for writing texts in components.
 ```
 
-### Skill da aggiornare
+### Skills to update
 
 ```txt
 .opencode/skills/project-context/SKILL.md
 ```
 
-Possibile aggiornamento:
+Possible update:
 
 ```txt
-Il progetto usa @culturando/translation per centralizzare dizionari e chiavi testuali.
-La web app espone useTranslation come hook React-specific.
-I componenti devono usare t("...") invece di testi hardcoded quando una chiave esiste.
+The project uses @culturando/translation to centralize dictionaries and textual keys.
+The web app exposes useTranslation as a React-specific hook.
+Components must use t("...") instead of hardcoded texts when a key exists.
 ```
 
-### Commit documentazione
+### Documentation commit
 
 ```bash
 git add .opencode/skills/project-context/SKILL.md
@@ -651,15 +651,15 @@ git commit -m "docs(project): update translation architecture context"
 
 ---
 
-## Esempio completo: nuovi componenti UI
+## Complete example: new UI components
 
-### Commit già creato
+### Commit already created
 
 ```txt
 feat(ui): add checkbox and form message components
 ```
 
-### File modificati
+### Modified files
 
 ```txt
 apps/web/src/components/ui/checkbox.tsx
@@ -667,20 +667,20 @@ apps/web/src/components/ui/form-message.tsx
 apps/web/src/features/auth/components/LoginForm.tsx
 ```
 
-### Analisi
+### Analysis
 
 ```txt
-La modifica aggiunge componenti UI generici.
-La conoscenza dell'area components/ui deve essere aggiornata.
+The change adds generic UI components.
+The knowledge of the components/ui area must be updated.
 ```
 
-### Skill da aggiornare
+### Skills to update
 
 ```txt
 .opencode/skills/project-context/SKILL.md
 ```
 
-### Commit documentazione
+### Documentation commit
 
 ```bash
 git add .opencode/skills/project-context/SKILL.md
@@ -689,22 +689,22 @@ git commit -m "docs(project): update shared UI components context"
 
 ---
 
-## Regola sui check tecnici
+## Rule on technical checks
 
-Prima della push, se sono state modificate parti di codice, suggerire o eseguire:
+Before the push, if parts of the code were modified, suggest or run:
 
 ```bash
 pnpm biome:check
 pnpm build
 ```
 
-Se la modifica riguarda solo documentazione Markdown, può bastare:
+If the change only concerns Markdown documentation, the following may be enough:
 
 ```bash
 git status
 ```
 
-Se la modifica riguarda package, config, Next.js o TypeScript, preferire sempre:
+If the change concerns packages, config, Next.js or TypeScript, always prefer:
 
 ```bash
 pnpm build
@@ -713,49 +713,49 @@ pnpm biome:check
 
 ---
 
-## Regola finale prima della push
+## Final rule before the push
 
-La push può essere suggerita solo quando:
+The push may only be suggested when:
 
 ```txt
-- git status è pulito oppure contiene solo modifiche intenzionalmente non incluse;
-- i commit sono separati correttamente;
-- le skill/documentazioni sono aggiornate se necessario;
-- eventuali aggiornamenti skill sono stati committati;
-- i check tecnici adeguati sono stati eseguiti o consigliati.
+- git status is clean or contains only intentional changes not included;
+- the commits are separated correctly;
+- the skills/documents are updated if necessary;
+- any skill updates have been committed;
+- the appropriate technical checks have been run or recommended.
 ```
 
 ---
 
-## Frase operativa standard
+## Standard operating phrase
 
-Quando l’agente conclude l’analisi pre-push, deve rispondere con una frase simile:
+When the agent concludes the pre-push analysis, it must respond with a phrase similar to:
 
 ```txt
-La push è pronta: i commit sono coerenti, non ci sono aggiornamenti di skill necessari e lo status è pulito.
+The push is ready: the commits are coherent, no skill updates are needed and the status is clean.
 ```
 
-Oppure:
+Or:
 
 ```txt
-Prima della push è necessario aggiornare .opencode/skills/project-context/SKILL.md, perché questa modifica introduce una nuova decisione architetturale che gli agenti futuri devono conoscere.
+Before the push it is necessary to update .opencode/skills/project-context/SKILL.md, because this change introduces a new architectural decision that future agents must know.
 ```
 
 ---
 
-## Principio conclusivo
+## Concluding principle
 
-Ogni push deve lasciare il progetto in uno stato coerente non solo a livello di codice, ma anche a livello di conoscenza.
+Every push must leave the project in a coherent state not only at the code level, but also at the knowledge level.
 
-Un agente futuro deve poter leggere le skill del progetto e capire:
+A future agent must be able to read the project skills and understand:
 
 ```txt
-- cosa esiste nel codice;
-- quali librerie sono usate;
-- quali feature sono state introdotte;
-- quali pattern sono obbligatori;
-- quali convenzioni vanno rispettate;
-- quali aree sono future e quali sono già implementate.
+- what exists in the code;
+- which libraries are used;
+- which features have been introduced;
+- which patterns are mandatory;
+- which conventions must be respected;
+- which areas are future and which are already implemented.
 ```
 
-Il codice evolve. La conoscenza degli agenti deve evolvere insieme al codice.
+The code evolves. The knowledge of the agents must evolve together with the code.

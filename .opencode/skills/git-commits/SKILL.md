@@ -5,25 +5,25 @@ description: Git commit, commit message, git status, git diff. Use when preparin
 
 # Git Commits Skill — Culturando
 
-## Scopo della skill
+## Purpose of the skill
 
-Questa skill definisce le regole che ogni agente deve seguire quando deve preparare, suggerire o scrivere un commit per il progetto **Culturando**.
+This skill defines the rules that every agent must follow when preparing, suggesting or writing a commit for the **Culturando** project.
 
-L’obiettivo è mantenere una cronologia Git chiara, leggibile e professionale, usando convenzioni standard internazionali e separando correttamente i commit in base all’area del progetto modificata.
+The goal is to maintain a clear, readable and professional Git history, using standard international conventions and correctly separating commits based on the project area that was modified.
 
-Ogni commit deve essere comprensibile anche a distanza di tempo e deve spiegare con precisione cosa è stato fatto, dove è stato fatto e perché appartiene a una determinata area.
+Every commit must remain understandable even over time and must precisely explain what was done, where it was done and why it belongs to a given area.
 
 ---
 
-## Regola obbligatoria iniziale
+## Mandatory initial rule
 
-Prima di proporre o creare qualsiasi commit, l’agente deve sempre controllare lo stato dei file modificati tramite:
+Before proposing or creating any commit, the agent must always check the state of the modified files using:
 
 ```bash
 git status
 ```
 
-Se serve maggiore dettaglio, deve usare anche:
+If more detail is needed, it must also use:
 
 ```bash
 git diff --stat
@@ -31,28 +31,28 @@ git diff --name-only
 git diff
 ```
 
-L’agente non deve mai scrivere un commit generico senza prima aver verificato quali file sono stati modificati, aggiunti o rimossi.
+The agent must never write a generic commit without first verifying which files were modified, added or removed.
 
 ---
 
-## Obiettivo del controllo `git status`
+## Purpose of the `git status` check
 
-Il comando `git status` serve per capire:
+The `git status` command is used to understand:
 
-- quali file sono stati modificati;
-- quali file sono stati aggiunti;
-- quali file sono stati eliminati;
-- quali file sono non tracciati;
-- se le modifiche appartengono a una sola area o a più aree del progetto;
-- se conviene creare un unico commit o più commit separati.
+- which files were modified;
+- which files were added;
+- which files were deleted;
+- which files are untracked;
+- whether the changes belong to a single area or to multiple areas of the project;
+- whether it is better to create a single commit or multiple separate commits.
 
 ---
 
-## Regola di raggruppamento
+## Grouping rule
 
-L’agente deve separare i commit in base all’area di appartenenza delle modifiche.
+The agent must separate commits based on the area the changes belong to.
 
-Nel progetto Culturando le aree principali sono:
+In the Culturando project the main areas are:
 
 ```txt
 web
@@ -70,35 +70,35 @@ tooling
 repo
 ```
 
-Se le modifiche coinvolgono aree diverse e indipendenti, l’agente deve proporre commit separati.
+If the changes involve different and independent areas, the agent must propose separate commits.
 
-Esempio:
+Example:
 
 ```txt
-Modifiche a LoginForm.tsx e SignupForm.tsx
-→ commit area auth oppure web/auth
+Changes to LoginForm.tsx and SignupForm.tsx
+→ commit area auth or web/auth
 
-Modifiche a packages/config e packages/types
+Changes to packages/config and packages/types
 → commit area packages
 
-Modifiche a README.md o documentazione
+Changes to README.md or documentation
 → commit area docs
 
-Modifiche a biome.json, pnpm-workspace.yaml, package.json root
-→ commit area tooling oppure repo
+Changes to biome.json, pnpm-workspace.yaml, root package.json
+→ commit area tooling or repo
 ```
 
 ---
 
-## Formato commit obbligatorio
+## Mandatory commit format
 
-I commit devono seguire il formato **Conventional Commits**:
+Commits must follow the **Conventional Commits** format:
 
 ```txt
 type(scope): short description
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(auth): implement login form
@@ -112,13 +112,13 @@ chore(repo): update workspace configuration
 
 ---
 
-## Tipi di commit ammessi
+## Allowed commit types
 
 ### `feat`
 
-Usare quando viene aggiunta una nuova funzionalità.
+Use when a new feature is added.
 
-Esempi:
+Examples:
 
 ```txt
 feat(auth): implement login form
@@ -130,9 +130,9 @@ feat(packages): add shared translation package
 
 ### `fix`
 
-Usare quando viene corretto un bug.
+Use when a bug is corrected.
 
-Esempi:
+Examples:
 
 ```txt
 fix(auth): correct password label target
@@ -144,9 +144,9 @@ fix(config): restore tailwind content paths
 
 ### `refactor`
 
-Usare quando il codice viene ristrutturato senza cambiare comportamento funzionale.
+Use when the code is restructured without changing functional behavior.
 
-Esempi:
+Examples:
 
 ```txt
 refactor(auth): move login form into feature folder
@@ -158,9 +158,9 @@ refactor(packages): reorganize shared domain types
 
 ### `docs`
 
-Usare per documentazione, file `.md`, README, skill o note architetturali.
+Use for documentation, `.md` files, README, skills or architectural notes.
 
-Esempi:
+Examples:
 
 ```txt
 docs(project): add architecture context skill
@@ -172,9 +172,9 @@ docs(readme): update setup instructions
 
 ### `chore`
 
-Usare per attività tecniche non direttamente legate a feature o bug fix.
+Use for technical activities not directly related to a feature or bug fix.
 
-Esempi:
+Examples:
 
 ```txt
 chore(repo): configure pnpm workspace
@@ -186,9 +186,9 @@ chore(deps): install zod
 
 ### `style`
 
-Usare solo per modifiche stilistiche che non cambiano logica.
+Use only for stylistic changes that do not change logic.
 
-Esempi:
+Examples:
 
 ```txt
 style(auth): improve login form spacing
@@ -199,9 +199,9 @@ style(ui): update card shadow classes
 
 ### `test`
 
-Usare per test.
+Use for tests.
 
-Esempi:
+Examples:
 
 ```txt
 test(auth): add login schema validation tests
@@ -212,9 +212,9 @@ test(geo): add distance calculation tests
 
 ### `build`
 
-Usare per modifiche al sistema di build.
+Use for changes to the build system.
 
-Esempi:
+Examples:
 
 ```txt
 build(web): configure next transpile packages
@@ -225,9 +225,9 @@ build(repo): update nx build settings
 
 ### `ci`
 
-Usare per pipeline CI/CD.
+Use for CI/CD pipelines.
 
-Esempi:
+Examples:
 
 ```txt
 ci(github): add build workflow
@@ -236,11 +236,11 @@ ci(repo): run biome checks on pull requests
 
 ---
 
-## Scope consigliati per Culturando
+## Recommended scopes for Culturando
 
-Gli scope devono essere brevi, chiari e coerenti con l’area del progetto.
+Scopes must be short, clear and consistent with the project area.
 
-Scope principali:
+Main scopes:
 
 ```txt
 auth
@@ -260,16 +260,16 @@ docs
 deps
 ```
 
-### Quando usare `auth`
+### When to use `auth`
 
-Usare per modifiche a:
+Use for changes to:
 
 ```txt
 apps/web/src/features/auth
 apps/web/src/app/auth
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(auth): implement signup form
@@ -279,9 +279,9 @@ refactor(auth): move auth text into constants
 
 ---
 
-### Quando usare `web`
+### When to use `web`
 
-Usare per modifiche generali alla web app:
+Use for general changes to the web app:
 
 ```txt
 apps/web/src/app
@@ -290,7 +290,7 @@ apps/web/tailwind.config.js
 apps/web/postcss.config.mjs
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(web): add dashboard placeholder
@@ -300,15 +300,15 @@ fix(web): resolve Tailwind config loading issue
 
 ---
 
-### Quando usare `ui`
+### When to use `ui`
 
-Usare per componenti generici:
+Use for generic components:
 
 ```txt
 apps/web/src/components/ui
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(ui): add checkbox component
@@ -318,31 +318,31 @@ style(ui): update button variants
 
 ---
 
-### Quando usare `packages`
+### When to use `packages`
 
-Usare per modifiche trasversali ai package condivisi.
+Use for changes that span the shared packages.
 
-Esempi:
+Examples:
 
 ```txt
 feat(packages): add shared workspace packages
 refactor(packages): expose shared config exports
 ```
 
-Se il package è specifico, preferire lo scope specifico.
+If the package is specific, prefer the specific scope.
 
 ---
 
-### Quando usare `config`
+### When to use `config`
 
-Usare per:
+Use for:
 
 ```txt
 packages/config
 apps/web/src/config
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(config): add app metadata values
@@ -351,15 +351,15 @@ refactor(config): centralize auth constraints
 
 ---
 
-### Quando usare `types`
+### When to use `types`
 
-Usare per:
+Use for:
 
 ```txt
 packages/types
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(types): add book and loan domain types
@@ -368,16 +368,16 @@ refactor(types): split auth and user types
 
 ---
 
-### Quando usare `translation`
+### When to use `translation`
 
-Usare per futuro package i18n:
+Use for the future i18n package:
 
 ```txt
 packages/translation
 apps/web/src/hooks/useTranslation.ts
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(translation): add shared dictionaries
@@ -386,9 +386,9 @@ refactor(translation): replace auth copy with translation keys
 
 ---
 
-### Quando usare `docs`
+### When to use `docs`
 
-Usare per:
+Use for:
 
 ```txt
 README.md
@@ -397,7 +397,7 @@ project skills
 architecture notes
 ```
 
-Esempi:
+Examples:
 
 ```txt
 docs(project): add Culturando architecture context
@@ -406,21 +406,21 @@ docs(git): add commit conventions skill
 
 ---
 
-## Commit singolo o commit multipli
+## Single or multiple commits
 
-L’agente deve valutare se creare un singolo commit o più commit.
+The agent must evaluate whether to create a single commit or multiple commits.
 
-### Commit singolo
+### Single commit
 
-Va bene se le modifiche appartengono alla stessa attività.
+It is fine if the changes belong to the same activity.
 
-Esempio:
+Example:
 
 ```txt
 feat(auth): implement login and signup forms
 ```
 
-Può includere:
+It may include:
 
 ```txt
 - LoginForm.tsx
@@ -432,11 +432,11 @@ Può includere:
 
 ---
 
-### Commit multipli
+### Multiple commits
 
-Sono preferibili quando le modifiche appartengono ad aree diverse.
+They are preferred when the changes belong to different areas.
 
-Esempio:
+Example:
 
 ```txt
 feat(auth): implement login and signup forms
@@ -450,28 +450,28 @@ feat(packages): add shared config and types packages
 docs(project): add architecture context skill
 ```
 
-Non bisogna mischiare in un solo commit modifiche non correlate, ad esempio:
+Unrelated changes must not be mixed into a single commit, for example:
 
 ```txt
 auth forms + package translation + README + Tailwind fix
 ```
 
-In quel caso l’agente deve proporre commit separati.
+In that case the agent must propose separate commits.
 
 ---
 
-## Formato commit multilinea
+## Multiline commit format
 
-Quando il commit include più attività correlate, usare un messaggio multilinea.
+When the commit includes several related activities, use a multiline message.
 
-Formato:
+Format:
 
 ```bash
 git commit -m "feat(scope): short summary" \
   -m "Detailed explanation of the grouped changes."
 ```
 
-Esempio:
+Example:
 
 ```bash
 git commit -m "feat(auth): implement login and signup forms" \
@@ -480,11 +480,11 @@ git commit -m "feat(auth): implement login and signup forms" \
 
 ---
 
-## Formato per commit con elenco dettagliato
+## Format for commits with a detailed list
 
-Quando serve maggiore dettaglio, il body può contenere bullet points.
+When more detail is needed, the body may contain bullet points.
 
-Esempio:
+Example:
 
 ```bash
 git commit -m "feat(packages): add shared workspace packages" \
@@ -495,15 +495,15 @@ git commit -m "feat(packages): add shared workspace packages" \
 
 ---
 
-## Esempi per Culturando
+## Examples for Culturando
 
-### Esempio 1 — Login form
+### Example 1 — Login form
 
 ```txt
 feat(auth): implement login form
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Add LoginForm component, connect shared auth copy, and prepare fields for email, password and remember me.
@@ -511,13 +511,13 @@ Add LoginForm component, connect shared auth copy, and prepare fields for email,
 
 ---
 
-### Esempio 2 — Signup form
+### Example 2 — Signup form
 
 ```txt
 feat(auth): implement signup form
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Add SignupForm component with name, email, password and confirm password fields.
@@ -525,13 +525,13 @@ Add SignupForm component with name, email, password and confirm password fields.
 
 ---
 
-### Esempio 3 — Zod validation
+### Example 3 — Zod validation
 
 ```txt
 feat(auth): add zod validation schemas
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Validate login and signup inputs using Zod and shared auth constraints from @culturando/config.
@@ -539,13 +539,13 @@ Validate login and signup inputs using Zod and shared auth constraints from @cul
 
 ---
 
-### Esempio 4 — Shared packages
+### Example 4 — Shared packages
 
 ```txt
 feat(packages): add shared config and types packages
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Create @culturando/config and @culturando/types workspace packages to centralize app metadata, auth constraints and domain types.
@@ -553,13 +553,13 @@ Create @culturando/config and @culturando/types workspace packages to centralize
 
 ---
 
-### Esempio 5 — Project context skill
+### Example 5 — Project context skill
 
 ```txt
 docs(project): add Culturando architecture context
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Document the project purpose, feature roadmap, monorepo structure and architectural conventions for future agents.
@@ -567,13 +567,13 @@ Document the project purpose, feature roadmap, monorepo structure and architectu
 
 ---
 
-### Esempio 6 — Git commits skill
+### Example 6 — Git commits skill
 
 ```txt
 docs(git): add commit conventions skill
 ```
 
-Body opzionale:
+Optional body:
 
 ```txt
 Document commit rules, status checks, Conventional Commit format and grouping strategy by project area.
@@ -581,9 +581,9 @@ Document commit rules, status checks, Conventional Commit format and grouping st
 
 ---
 
-### Esempio 7 — Multiple areas
+### Example 7 — Multiple areas
 
-Se `git status` mostra modifiche a:
+If `git status` shows changes to:
 
 ```txt
 apps/web/src/features/auth/*
@@ -592,7 +592,7 @@ packages/types/*
 docs/project-context.md
 ```
 
-L’agente deve proporre commit separati:
+The agent must propose separate commits:
 
 ```txt
 feat(auth): implement auth form structure
@@ -608,40 +608,40 @@ docs(project): add architecture context skill
 
 ---
 
-## Regola sullo staging
+## Staging rule
 
-Prima di effettuare commit, l’agente deve evitare `git add .` se le modifiche appartengono ad aree diverse e devono essere separate.
+Before making commits, the agent must avoid `git add .` if the changes belong to different areas and must be separated.
 
-In questi casi deve usare staging selettivo:
+In these cases it must use selective staging:
 
 ```bash
 git add apps/web/src/features/auth
 git commit -m "feat(auth): implement auth form structure"
 ```
 
-Poi:
+Then:
 
 ```bash
 git add packages/config packages/types
 git commit -m "feat(packages): add shared config and domain types"
 ```
 
-Poi:
+Then:
 
 ```bash
 git add docs/project-context.md
 git commit -m "docs(project): add architecture context skill"
 ```
 
-Usare `git add .` solo quando tutte le modifiche fanno parte dello stesso commit logico.
+Use `git add .` only when all changes are part of the same logical commit.
 
 ---
 
-## Regola sui file da non includere
+## Rule on files not to include
 
-L’agente deve fare attenzione a non committare file non desiderati.
+The agent must be careful not to commit undesired files.
 
-Controllare sempre se nello status compaiono:
+Always check whether the status contains:
 
 ```txt
 node_modules/
@@ -655,17 +655,17 @@ coverage/
 package-lock.json
 ```
 
-Questi file non devono essere committati, salvo casi specifici e intenzionali.
+These files must not be committed, except in specific and intentional cases.
 
-In particolare, nel progetto Culturando si usa pnpm, quindi `package-lock.json` non deve essere aggiunto.
+In particular, the Culturando project uses pnpm, so `package-lock.json` must not be added.
 
 ---
 
-## Regola sul package manager
+## Package manager rule
 
-Il progetto Culturando usa pnpm.
+The Culturando project uses pnpm.
 
-I comandi corretti sono:
+The correct commands are:
 
 ```bash
 pnpm dev
@@ -675,7 +675,7 @@ pnpm biome:check
 pnpm biome:write
 ```
 
-Non usare:
+Do not use:
 
 ```bash
 npm run dev
@@ -683,41 +683,41 @@ npm install
 yarn
 ```
 
-Se vengono generati file da npm come `package-lock.json`, l’agente deve segnalarlo e proporre la rimozione.
+If npm generates files such as `package-lock.json`, the agent must flag it and propose its removal.
 
 ---
 
-## Regola sui controlli prima del commit
+## Rule on checks before committing
 
-Quando possibile, prima del commit l’agente deve suggerire o eseguire:
+When possible, before the commit the agent must suggest or run:
 
 ```bash
 pnpm build
 pnpm biome:check
 ```
 
-Se la modifica riguarda solo documentazione, il build può non essere necessario.
+If the change only concerns documentation, the build may not be necessary.
 
-Se la modifica riguarda codice TypeScript, Next.js, packages o configurazioni, almeno `pnpm build` è consigliato.
-
----
-
-## Regola di output dell’agente
-
-Quando l’utente chiede un commit, l’agente deve rispondere in questo ordine:
-
-1. mostrare o chiedere l’output di `git status`;
-2. classificare i file per area;
-3. suggerire se fare uno o più commit;
-4. proporre i comandi `git add` selettivi;
-5. proporre il messaggio di commit in formato Conventional Commit;
-6. suggerire eventuali check prima del commit.
+If the change concerns TypeScript, Next.js, packages or configurations, at least `pnpm build` is recommended.
 
 ---
 
-## Template operativo
+## Agent output rule
 
-Quando si prepara un commit, usare questo schema:
+When the user requests a commit, the agent must respond in this order:
+
+1. show or request the output of `git status`;
+2. classify the files by area;
+3. suggest whether to make one or more commits;
+4. propose the selective `git add` commands;
+5. propose the commit message in Conventional Commit format;
+6. suggest any checks before the commit.
+
+---
+
+## Operating template
+
+When preparing a commit, use this scheme:
 
 ```txt
 Status analysis:
@@ -737,9 +737,9 @@ git commit -m "..."
 
 ---
 
-## Esempio operativo completo
+## Complete operating example
 
-Input ipotetico da `git status`:
+Hypothetical input from `git status`:
 
 ```txt
 modified: apps/web/src/features/auth/components/LoginForm.tsx
@@ -750,7 +750,7 @@ new file: packages/translation/src/index.ts
 new file: docs/git-commits.md
 ```
 
-Analisi:
+Analysis:
 
 ```txt
 auth:
@@ -768,7 +768,7 @@ docs:
 - git commit skill
 ```
 
-Commit suggeriti:
+Suggested commits:
 
 ```bash
 git add apps/web/src/features/auth
@@ -787,26 +787,26 @@ git commit -m "docs(git): add commit conventions skill"
 
 ---
 
-## Principio finale
+## Final principle
 
-Un buon commit deve rispondere chiaramente a tre domande:
+A good commit must clearly answer three questions:
 
-1. Che tipo di modifica è stata fatta?
-2. Quale area del progetto riguarda?
-3. Quale comportamento, struttura o documentazione è stata introdotta o modificata?
+1. What type of change was made?
+2. Which area of the project does it concern?
+3. Which behavior, structure or documentation was introduced or modified?
 
-Esempio ideale:
+Ideal example:
 
 ```txt
 feat(auth): add zod validation for login and signup
 ```
 
-È chiaro perché:
+It is clear because:
 
 ```txt
-feat       → introduce una nuova funzionalità
-auth       → riguarda l’area autenticazione
-messaggio  → spiega la modifica concreta
+feat       → introduces a new feature
+auth       → concerns the authentication area
+message    → explains the concrete change
 ```
 
-L’agente deve sempre privilegiare commit piccoli, coerenti e leggibili rispetto a commit grandi e generici.
+The agent must always prefer small, coherent and readable commits over large and generic ones.

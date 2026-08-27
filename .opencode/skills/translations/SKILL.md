@@ -5,57 +5,57 @@ description: Translations, i18n, dictionaries, packages/translation. Use when ed
 
 # Translations Skill — Culturando
 
-## Scopo della skill
+## Purpose of the skill
 
-Questa skill definisce il comportamento da seguire quando si lavora sulle traduzioni di **Culturando**.
+This skill defines the behavior to follow when working on the translations of **Culturando**.
 
-L'obiettivo è mantenere sincronizzati i dizionari del package:
+The goal is to keep the dictionaries of the package synchronized:
 
 ```txt
 packages/translation
 ```
 
-Il dizionario italiano è la fonte di verità:
+The Italian dictionary is the source of truth:
 
 ```txt
 packages/translation/src/dictionaries/it.ts
 ```
 
-Il dizionario inglese deve mantenere la stessa struttura:
+The English dictionary must keep the same structure:
 
 ```txt
 packages/translation/src/dictionaries/en.ts
 ```
 
-## Regola fondamentale
+## Fundamental rule
 
-Ogni volta che viene richiesto di lavorare sulle traduzioni, l'agente deve:
+Whenever the agent is asked to work on translations, it must:
 
 ```txt
-1. leggere packages/translation/src/dictionaries/it.ts;
-2. mantenere esattamente la stessa struttura in en.ts;
-3. mantenere esattamente le stesse chiavi;
-4. mantenere lo stesso annidamento degli oggetti;
-5. tradurre in inglese solo i valori testuali;
-6. preservare valori tecnici, placeholder, route, email e nomi prodotto;
-7. verificare con TypeScript che en.ts soddisfi la struttura attesa.
+1. read packages/translation/src/dictionaries/it.ts;
+2. keep exactly the same structure in en.ts;
+3. keep exactly the same keys;
+4. keep the same object nesting;
+5. translate only the textual values into English;
+6. preserve technical values, placeholders, routes, emails and product names;
+7. verify with TypeScript that en.ts satisfies the expected structure.
 ```
 
-## Percorsi obbligatori
+## Mandatory paths
 
-File sorgente:
+Source file:
 
 ```txt
 packages/translation/src/dictionaries/it.ts
 ```
 
-File di destinazione:
+Destination file:
 
 ```txt
 packages/translation/src/dictionaries/en.ts
 ```
 
-Non creare percorsi alternativi come:
+Do not create alternative paths such as:
 
 ```txt
 packages/translations
@@ -64,13 +64,13 @@ apps/web/src/translations
 src/locales
 ```
 
-salvo esplicita richiesta dell'utente.
+unless explicitly requested by the user.
 
-## Formato dei dizionari
+## Dictionary format
 
-I dizionari sono file TypeScript, non JSON.
+The dictionaries are TypeScript files, not JSON.
 
-Formato corretto:
+Correct format:
 
 ```ts
 export const it = {
@@ -92,65 +92,65 @@ export const en = {
 } as const;
 ```
 
-Non usare JSON, `export default`, commenti dentro gli oggetti o chiavi tradotte.
+Do not use JSON, `export default`, comments inside the objects or translated keys.
 
-## Regola sulle chiavi
+## Rule on keys
 
-Le chiavi sono identificatori tecnici e non devono mai essere tradotte.
+Keys are technical identifiers and must never be translated.
 
-Corretto:
+Correct:
 
 ```ts
 auth.login.title
 ```
 
-Sbagliato:
+Wrong:
 
 ```ts
 autenticazione.accesso.titolo
 ```
 
-## Regola sui valori
+## Rule on values
 
-Solo i valori testuali devono essere tradotti.
+Only textual values must be translated.
 
-Esempio:
+Example:
 
 ```ts
 submitLabel: "Accedi"
 ```
 
-diventa:
+becomes:
 
 ```ts
 submitLabel: "Sign in"
 ```
 
-## Valori da non tradurre
+## Values not to translate
 
-Non tradurre valori che rappresentano:
+Do not translate values that represent:
 
 ```txt
 - URL;
 - email;
-- nomi tecnici;
-- placeholder tecnici;
-- route;
-- chiavi;
-- codici;
-- variabili;
-- token;
-- nomi prodotto, se devono restare invariati;
-- stringhe con significato tecnico.
+- technical names;
+- technical placeholders;
+- routes;
+- keys;
+- codes;
+- variables;
+- tokens;
+- product names, if they must remain unchanged;
+- strings with technical meaning.
 ```
 
-Il nome prodotto `Culturando` deve restare invariato.
+The product name `Culturando` must remain unchanged.
 
-## Regola sui placeholder
+## Rule on placeholders
 
-Se una stringa contiene placeholder, variabili o interpolazioni, devono rimanere identici.
+If a string contains placeholders, variables or interpolations, they must remain identical.
 
-Esempi di placeholder:
+Examples of placeholders:
 
 ```txt
 {name}
@@ -163,53 +163,53 @@ Esempi di placeholder:
 ${name}
 ```
 
-Corretto:
+Correct:
 
 ```ts
 welcome: "Hi {name}, welcome back to Culturando."
 ```
 
-Sbagliato:
+Wrong:
 
 ```ts
 welcome: "Hi {nome}, welcome back to Culturando."
 ```
 
-## Regola su array, booleani, numeri e null
+## Rule on arrays, booleans, numbers and null
 
-Se in futuro i dizionari contengono array, `en.ts` deve mantenere lo stesso numero di elementi nello stesso ordine.
+If the dictionaries later contain arrays, `en.ts` must keep the same number of elements in the same order.
 
-Booleani, numeri e `null` non devono essere modificati.
+Booleans, numbers and `null` must not be modified.
 
-## Controllo strutturale
+## Structural check
 
-Dopo aver aggiornato `en.ts`, l'agente deve verificare che:
-
-```txt
-- tutte le chiavi presenti in it.ts siano presenti in en.ts;
-- nessuna chiave extra sia stata aggiunta in en.ts;
-- la profondità degli oggetti sia identica;
-- gli array abbiano la stessa lunghezza;
-- i placeholder siano identici;
-- pnpm build passi.
-```
-
-La struttura è validata dal tipo `TranslationDictionary`, che impone gli stessi oggetti e le stesse chiavi ma permette valori testuali diversi.
-
-## Tono e terminologia
-
-Le traduzioni devono usare un tono:
+After updating `en.ts`, the agent must verify that:
 
 ```txt
-- chiaro;
-- professionale;
-- semplice;
-- adatto a una web app;
-- non eccessivamente tecnico per l'utente finale;
-- coerente con un prodotto culturale e librario.
+- every key present in it.ts is present in en.ts;
+- no extra key has been added in en.ts;
+- the depth of the objects is identical;
+- the arrays have the same length;
+- the placeholders are identical;
+- pnpm build passes.
 ```
 
-Terminologia consigliata:
+The structure is validated by the `TranslationDictionary` type, which enforces the same objects and the same keys but allows different textual values.
+
+## Tone and terminology
+
+Translations must use a tone that is:
+
+```txt
+- clear;
+- professional;
+- simple;
+- suitable for a web app;
+- not overly technical for the end user;
+- consistent with a cultural and book-related product.
+```
+
+Recommended terminology:
 
 ```txt
 Accedi -> Sign in
@@ -232,33 +232,33 @@ Posizione -> Location
 Geolocalizzato -> Geolocated
 ```
 
-Preferire sentence case in inglese.
+Prefer sentence case in English.
 
-## Procedura operativa
+## Operating procedure
 
-Quando l'agente deve aggiornare il dizionario inglese:
+When the agent must update the English dictionary:
 
 ```txt
-1. Leggere packages/translation/src/dictionaries/it.ts.
-2. Leggere packages/translation/src/dictionaries/en.ts.
-3. Copiare la struttura mancante da it.ts a en.ts.
-4. Tradurre ogni valore testuale italiano in inglese.
-5. Preservare chiavi, ordine, placeholder, array, booleani, numeri e null.
-6. Eseguire formatter mirato sui file translation.
-7. Eseguire pnpm build per verificare la struttura TypeScript.
+1. Read packages/translation/src/dictionaries/it.ts.
+2. Read packages/translation/src/dictionaries/en.ts.
+3. Copy the missing structure from it.ts to en.ts.
+4. Translate every Italian textual value into English.
+5. Preserve keys, order, placeholders, arrays, booleans, numbers and null.
+6. Run a targeted formatter on the translation files.
+7. Run pnpm build to verify the TypeScript structure.
 ```
 
 ## Commit
 
-Quando viene aggiornato `en.ts`, usare le convenzioni della skill `git-commits`.
+When `en.ts` is updated, use the conventions of the `git-commits` skill.
 
-Scope consigliato:
+Recommended scope:
 
 ```txt
 translation
 ```
 
-Esempi:
+Examples:
 
 ```txt
 feat(translation): add English dictionary
@@ -266,22 +266,22 @@ refactor(translation): sync English dictionary with Italian source
 fix(translation): align dictionary types
 ```
 
-## Quando aggiornare questa skill
+## When to update this skill
 
-Aggiornare questa skill se cambiano:
+Update this skill if the following change:
 
 ```txt
-- il percorso dei file di traduzione;
-- il formato dei dizionari;
-- la strategia i18n;
-- la lingua sorgente;
-- le regole sui placeholder;
-- le convenzioni terminologiche;
-- il modo in cui l'app consuma le traduzioni.
+- the path of the translation files;
+- the dictionary format;
+- the i18n strategy;
+- the source language;
+- the placeholder rules;
+- the terminology conventions;
+- the way the app consumes translations.
 ```
 
-## Principio finale
+## Final principle
 
-`it.ts` è la fonte di verità.
+`it.ts` is the source of truth.
 
-`en.ts` deve avere la stessa struttura, gli stessi identificatori tecnici, lo stesso ordine logico e gli stessi placeholder, ma con valori tradotti in inglese naturale e coerente con il prodotto Culturando.
+`en.ts` must have the same structure, the same technical identifiers, the same logical order and the same placeholders, but with values translated into natural English that is consistent with the Culturando product.
