@@ -1,5 +1,5 @@
 import { prisma } from "@culturando/db";
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
 import { verifyPassword } from "@/lib/password";
@@ -12,7 +12,7 @@ function isSalutationPreference(value: unknown): value is "masculine" | "feminin
   return value === "masculine" || value === "feminine" || value === "neutral";
 }
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
+const nextAuth = NextAuth({
   secret: process.env.AUTH_SECRET,
   trustHost: true,
   pages: {
@@ -38,12 +38,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const userId = String(token.id ?? token.sub ?? "");
         const profile = userId
           ? await prisma.user.findUnique({
-              where: { id: userId },
-              select: {
-                avatarUrl: true,
-                nickname: true,
-              },
-            })
+            where: { id: userId },
+            select: {
+              avatarUrl: true,
+              nickname: true,
+            },
+          })
           : null;
 
         session.user.id = userId;
@@ -102,6 +102,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
 });
+
+export const handlers: NextAuthResult["handlers"] = nextAuth.handlers;
+export const signIn: NextAuthResult["signIn"] = nextAuth.signIn;
+export const signOut: NextAuthResult["signOut"] = nextAuth.signOut;
+export const auth: NextAuthResult["auth"] = nextAuth.auth;
+
 
 function getOptionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value : undefined;
