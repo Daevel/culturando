@@ -8,56 +8,42 @@
 \section{Strategia di verifica}
 \label{sec:strategia-testing}
 
-
 \subsection{Obiettivi della validazione}
 \label{subsec:obiettivi-validazione}
 
-% Obiettivo:
-% verificare che il prototipo soddisfi i requisiti
-% definiti nel Capitolo 3.
-%
-% La validazione deve dimostrare:
-%
-% - correttezza statica del progetto;
-% - producibilità della build;
-% - eseguibilità dei flussi core;
-% - correttezza dei comportamenti geografici;
-% - applicazione delle misure privacy.
-%
-% Relazione:
-%
-% Requisito
-% -> Implementazione
-% -> Caso di test
-% -> Esito
+La validazione di \projectname{} ha l'obiettivo di verificare che il prototipo realizzato sia coerente con i requisiti definiti nel Capitolo~\ref{chap:requisiti} e con le scelte implementative descritte nel Capitolo~\ref{chap:implementazione}. In particolare, la verifica non riguarda soltanto la capacità dell'applicazione di essere compilata, ma anche la corrispondenza tra requisiti funzionali, comportamenti osservabili e vincoli non funzionali, con attenzione specifica ad autenticazione, persistenza, geolocalizzazione e tutela della posizione.
+
+Il processo di validazione è stato organizzato su due livelli complementari. Il primo livello riguarda la qualità tecnica del codice: type checking, linting, controllo di formattazione e build di produzione. Questi controlli permettono di individuare errori statici, violazioni di convenzioni e problemi di integrazione prima dell'esecuzione manuale degli scenari utente. Il secondo livello riguarda la validazione funzionale del prototipo: registrazione, conferma email, login, gestione dei libri, ricerca, richieste, dashboard e comportamento geografico.
+
+La relazione adottata è di tipo tracciabile: ogni requisito rilevante viene collegato a uno o più casi d'uso, a un controllo tecnico o funzionale e a un esito verificabile. Tale impostazione evita di presentare la validazione come una lista generica di prove e consente invece di mostrare in che modo le funzionalità implementate rispondano agli obiettivi stabiliti in fase di analisi.
+
+Nel contesto del presente elaborato, la validazione non viene presentata come una certificazione produttiva del sistema. Il progetto resta un prototipo universitario e non dispone di una suite automatizzata completa di test unitari, di integrazione ed end-to-end. La strategia adottata combina quindi controlli automatizzati disponibili nel repository e scenari manuali ripetibili, sufficienti a verificare i flussi principali e i vincoli progettuali più rilevanti.
 
 
 \subsection{Livelli di verifica adottati}
 \label{subsec:livelli-testing}
 
-% 1. Verifica statica
-%
-% - TypeScript
-% - ESLint
-% - Nx module boundaries
-% - Biome
-%
-% 2. Verifica di build e integrazione
-%
-% - build Next.js/Nx
-% - avvio ambiente
-% - database/PostGIS
-%
-% 3. Validazione funzionale
-%
-% - scenari utente
-% - geolocalizzazione
-% - richieste
-% - privacy
-%
-% Dichiarare esplicitamente che il prototipo
-% corrente non dispone di una suite automatizzata
-% completa di unit/integration/E2E test.
+I livelli di verifica adottati sono sintetizzati in \cref{tab:livelli-verifica}. Essi coprono progressivamente correttezza statica, producibilità della build, riproducibilità dell'ambiente e validazione funzionale.
+
+\begin{table}[H]
+    \centering
+    \caption{Livelli di verifica adottati}
+    \label{tab:livelli-verifica}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.25\textwidth}p{0.30\textwidth}X}
+        \toprule
+        \textbf{Livello} & \textbf{Strumenti o attività} & \textbf{Obiettivo} \\
+        \midrule
+        Verifica statica & \typescript{}, ESLint, Biome, regole \nx{} & Individuare errori di tipo, violazioni sintattiche, problemi di formattazione e incoerenze rispetto alle convenzioni del workspace. \\
+        Build e integrazione & Build \nextjs{} tramite \nx{} & Verificare che l'applicazione possa essere compilata in modalità produzione e che le route principali siano riconosciute dal framework. \\
+        Ambiente locale & Script di sviluppo, database \postgresql{} e \postgis{} & Verificare la riproducibilità dell'ambiente necessario al prototipo e la disponibilità dei servizi locali. \\
+        Scenari funzionali & Prove manuali sui flussi principali & Verificare requisiti osservabili relativi ad account, libri, ricerca, richieste, dashboard e geolocalizzazione. \\
+        Privacy geografica & Controlli su coordinate pubbliche e query nearby & Verificare che mappa e discovery usino coordinate approssimate e non coordinate precise. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+La distinzione tra livelli è rilevante perché non tutti gli errori emergono nello stesso momento. Un progetto può superare la compilazione \typescript{} ma fallire la build di produzione; allo stesso modo, una build corretta non dimostra automaticamente che i vincoli di proprietà, disponibilità o privacy siano rispettati durante l'interazione utente. Per questa ragione la validazione del prototipo richiede sia strumenti automatici sia scenari applicativi mirati.
 
 
 % ==================================================
@@ -67,53 +53,52 @@
 \section{Verifica statica e qualità del codice}
 \label{sec:verifica-statica}
 
+La verifica statica è stata eseguita mediante i comandi previsti dal repository. Gli esiti sono riportati in \cref{tab:verifica-statica-build}. I controlli sono stati eseguiti dopo la correzione di una difformità puramente formale individuata da Biome nel file di configurazione dell'autenticazione; tale correzione non ha modificato il comportamento applicativo.
+
 \subsection{Type checking}
 \label{subsec:typechecking}
 
-% VQ-01 — SUPERATO
-%
-% Comando:
-%
-% pnpm exec tsc -p apps/web/tsconfig.json --noEmit
-%
-% Il controllo si è concluso senza produrre
-% errori o diagnostiche TypeScript.
+Il controllo di tipo è stato eseguito con il comando di type checking dedicato alla web app:
+
+\begin{lstlisting}[language=bash]
+pnpm exec tsc -p apps/web/tsconfig.json --noEmit
+\end{lstlisting}
+
+L'opzione \codeinline{--noEmit} permette di verificare il progetto senza generare file di output, concentrandosi quindi sulla correttezza statica del codice \typescript{}. Il comando si è concluso senza errori o diagnostiche, confermando che il codice della web app è coerente con la configurazione TypeScript attuale.
 
 
 \subsection{Linting e convenzioni}
 \label{subsec:linting}
 
-% VQ-02 — SUPERATO
-%
-% pnpm lint
-%
-% Nx ha completato correttamente il target lint
-% dell'applicazione web.
-%
-%
-% VQ-03 — SUPERATO
-%
-% pnpm biome:ci
-%
-% 170 file verificati.
-% Nessuna correzione necessaria.
+Il linting è stato eseguito con \codeinline{pnpm lint}, che invoca il target \codeinline{lint} dell'applicazione web tramite \nx{}. Il controllo ha completato correttamente l'esecuzione, senza segnalare errori bloccanti. Questo risultato verifica la conformità del codice alle regole ESLint configurate per il progetto e contribuisce a mantenere coerenti le convenzioni tra route, feature e componenti.
+
+Il controllo Biome è stato eseguito con \codeinline{pnpm biome:ci}. Una prima esecuzione ha evidenziato una difformità di formattazione in \filepath{apps/web/src/config/auth.ts}; dopo la correzione, il comando ha verificato 170 file senza applicare fix e senza produrre errori. L'esito conferma che, allo stato finale della validazione, il repository rispetta le regole di formattazione e controllo gestite da Biome.
 
 
 \subsection{Verifica della build}
 \label{subsec:build-validation}
 
-% VQ-04 — SUPERATO
-%
-% pnpm build
-%
-% Risultati:
-%
-% - compilazione completata;
-% - controllo TypeScript completato;
-% - page data raccolti;
-% - 14/14 pagine statiche generate;
-% - ottimizzazione finale completata;
-% - tutte le route applicative riconosciute.
+La build di produzione è stata verificata con \codeinline{pnpm build}. Il comando invoca \nx{} e compila l'applicazione \nextjs{}. L'esecuzione ha completato correttamente la compilazione, il controllo TypeScript interno alla build, la raccolta dei dati di pagina, la generazione delle pagine statiche e l'ottimizzazione finale. Il framework ha inoltre riconosciuto le route applicative principali, comprese le aree pubbliche, le route di autenticazione, i dettagli dei libri, le pagine dashboard e la ricerca nearby.
+
+Durante la build è stato prodotto un avviso non bloccante relativo al supporto incompleto dei project references TypeScript da parte del processo di build \nextjs{}, con tentativo di compilazione incrementale. L'avviso non ha impedito il completamento della build e non è stato classificato come errore funzionale del prototipo.
+
+\begin{longtable}{p{0.13\textwidth}p{0.27\textwidth}p{0.17\textwidth}p{0.31\textwidth}}
+    \caption{Esiti della verifica statica e di build}
+    \label{tab:verifica-statica-build} \\
+    \toprule
+    \textbf{ID} & \textbf{Controllo} & \textbf{Esito} & \textbf{Osservazioni} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Controllo} & \textbf{Esito} & \textbf{Osservazioni} \\
+    \midrule
+    \endhead
+    \testid{VQ-01} & Type checking \typescript{} & \testpass{} & Nessuna diagnostica TypeScript. \\
+    \testid{VQ-02} & Linting ESLint/\nx{} & \testpass{} & Target lint dell'applicazione web completato da \nx{}. \\
+    \testid{VQ-03} & Controllo Biome CI & \testpass{} & 170 file verificati dopo correzione formale; nessun fix applicato nello stato finale. \\
+    \testid{VQ-04} & Build di produzione & \testpass{} & Build \nextjs{} completata; 14/14 pagine statiche generate; route applicative riconosciute. \\
+    \bottomrule
+\end{longtable}
 
 
 \subsection{Riproducibilità dell'ambiente}
@@ -140,80 +125,112 @@
 \section{Validazione dei requisiti funzionali}
 \label{sec:validazione-funzionale}
 
+La validazione funzionale è stata impostata a partire dai casi d'uso del Capitolo~\ref{chap:requisiti}. Ogni scenario verifica un comportamento osservabile del prototipo e, dove necessario, un vincolo di autorizzazione o integrità. A differenza dei controlli statici descritti nella sezione precedente, questi casi richiedono l'interazione con l'applicazione in esecuzione e con un database popolato con dati coerenti. Per questo motivo, gli esiti delle prove funzionali vengono indicati come da verificare finché non è disponibile una sessione manuale documentata.
+
+I casi di test sono stati raggruppati per area funzionale: account e autenticazione, patrimonio librario, ricerca e discovery, condivisione tramite richieste. La validazione specifica della geolocalizzazione è trattata separatamente nella Sezione~\ref{sec:validazione-geolocalizzazione}, perché costituisce un vincolo trasversale sia funzionale sia di privacy.
 
 \subsection{Account e autenticazione}
 \label{subsec:test-auth}
 
-% TC-AUTH-01
-% Registrazione valida.
-%
-% TC-AUTH-02
-% Email duplicata.
-%
-% TC-AUTH-03
-% Conferma email con token valido.
-%
-% TC-AUTH-04
-% Token invalido o scaduto.
-%
-% Collegare:
-%
-% RF-01
-% RF-02
-% RF-03
-% RNF-03
-% RNF-04
+Gli scenari relativi ad account e autenticazione verificano che il sistema consenta la creazione di un utente, protegga l'accesso fino alla conferma email e rifiuti casi non validi. Le prove sono collegate ai requisiti RF-01, RF-02, RF-03, RNF-03 e RNF-04, perché coinvolgono registrazione, verifica dell'indirizzo, login e protezione delle route operative.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.28\textwidth}p{0.35\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per account e autenticazione}
+    \label{tab:test-auth} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-AUTH-01} & Registrazione con dati validi. & L'utente viene creato non verificato, il token di conferma viene generato e il sistema mostra il messaggio di invio email. & Da verificare \\
+    \testid{TC-AUTH-02} & Registrazione con email già presente. & La registrazione viene rifiutata e viene mostrato un errore sul campo email. & Da verificare \\
+    \testid{TC-AUTH-03} & Apertura di un link di conferma con token valido. & L'account viene marcato come verificato, i token residui vengono eliminati e l'utente può procedere al login. & Da verificare \\
+    \testid{TC-AUTH-04} & Apertura di un link con token mancante, invalido o scaduto. & La conferma viene rifiutata e l'utente visualizza uno stato di errore senza attivazione dell'account. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+Un ulteriore controllo implicito del flusso riguarda l'accesso alle aree protette. Dashboard, profilo, impostazioni, creazione libri, richieste e ricerca nearby richiedono una sessione valida. La mancata autenticazione deve quindi produrre redirect o messaggi di errore coerenti, senza eseguire operazioni persistenti.
 
 
 \subsection{Gestione del patrimonio librario}
 \label{subsec:test-books}
 
-% TC-BOOK-01
-% Creazione libro.
-%
-% TC-BOOK-02
-% Modifica.
-%
-% TC-BOOK-03
-% Eliminazione.
-%
-% TC-BOOK-04
-% Visibilità privata.
-%
-% TC-BOOK-05
-% Gestione ISBN duplicato.
+La validazione della gestione libraria riguarda la corretta persistenza dei libri e il rispetto della proprietà. Gli scenari verificano RF-05, RF-06, RF-07, RF-09 e, indirettamente, RNF-04 e RNF-05. La creazione e la modifica devono salvare metadati, immagini e posizione descrittiva; le operazioni di aggiornamento ed eliminazione devono essere consentite solo al proprietario.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.28\textwidth}p{0.35\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per la gestione del patrimonio librario}
+    \label{tab:test-books} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-BOOK-01} & Creazione di una scheda libro con dati validi. & Il libro viene associato all'utente autenticato, salvato nel database e reso visibile secondo la visibilità scelta. & Da verificare \\
+    \testid{TC-BOOK-02} & Modifica di un libro posseduto dall'utente. & I campi modificati vengono aggiornati e la pagina di dettaglio mostra i nuovi dati. & Da verificare \\
+    \testid{TC-BOOK-03} & Eliminazione di un libro posseduto dall'utente. & La scheda viene rimossa e l'utente viene riportato alla dashboard o al catalogo senza riferimenti residui. & Da verificare \\
+    \testid{TC-BOOK-04} & Pubblicazione o modifica di un libro con visibilità privata. & Il libro resta gestibile dal proprietario ma non viene proposto nel catalogo pubblico o nelle ricerche territoriali pubbliche. & Da verificare \\
+    \testid{TC-BOOK-05} & Inserimento di un ISBN già presente nella collezione dello stesso proprietario. & Il salvataggio viene bloccato e il sistema segnala la duplicazione dell'ISBN. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+Per le immagini, la prova funzionale deve considerare sia il caricamento diretto sia la presenza di thumbnail. Un file valido deve produrre un'immagine associata al libro e, quando il processamento riesce, una versione ridotta utilizzabile nelle card e nel dettaglio. File non supportati o eccedenti i limiti previsti devono essere rifiutati dal server.
 
 
 \subsection{Ricerca e discovery}
 \label{subsec:test-search}
 
-% TC-SEARCH-01
-% Ricerca bibliografica/testuale.
-%
-% TC-SEARCH-02
-% Accesso alla ricerca nearby senza autenticazione.
-%
-% Atteso:
-% redirect al login.
+La ricerca bibliografica verifica che il catalogo pubblico consenta di individuare libri tramite metadati descrittivi, mentre l'accesso alla ricerca geografica verifica la distinzione tra consultazione pubblica e funzionalità protetta. Gli scenari sono collegati a RF-09, RF-10, RF-11 e RF-12.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.28\textwidth}p{0.35\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per ricerca e discovery}
+    \label{tab:test-search} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-SEARCH-01} & Ricerca nel catalogo per titolo, autore, ISBN, editore, città, categoria o descrizione. & Il catalogo filtra i risultati coerentemente con la query e mantiene visibili solo le schede ammesse alla consultazione pubblica. & Da verificare \\
+    \testid{TC-SEARCH-02} & Accesso alla ricerca nearby senza sessione autenticata. & L'utente non autenticato viene indirizzato al login e non accede alla funzionalità geografica protetta. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+La separazione tra catalogo e nearby è rilevante dal punto di vista dei requisiti. Il catalogo rappresenta una vetrina pubblica del patrimonio condiviso; la ricerca geografica, invece, usa dati di posizione e viene quindi mantenuta dietro autenticazione, coerentemente con la maggiore sensibilità del dato trattato.
 
 
 \subsection{Condivisione e richieste}
 \label{subsec:test-requests}
 
-% TC-REQ-01
-% Creazione richiesta valida.
-%
-% TC-REQ-02
-% Richiesta relativa al proprio libro.
-%
-% TC-REQ-03
-% Richiesta senza autenticazione.
-%
-% TC-REQ-04
-% Libro non disponibile/non valido.
-%
-% TC-REQ-05
-% Aggiornamento stato richiesta.
+La validazione delle richieste verifica che l'interazione tra utenti avvenga solo quando il libro è pubblico, richiedibile e appartenente a un altro utente. Gli scenari sono collegati a RF-13, RF-14, RF-15 e RNF-04. Il comportamento atteso non riguarda soltanto la creazione del record, ma anche il controllo degli stati e delle autorizzazioni.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.28\textwidth}p{0.35\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per condivisione e richieste}
+    \label{tab:test-requests} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-REQ-01} & Invio di una richiesta valida per un libro pubblico di un altro utente. & La richiesta viene salvata con stato \codeinline{pending} e compare tra le richieste ricevute dal proprietario. & Da verificare \\
+    \testid{TC-REQ-02} & Tentativo di richiesta verso un libro posseduto dallo stesso utente. & Il sistema blocca l'operazione e segnala che non è possibile richiedere un proprio libro. & Da verificare \\
+    \testid{TC-REQ-03} & Tentativo di richiesta senza autenticazione. & La richiesta non viene creata e l'utente riceve indicazione di autenticarsi. & Da verificare \\
+    \testid{TC-REQ-04} & Richiesta verso libro privato, indisponibile o non esistente. & L'operazione viene rifiutata e non vengono creati record persistenti. & Da verificare \\
+    \testid{TC-REQ-05} & Accettazione o rifiuto di una richiesta ricevuta dal proprietario. & Solo il proprietario può modificare una richiesta \codeinline{pending}; lo stato viene aggiornato in \codeinline{accepted} o \codeinline{rejected}. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+La validazione deve inoltre considerare la prospettiva del richiedente: una richiesta inviata e ancora in stato \codeinline{pending} deve poter essere cancellata dal suo autore, mentre richieste non appartenenti all'utente o già gestite non devono essere modificabili arbitrariamente. Questo controllo completa il requisito di autorizzazione sulle interazioni tra utenti.
 
 
 % ==================================================
@@ -223,76 +240,111 @@
 \section{Validazione della geolocalizzazione e della privacy}
 \label{sec:validazione-geolocalizzazione}
 
+La geolocalizzazione rappresenta l'area di validazione più delicata del prototipo, perché combina utilità funzionale e tutela di un dato potenzialmente sensibile. Le prove descritte in questa sezione verificano che il sistema sia in grado di trasformare un indirizzo in coordinate, salvare una rappresentazione pubblica approssimata e usare tale rappresentazione nelle ricerche e nella mappa. L'obiettivo non è misurare sperimentalmente la precisione dei provider di geocoding, ma verificare che il comportamento applicativo rispetti il modello progettuale definito nei capitoli precedenti.
+
+La validazione geografica è distinta in quattro gruppi: geocoding e fallback, approssimazione delle coordinate, ricerca per prossimità e visualizzazione cartografica. I primi due gruppi verificano la produzione e la conservazione del dato geografico; gli ultimi due verificano il suo utilizzo operativo. La distinzione è importante perché la tutela della privacy non dipende soltanto da come il dato viene salvato, ma anche da quali campi vengono usati nelle query e nell'interfaccia.
 
 \subsection{Geocoding e fallback}
 \label{subsec:test-geocoding}
 
-% TC-GEO-01
-%
-% Geoapify configurato
-% -> coordinate.
-%
-% TC-GEO-02
-%
-% Geoapify non disponibile
-% -> fallback Nominatim.
+Il geocoding viene validato verificando il comportamento del pacchetto geografico quando è disponibile il provider principale e quando invece è necessario ricorrere al provider di riserva. Nel prototipo, Geoapify rappresenta il provider principale configurabile tramite variabile d'ambiente, mentre Nominatim/OpenStreetMap funge da fallback. La validazione deve considerare anche il caso in cui nessun provider restituisca coordinate: in tale situazione il libro può conservare l'indirizzo descrittivo, ma non deve essere incluso in ricerche territoriali che richiedono coordinate pubbliche.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.29\textwidth}p{0.34\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per geocoding e fallback}
+    \label{tab:test-geocoding} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-GEO-01} & Geocoding con Geoapify configurato e indirizzo valido. & Il sistema ottiene coordinate normalizzate, genera coordinate pubbliche approssimate e registra il provider usato. & Da verificare \\
+    \testid{TC-GEO-02} & Geocoding senza Geoapify configurato o con provider principale non disponibile. & Il sistema tenta il fallback Nominatim/OpenStreetMap e, se ottiene un risultato valido, produce la stessa struttura geografica attesa. & Da verificare \\
+    \testid{TC-GEO-03} & Geocoding senza risultati validi. & Il libro mantiene l'indirizzo testuale, ma non dispone di coordinate pubbliche e non partecipa alle ricerche nearby. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+Questi test non assumono che un provider esterno restituisca sempre lo stesso punto per lo stesso indirizzo, perché tale comportamento dipende da basi dati e politiche del provider. L'elemento da verificare per la tesi è la robustezza del flusso applicativo: normalizzazione del risultato, fallback controllato e gestione dell'assenza di coordinate.
 
 
 \subsection{Approssimazione delle coordinate}
 \label{subsec:test-coordinate-privacy}
 
-% TC-PRIV-01
-%
-% Verificare la trasformazione:
-%
-% coordinate precise
-% -> coordinate pubbliche a 3 decimali.
-%
-%
-% TC-PRIV-02
-%
-% Verificare che discovery e mappa utilizzino
-% publicLatitude/publicLongitude
-% e non latitude/longitude.
+La prova sulle coordinate verifica direttamente RNF-01 e RNF-02. Il sistema deve distinguere tra coordinate precise e coordinate pubbliche: le prime rappresentano il dato interno, le seconde sono quelle utilizzabili per discovery e visualizzazione. Nel codice corrente, l'approssimazione avviene arrotondando latitudine e longitudine a tre cifre decimali.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.29\textwidth}p{0.34\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per approssimazione e privacy delle coordinate}
+    \label{tab:test-coordinate-privacy} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-PRIV-01} & Trasformazione di coordinate precise valide. & Le coordinate pubbliche vengono generate arrotondando latitudine e longitudine a tre decimali. & Da verificare \\
+    \testid{TC-PRIV-02} & Consultazione dei dati usati da nearby e mappa. & Query spaziali e marker utilizzano \codeinline{publicLatitude} e \codeinline{publicLongitude}, non i campi precisi. & Da verificare \\
+    \testid{TC-PRIV-03} & Libro privo di coordinate pubbliche. & Il libro non viene incluso tra i risultati geografici e non produce marker sulla mappa nearby. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+Il criterio di successo non consiste nell'ottenere una posizione anonima in senso assoluto, risultato che richiederebbe tecniche e valutazioni più avanzate, ma nel dimostrare che il prototipo non espone il punto preciso associato alla scheda libro nelle funzionalità pubbliche o semi-pubbliche di discovery. La limitazione della granularità geografica è quindi una misura progettuale di minimizzazione, coerente con la natura prototipale del sistema.
 
 
 \subsection{Ricerca per prossimità}
 \label{subsec:test-nearby}
 
-% Raggi supportati:
-%
-% 5 km
-% 10 km
-% 25 km
-% 50 km
-%
-% TC-GEO-03
-% Libro interno al raggio.
-%
-% TC-GEO-04
-% Libro esterno al raggio.
-%
-% TC-GEO-05
-% Libro privato escluso.
-%
-% TC-GEO-06
-% Libro indisponibile escluso.
-%
-% TC-GEO-07
-% Ordinamento per distanza.
+La ricerca per prossimità verifica RF-11 e parte di RF-12. L'utente autenticato deve poter indicare un'origine geografica e un raggio tra quelli supportati dal prototipo: 5 km, 10 km, 25 km e 50 km. Il sistema deve restituire soltanto libri compatibili con i vincoli di visibilità, disponibilità e distanza, ordinandoli per prossimità calcolata sulle coordinate pubbliche.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.29\textwidth}p{0.34\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per ricerca per prossimità}
+    \label{tab:test-nearby} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-NEAR-01} & Libro pubblico e disponibile entro il raggio selezionato. & Il libro compare nella lista nearby e, se presente la mappa, viene rappresentato tramite marker. & Da verificare \\
+    \testid{TC-NEAR-02} & Libro pubblico e disponibile esterno al raggio selezionato. & Il libro non compare nei risultati della ricerca. & Da verificare \\
+    \testid{TC-NEAR-03} & Libro privato entro il raggio. & Il libro viene escluso dai risultati anche se geograficamente vicino. & Da verificare \\
+    \testid{TC-NEAR-04} & Libro non disponibile entro il raggio. & Il libro viene escluso dai risultati nearby. & Da verificare \\
+    \testid{TC-NEAR-05} & Più libri validi nello stesso raggio. & I risultati sono ordinati in base alla distanza crescente calcolata sulle coordinate pubbliche. & Da verificare \\
+    \testid{TC-NEAR-06} & Ricerca vicino a un libro specifico. & Il libro di origine viene escluso dai risultati e usato soltanto come punto di riferimento. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+Per i libri persistiti, il comportamento atteso deriva dalle query \postgis{} basate su \codeinline{ST\_DWithin} e \codeinline{ST\_Distance}. La validazione deve quindi controllare sia la lista testuale sia la coerenza del comportamento rispetto ai filtri applicati: visibilità pubblica, disponibilità diversa da non disponibile e presenza di coordinate pubbliche. L'eventuale fallback sui dati dimostrativi non persistiti deve produrre un ordinamento coerente, pur usando il calcolo in \typescript{} invece delle funzioni spaziali del database.
 
 
 \subsection{Visualizzazione cartografica}
 \label{subsec:test-map}
 
-% TC-MAP-01
-% Marker basati su coordinate pubbliche.
-%
-% TC-MAP-02
-% Marker / popup / cluster / modalità 2D-3D.
-%
-% TC-MAP-03
-% Comportamento con prefers-reduced-motion.
+La validazione della mappa riguarda la presentazione dei risultati nearby e l'usabilità dell'interazione cartografica. La mappa non deve introdurre un livello di dettaglio maggiore rispetto alla lista: marker, cluster e popup devono basarsi sulle stesse coordinate pubbliche usate dalla ricerca. In caso contrario, la visualizzazione vanificherebbe la separazione tra posizione interna e posizione esposta.
+
+\begin{longtable}{@{}p{0.16\textwidth}p{0.29\textwidth}p{0.34\textwidth}p{0.10\textwidth}@{}}
+    \caption{Casi di test per visualizzazione cartografica}
+    \label{tab:test-map} \\
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Scenario} & \textbf{Risultato atteso} & \textbf{Esito} \\
+    \midrule
+    \endhead
+    \testid{TC-MAP-01} & Visualizzazione dei marker dei libri nearby. & I marker sono costruiti a partire da \codeinline{publicLatitude} e \codeinline{publicLongitude}. & Da verificare \\
+    \testid{TC-MAP-02} & Interazione con marker, popup, cluster e controlli 2D/3D. & La mappa permette esplorazione, apertura popup, espansione cluster e cambio modalità senza perdere coerenza con la lista. & Da verificare \\
+    \testid{TC-MAP-03} & Utilizzo su viewport mobile o con preferenza di moto ridotto. & Il comportamento viene alleggerito, evitando rotazione automatica iniziale o animazioni non necessarie. & Da verificare \\
+    \bottomrule
+\end{longtable}
+
+La componente cartografica deve essere valutata anche dal punto di vista della degradazione controllata. Un errore di caricamento della mappa non deve compromettere la possibilità di consultare la lista testuale dei risultati, che resta la rappresentazione funzionale primaria. Questa distinzione è coerente con la natura accessoria della visualizzazione cartografica rispetto al requisito principale di discovery.
 
 
 % ==================================================
@@ -302,17 +354,9 @@
 \section{Tracciabilità e sintesi della validazione}
 \label{sec:tracciabilita-testing}
 
-% Creare la matrice:
-%
-% requisito
-% -> caso d'uso
-% -> caso di test
-% -> esito.
-%
-% Gli esiti devono essere compilati solo
-% in seguito all'esecuzione effettiva dei test.
+La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel capitolo. La matrice distingue tra controlli già eseguiti automaticamente e scenari funzionali predisposti per la validazione manuale. Gli esiti indicati come \emph{Da verificare} non rappresentano fallimenti, ma casi per i quali non è ancora stata registrata una sessione manuale documentata.
 
-\begin{longtable}{p{0.13\textwidth} p{0.16\textwidth} p{0.27\textwidth} p{0.24\textwidth}}
+\begin{longtable}{@{}p{0.14\textwidth}p{0.18\textwidth}p{0.38\textwidth}p{0.18\textwidth}@{}}
     \caption{Matrice di tracciabilità della validazione}
     \label{tab:validation-traceability} \\
 
@@ -332,14 +376,40 @@
     \midrule
     \endhead
 
-    RF-01 & UC-01 & TC-AUTH-01 & Da verificare \\
-    RF-02 & UC-01 & TC-AUTH-03 & Da verificare \\
-    RF-05 & UC-03 & TC-BOOK-01 & Da verificare \\
-    RF-08 & UC-03 & TC-PRIV-01 & Da verificare \\
-    RF-12 & UC-06 & TC-GEO-03, TC-GEO-04 & Da verificare \\
-    RF-13 & UC-06 & TC-MAP-01, TC-MAP-02 & Da verificare \\
-    RF-14 & UC-07 & TC-REQ-01 & Da verificare \\
-    RF-15 & UC-07 & TC-REQ-02, TC-REQ-03, TC-REQ-04 & Da verificare \\
+    RF-01 & UC-01 & TC-AUTH-01, TC-AUTH-02 & Da verificare \\
+    RF-02 & UC-01 & TC-AUTH-03, TC-AUTH-04 & Da verificare \\
+    RF-03 & UC-02 & TC-SEARCH-02, TC-REQ-03 & Da verificare \\
+    RF-04 & UC-03 & Validazione profilo da integrare nella sessione manuale & Da verificare \\
+    RF-05 & UC-04 & TC-BOOK-01, TC-BOOK-02 & Da verificare \\
+    RF-06 & UC-04 & Controllo caricamento immagini e thumbnail & Da verificare \\
+    RF-07 & UC-05 & TC-BOOK-02, TC-BOOK-03 & Da verificare \\
+    RF-08 & UC-04 & Validazione catalogazione assistita da integrare nella sessione manuale & Da verificare \\
+    RF-09 & UC-06 & TC-BOOK-04, TC-SEARCH-01 & Da verificare \\
+    RF-10 & UC-06 & TC-SEARCH-01 & Da verificare \\
+    RF-11 & UC-07 & TC-NEAR-01, TC-NEAR-02, TC-NEAR-05 & Da verificare \\
+    RF-12 & UC-08 & TC-MAP-01, TC-MAP-02, TC-MAP-03 & Da verificare \\
+    RF-13 & UC-09 & TC-REQ-01, TC-REQ-02, TC-REQ-03, TC-REQ-04 & Da verificare \\
+    RF-14 & UC-10, UC-11 & TC-REQ-05 e controllo cancellazione richiesta pending & Da verificare \\
+    RF-15 & UC-09 & TC-REQ-02 & Da verificare \\
+    RF-16 & UC-12 & Controllo dashboard personale e statistiche & Da verificare \\
+    RF-17 & UC-13 & Controllo dashboard amministrativa con ruolo admin & Da verificare \\
+    RF-18 & UC-03 & Controllo impostazioni e preferenze applicative & Da verificare \\
+    RNF-01 & UC-07, UC-08 & TC-PRIV-02, TC-MAP-01 & Da verificare \\
+    RNF-02 & UC-07, UC-08 & TC-PRIV-01, TC-PRIV-03 & Da verificare \\
+    RNF-03 & UC-01, UC-02 & TC-AUTH-01, TC-AUTH-03, TC-AUTH-04 & Da verificare \\
+    RNF-04 & UC-03--UC-13 & TC-REQ-02, TC-REQ-03, TC-REQ-05, TC-BOOK-02, TC-BOOK-03 & Da verificare \\
+    RNF-05 & UC-01--UC-11 & VQ-01, TC-AUTH-02, TC-BOOK-05 & Parziale: VQ-01 superato \\
+    RNF-06 & Trasversale & VQ-02, VQ-03 & \testpass{} \\
+    RNF-07 & Trasversale & VQ-02, VQ-03, VQ-04 & \testpass{} \\
+    RNF-08 & Trasversale & VQ-04 e verifica ambiente locale & Parziale: VQ-04 superato \\
+    RNF-09 & Trasversale & TC-GEO-02, TC-GEO-03 & Da verificare \\
+    RNF-10 & UC-08 & TC-MAP-03 & Da verificare \\
+    RNF-11 & Trasversale & VQ-02, VQ-03 & \testpass{} \\
+    RNF-12 & UC-12, UC-13 & Controllo dashboard personale e amministrativa & Da verificare \\
 
     \bottomrule
 \end{longtable}
+
+La matrice mostra che la validazione automatica copre in modo diretto gli aspetti statici, architetturali e di build, mentre i requisiti funzionali di dominio richiedono una sessione manuale successiva. Questa distinzione è intenzionale: type checking, linting, Biome e build dimostrano la coerenza tecnica del progetto, ma non sono sufficienti a provare da soli che registrazione, catalogazione, richieste e discovery geografica soddisfino tutti gli scenari d'uso.
+
+La prosecuzione della validazione dovrà quindi concentrarsi sull'esecuzione controllata dei casi funzionali. In particolare, i test più rilevanti dal punto di vista della tesi sono quelli relativi a conferma email, ownership dei libri, esclusione delle richieste verso risorse non valide, approssimazione delle coordinate, uso delle coordinate pubbliche nelle query nearby e coerenza tra lista testuale e mappa. Solo dopo tale esecuzione gli esiti \emph{Da verificare} potranno essere sostituiti con \testpass{} o con una descrizione del comportamento osservato.

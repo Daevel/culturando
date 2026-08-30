@@ -1,54 +1,54 @@
 \chapter{Risultati e discussione}
 \label{chap:risultati-discussione}
 
-% ==================================================
-% 7.1 Risultati ottenuti
-% ==================================================
-
 \section{Risultati ottenuti}
 \label{sec:risultati-ottenuti}
 
-% Sintetizzare solo risultati supportati dal prototipo e dalla
-% validazione effettivamente eseguita.
-%
-% Non inventare metriche, percentuali, tempi di esecuzione,
-% risultati sperimentali o feedback utenti non raccolti.
+Il lavoro svolto ha portato alla realizzazione di un prototipo web funzionante per la gestione e la condivisione di collezioni librarie private. Il risultato principale non consiste soltanto nella presenza di un catalogo digitale, ma nell'integrazione tra catalogazione, ricerca, geolocalizzazione e interazione tra utenti. Le funzionalità implementate permettono di rappresentare il libro come risorsa persistente, associarlo a un proprietario, controllarne visibilità e disponibilità, collegarlo a una posizione territoriale e abilitarne la richiesta da parte di altri utenti.
 
-% ==================================================
-% 7.2 Discussione
-% ==================================================
+Dal punto di vista architetturale, il prototipo ha raggiunto l'obiettivo di separare le responsabilità principali del sistema. L'applicazione Next.js è organizzata per route e feature, mentre le funzionalità riutilizzabili sono collocate in pacchetti condivisi del monorepo. Tale organizzazione ha reso possibile isolare componenti con responsabilità diverse: accesso al database, modello geografico, catalogazione assistita, traduzioni e logica applicativa della web app. La verifica statica e la build di produzione hanno confermato che questa struttura è compilabile e coerente con la configurazione corrente del workspace.
+
+Sul piano funzionale, il prototipo copre i flussi centrali individuati nell'analisi dei requisiti. Sono presenti registrazione con verifica email, autenticazione, gestione del profilo, creazione e modifica dei libri, gestione delle immagini, consultazione del catalogo pubblico, ricerca testuale, ricerca geografica, visualizzazione cartografica, richieste tra utenti, dashboard personale e dashboard amministrativa. La copertura implementativa di tali funzionalità è stata documentata nel Capitolo~\ref{chap:implementazione}; la validazione automatica disponibile ha confermato la correttezza statica del codice e la producibilità della build.
+
+Un risultato rilevante riguarda la progettazione della posizione. Il sistema non usa la geolocalizzazione come semplice attributo accessorio del libro, ma come parte della logica di discovery. La posizione precisa e la posizione pubblica approssimata sono mantenute distinte, e le funzionalità di ricerca territoriale e mappa sono progettate per utilizzare le coordinate pubbliche. Questo risultato risponde al vincolo emerso nell'analisi: rendere utile la prossimità geografica senza trasformare l'indirizzo del proprietario in un dato pubblicamente esposto con precisione eccessiva.
+
+La validazione tecnica eseguita ha prodotto esiti positivi per type checking, linting, controllo Biome e build di produzione. Questi risultati dimostrano che il codice del prototipo, nello stato considerato, è coerente con le regole statiche e con la pipeline di compilazione disponibile. Non dimostrano invece, da soli, la correttezza completa dei flussi utente: per questo motivo il Capitolo~\ref{chap:testing-validazione} distingue esplicitamente tra controlli automatici già superati e scenari funzionali manuali ancora da verificare.
 
 \section{Discussione delle scelte progettuali}
 \label{sec:discussione-scelte}
 
-% Discutere i trade-off principali:
-% - precisione geografica e privacy;
-% - modularità e complessità del monorepo;
-% - provider esterni e fallback;
-% - catalogazione assistita e controllo umano;
-% - prototipo universitario e limiti produttivi.
+La scelta più significativa del progetto riguarda il bilanciamento tra utilità geografica e tutela della posizione. Per una piattaforma basata su beni fisici, la distanza è un'informazione utile: un libro disponibile nella stessa area dell'utente ha un valore pratico maggiore rispetto a un libro lontano. Tuttavia, esporre coordinate precise o indirizzi completi introdurrebbe un rischio non giustificato rispetto agli obiettivi del prototipo. L'approssimazione delle coordinate pubbliche rappresenta quindi un compromesso: riduce la precisione spaziale, ma conserva una granularità sufficiente per ordinare e visualizzare risultati territorialmente vicini.
 
-% ==================================================
-% 7.3 Limiti
-% ==================================================
+Questo compromesso ha una conseguenza progettuale importante. Il sistema non cerca di garantire anonimato geografico assoluto, perché tale obiettivo richiederebbe tecniche, modelli di minaccia e verifiche più avanzate. L'obiettivo perseguito è più circoscritto e verificabile: evitare che le funzionalità di discovery usino direttamente il dato preciso. In un prototipo universitario questa distinzione è essenziale, perché permette di documentare una misura concreta di minimizzazione senza attribuirle proprietà superiori a quelle effettivamente implementate.
+
+La seconda scelta rilevante è l'adozione di un monorepo modulare. Per un prototipo di dimensioni contenute, questa struttura introduce un costo iniziale maggiore rispetto a una singola applicazione monolitica: occorre mantenere pacchetti, configurazioni e confini tra aree del codice. Il beneficio è però la maggiore chiarezza architetturale. Le logiche di geocoding, persistenza, catalogazione assistita e traduzione non sono disperse nelle pagine della web app, ma collocate in aree riutilizzabili. Questo rende più esplicito il rapporto tra requisiti non funzionali di modularità e organizzazione concreta del codice.
+
+Anche l'uso di servizi esterni è stato trattato come scelta progettuale e non come dipendenza assoluta. Geocoding, recupero metadati, OCR, storage delle immagini e invio email possono dipendere da provider o credenziali. Il prototipo prevede comportamenti degradati o fallback, così da rimanere eseguibile in ambiente locale e da non confondere la disponibilità di un servizio esterno con la correttezza del dominio applicativo. Questa scelta migliora la riproducibilità, ma impone di distinguere con attenzione tra funzionalità sempre disponibili e funzionalità condizionate dalla configurazione.
+
+La catalogazione assistita introduce un ulteriore trade-off. Il recupero automatico di metadati tramite ISBN e l'OCR possono ridurre il carico di compilazione per l'utente, ma non garantiscono necessariamente dati completi o corretti. Per questo il prototipo mantiene il controllo umano sul form: i dati suggeriti assistono la compilazione, ma non sostituiscono la responsabilità dell'utente nella conferma delle informazioni. Questa impostazione è coerente con la natura bibliografica del dominio, nel quale piccoli errori su titolo, autore o ISBN possono compromettere la qualità del catalogo.
 
 \section{Limiti del prototipo}
 \label{sec:limiti-prototipo}
 
-% Distinguere limiti implementativi, metodologici e di
-% validazione.
-%
-% Indicare come limite ogni funzionalità non implementata o
-% non validata, senza presentarla come risultato.
+Il primo limite è metodologico e riguarda la validazione. Il repository dispone di controlli automatici di tipo statico e di build, ma non di una suite completa di test unitari, di integrazione ed end-to-end. Di conseguenza, gli esiti positivi ottenuti non possono essere interpretati come prova esaustiva del comportamento applicativo. I casi funzionali descritti nel Capitolo~\ref{chap:testing-validazione} costituiscono una traccia ripetibile, ma richiedono ancora una sessione manuale documentata prima di poter essere registrati come superati.
 
-% ==================================================
-% 7.4 Sviluppi futuri
-% ==================================================
+Un secondo limite riguarda la dipendenza da servizi esterni. La disponibilità e la qualità dei risultati di geocoding, metadati bibliografici e OCR dipendono da provider e configurazioni non interamente controllate dal prototipo. I fallback riducono la fragilità operativa, ma non eliminano la variabilità dei risultati. In particolare, provider geografici diversi possono restituire coordinate differenti per lo stesso indirizzo, e provider bibliografici esterni possono non coprire tutti gli ISBN inseriti dagli utenti.
+
+La tutela geografica adottata è intenzionalmente semplice. L'arrotondamento delle coordinate pubbliche riduce la granularità del dato esposto, ma non costituisce una tecnica avanzata di anonimizzazione. Non sono state implementate analisi formali del rischio di reidentificazione, strategie adattive basate sulla densità territoriale o meccanismi di aggregazione dipendenti dal contesto urbano. Il sistema quindi migliora la minimizzazione rispetto all'esposizione del punto preciso, ma non deve essere presentato come soluzione completa di privacy geografica.
+
+Dal punto di vista funzionale, il prototipo non copre tutte le esigenze di una piattaforma produttiva. Restano fuori dal perimetro elementi come moderazione avanzata dei contenuti, messaggistica completa tra utenti, notifiche transazionali estese, gestione operativa del prestito dopo l'accettazione, procedure amministrative complesse e metriche analitiche approfondite. Tali omissioni non impediscono di valutare il nucleo progettuale, ma delimitano chiaramente il campo di validità dei risultati.
+
+Infine, la valutazione non include dati d'uso raccolti da utenti reali. Non sono quindi disponibili misure quantitative su tempi di compilazione, soddisfazione degli utenti, precisione percepita della mappa o tasso di completamento delle richieste. La discussione dei risultati deve pertanto rimanere tecnica e progettuale, evitando conclusioni empiriche non supportate.
 
 \section{Sviluppi futuri}
 \label{sec:sviluppi-futuri}
 
-% Gli sviluppi futuri devono essere coerenti con lo stato
-% reale del repository. Se una funzionalità viene implementata
-% in futuro, rimuoverla da questa sezione e documentarla nel
-% capitolo appropriato.
+Il primo sviluppo futuro riguarda il completamento della validazione funzionale. La traccia di test già definita dovrebbe essere eseguita in un ambiente controllato, con dati coerenti e utenti aventi ruoli diversi. Gli esiti dovrebbero poi essere registrati distinguendo tra casi superati, casi non superati e comportamenti parziali. Un'estensione naturale consisterebbe nell'automatizzare almeno parte degli scenari tramite test di integrazione o test end-to-end, riducendo la dipendenza da verifiche manuali.
+
+Un secondo sviluppo riguarda il rafforzamento della privacy geografica. L'approssimazione attuale potrebbe essere sostituita o affiancata da strategie più robuste, ad esempio granularità variabile in base al contesto, soglie minime di densità, visualizzazione per aree invece che per punti o politiche configurabili dall'utente. Queste evoluzioni richiederebbero però una valutazione più approfondita del rischio e dell'impatto sull'utilità della ricerca.
+
+La piattaforma potrebbe inoltre evolvere nella gestione del ciclo di vita delle richieste. Dopo l'accettazione, il sistema potrebbe supportare accordi tra utenti, notifiche, stati successivi del prestito, conferma di restituzione e storico delle interazioni. Tali funzionalità amplierebbero il passaggio dalla semplice discovery alla gestione operativa della condivisione, ma richiederebbero anche regole più precise di responsabilità e moderazione.
+
+Ulteriori sviluppi possono riguardare la qualità del catalogo. La catalogazione assistita potrebbe integrare più provider bibliografici, controlli di qualità sui metadati, suggerimenti per duplicati e strumenti di revisione manuale. Analogamente, l'OCR potrebbe essere valutato su casi reali e confrontato con l'inserimento manuale, evitando però di automatizzare la persistenza di dati non verificati.
+
+Infine, una futura evoluzione produttiva dovrebbe affrontare aspetti infrastrutturali e operativi non centrali nel prototipo: deployment stabile, osservabilità, backup, rate limiting, gestione sicura dei segreti, politiche di moderazione e documentazione completa delle procedure amministrative. Questi interventi non modificano il nucleo concettuale del progetto, ma sarebbero necessari per trasformare il prototipo in un servizio utilizzabile in modo continuativo.

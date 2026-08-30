@@ -1,87 +1,76 @@
 \chapter{Implementazione}
 \label{chap:implementazione}
 
-% ==================================================
-% 5.1 Organizzazione del codice
-% ==================================================
-
 \section{Organizzazione del codice applicativo}
 \label{sec:organizzazione-codice}
 
-% Obiettivo:
-% mostrare come l'architettura del Capitolo 4 viene
-% realizzata nel repository.
-%
-% Non trasformare la sezione in una lista di file: spiegare
-% le responsabilità implementative e le dipendenze tra moduli.
+L'implementazione di \projectname{} traduce l'architettura descritta nel Capitolo~\ref{chap:progettazione-architettura} in una struttura di codice organizzata per responsabilità. L'applicazione web principale è sviluppata in \filepath{apps/web} mediante \nextjs{} App Router: la directory delle route contiene pagine, layout e punti di ingresso HTTP, mentre la logica applicativa è demandata alle feature e ai pacchetti condivisi. Questa scelta evita che le pagine diventino contenitori di validazione, accesso ai dati o regole di dominio, mantenendo il routing come livello di composizione.
 
-% ==================================================
-% 5.2 Autenticazione e profilo
-% ==================================================
+Le funzionalità specifiche della web app sono collocate in \filepath{apps/web/src/features}. Ogni feature raggruppa componenti, server action, schemi di validazione e tipi relativi a un'area del dominio. La feature di autenticazione contiene i form e le azioni di login e registrazione; la feature dei libri gestisce catalogo, dettaglio, form di creazione e modifica; la feature delle richieste implementa l'interazione tra utenti; le feature di dashboard, amministrazione, profilo e impostazioni coprono le aree protette. Questa organizzazione rende esplicito il confine tra interfaccia, validazione e operazioni persistenti, riducendo le dipendenze trasversali non necessarie.
+
+I pacchetti in \filepath{packages} raccolgono invece funzionalità non legate a una singola pagina. Il pacchetto \filepath{packages/db} espone il client \prisma{} e lo schema del database; \filepath{packages/geo} isola geocoding, normalizzazione e approssimazione delle coordinate; \filepath{packages/ai} contiene le funzioni per catalogazione assistita, estrazione ISBN e OCR; \filepath{packages/translation} centralizza i dizionari testuali; \filepath{packages/assets} centralizza i percorsi degli asset pubblici. In questo modo le feature della web app consumano interfacce condivise senza duplicare logica tecnica.
+
+Dal punto di vista esecutivo, le operazioni che modificano lo stato sono implementate principalmente tramite server action. Tale scelta consente di validare i dati lato server, accedere alla sessione autenticata e interagire con il database senza esporre direttamente la logica persistente al client. I form React rimangono responsabili dell'interazione utente, della raccolta dei dati e della presentazione degli errori; le server action applicano invece controlli di autorizzazione, validazione e persistenza. La separazione risponde ai requisiti RNF-04 e RNF-05, perché ogni operazione sensibile viene rieseguita sul server indipendentemente dallo stato dell'interfaccia.
 
 \section{Autenticazione, conferma email e profilo utente}
 \label{sec:implementazione-auth-profilo}
 
-% Descrivere il flusso reale:
-% - registrazione;
-% - hash della password;
-% - token di conferma email;
-% - login con sessione;
-% - protezione delle route;
-% - gestione profilo e preferenza di saluto.
+L'autenticazione è implementata con \authjs{} tramite provider Credentials e strategia di sessione JWT. La scelta del provider a credenziali è coerente con il modello dati del prototipo, nel quale gli utenti sono persistiti nel database applicativo e il login deve verificare esplicitamente password, stato di conferma email e ruolo. La configurazione server-side arricchisce la sessione con identificativo utente, ruolo, nickname, avatar e preferenza di saluto, permettendo alle aree protette di usare informazioni essenziali senza interrogare ripetutamente tutto il profilo.
 
-% ==================================================
-% 5.3 Catalogazione libraria
-% ==================================================
+Il flusso di registrazione parte da un form validato con \tech{Zod}. I dati raccolti includono nome, email, password, conferma password e preferenza di saluto. Prima della persistenza, l'email viene normalizzata e controllata rispetto agli account esistenti; la password non viene salvata in chiaro, ma trasformata in hash tramite una funzione server-side. L'utente creato non è immediatamente abilitato al login: il campo \codeinline{emailVerifiedAt} resta nullo fino al completamento della conferma email.
+
+La conferma dell'indirizzo è gestita attraverso token temporanei. In fase di registrazione viene generato un valore casuale, ma nel database viene salvato soltanto il relativo hash, associato all'utente e a una scadenza. Il link inviato all'utente contiene il token originale; quando il link viene aperto, il server ricalcola l'hash, verifica l'esistenza del token, controlla la scadenza e, in caso positivo, aggiorna \codeinline{emailVerifiedAt}. La procedura elimina inoltre i token residui dell'utente, riducendo la permanenza di credenziali temporanee non più utili.
+
+Il login verifica tre condizioni: presenza dell'utente, password valida e account confermato. Se la password hash non è disponibile o l'email non è stata verificata, l'autorizzazione fallisce. Questa impostazione collega l'autenticazione ai requisiti RF-01, RF-02 e RF-03, e rafforza RNF-03 perché impedisce l'accesso di account creati ma non attivati. Le route operative, come dashboard, profilo, creazione libri, ricerca geografica protetta e richieste, recuperano la sessione lato server e redirigono o restituiscono errore quando l'identità non è presente.
+
+La gestione del profilo completa il flusso account permettendo all'utente autenticato di modificare dati descrittivi, nickname, avatar, domicilio e visibilità pubblica. Il domicilio è trattato come informazione descrittiva del profilo e viene gestito tramite autocomplete geografico condiviso, mentre l'avatar può essere salvato su storage remoto compatibile con S3 o, in assenza di configurazione, nel filesystem locale dell'applicazione. La preferenza di saluto è mantenuta come preferenza linguistica dell'interfaccia, non come dato sensibile: viene usata per personalizzare il titolo della dashboard senza introdurre ulteriori inferenze sul profilo dell'utente.
 
 \section{Catalogazione libraria e gestione delle immagini}
 \label{sec:implementazione-catalogazione}
 
-% Contenuti attesi:
-% - creazione, modifica ed eliminazione libri;
-% - persistenza tramite repository e Prisma;
-% - gestione di copertine, immagini e thumbnail;
-% - visibilità e disponibilità;
-% - statistiche di visualizzazione.
+La catalogazione libraria è implementata come flusso protetto: soltanto un utente autenticato può creare, modificare o cancellare libri persistiti. Il form raccoglie metadati bibliografici, stato di disponibilità, visibilità, condizione fisica, indirizzo e immagini. Anche in questo caso la validazione è eseguita lato server, così da non affidare l'integrità dei dati alla sola interfaccia client.
 
-% ==================================================
-% 5.4 Catalogazione assistita
-% ==================================================
+La creazione di un libro avviene tramite una server action che recupera la sessione, valida i dati, verifica l'eventuale duplicazione dell'ISBN all'interno della collezione dello stesso proprietario e invoca il livello repository. La persistenza crea una riga \codeinline{Book}, una posizione associata \codeinline{BookLocation} e zero o più immagini \codeinline{BookImage}. L'associazione con il proprietario deriva dall'identificativo della sessione e non da un campo modificabile del form; in questo modo il client non può dichiarare arbitrariamente la proprietà del libro.
+
+Le operazioni di modifica ed eliminazione applicano lo stesso principio di ownership. Prima di aggiornare o cancellare una scheda, il sistema recupera il proprietario persistito e lo confronta con l'utente autenticato. Se i valori non coincidono, l'operazione viene bloccata o rediretta. Questa verifica risponde al requisito RF-07 e al requisito non funzionale RNF-04, perché impedisce a un utente di intervenire su risorse altrui anche nel caso in cui conosca l'identificativo della route.
+
+La gestione delle immagini supporta tre casi: caricamento diretto, URL indicati manualmente e copertine provenienti da Open Library. Per i file caricati, il sistema accetta soltanto immagini JPG, PNG o WebP entro una dimensione massima, genera nomi non prevedibili e produce thumbnail WebP tramite \tech{Sharp}. Se Cloudflare R2 è configurato, immagine e thumbnail vengono salvate nello storage remoto; in caso contrario vengono scritte sotto gli upload pubblici locali della web app. La prima immagine salvata è marcata come principale, mentre le altre restano associate alla scheda come immagini secondarie.
+
+Lo stato di disponibilità e la visibilità incidono direttamente sul comportamento pubblico del catalogo. I libri possono essere pubblici o privati; possono inoltre essere disponibili, consultabili, prestabili o non disponibili. Il catalogo pubblico e la ricerca geografica considerano tali attributi per evitare che una risorsa privata o indisponibile venga proposta come disponibilità territoriale. Il dettaglio del libro registra inoltre le visualizzazioni attraverso \codeinline{BookStats}: l'apertura della pagina aggiorna o crea il contatore persistente, che viene poi riutilizzato nella dashboard personale e nell'area amministrativa.
 
 \section{Catalogazione assistita tramite ISBN, OCR e metadati esterni}
 \label{sec:implementazione-catalogazione-assistita}
 
-% Derivare la descrizione dal codice in packages/ai e dalle
-% server action della feature libri.
-%
-% Principio da evidenziare:
-% il sistema propone dati, ma il salvataggio resta sotto
-% controllo esplicito dell'utente.
+La catalogazione assistita ha lo scopo di ridurre il lavoro manuale dell'utente senza sostituirne il controllo. L'implementazione è collocata nel pacchetto \filepath{packages/ai} e viene richiamata dalla web app tramite server action dedicate. Il pacchetto fornisce tre capacità principali: estrazione e validazione di ISBN da testo, recupero di metadati bibliografici da Open Library e invio opzionale di immagini a un endpoint OCR esterno.
 
-% ==================================================
-% 5.5 Geolocalizzazione e ricerca nearby
-% ==================================================
+Il recupero tramite ISBN normalizza il valore inserito dall'utente, interroga Open Library e costruisce una proposta contenente titolo, autori, editore, anno, lingua, categorie, descrizione e copertina quando disponibili. Per alcuni dati, come gli autori, il sistema deve eseguire richieste aggiuntive perché l'API restituisce riferimenti separati. Il risultato non viene salvato direttamente nel database: viene restituito al form come suggerimento, così che l'utente possa applicarlo esplicitamente ai campi della scheda.
+
+Il flusso OCR è opzionale e dipende dalla configurazione di un endpoint Cloudflare. L'utente può caricare una o due immagini, ad esempio copertina e retro; la server action controlla tipo e dimensione dei file, poi invia il contenuto all'adapter OCR. La risposta può contenere testo libero e, se disponibile, metadati strutturati. Il sistema tenta di estrarre un ISBN dal testo riconosciuto; se l'ISBN è presente, lo usa per interrogare Open Library, altrimenti prova a inferire un titolo e a cercare per titolo. In ambiente locale è previsto anche un testo mock tramite variabile d'ambiente, utile per validare il flusso senza dipendere dal servizio esterno.
+
+L'aspetto centrale è il controllo umano. L'OCR può introdurre errori di riconoscimento e le API bibliografiche possono restituire dati incompleti o non corrispondenti alla copia posseduta. Per questo motivo l'assistenza propone metadati, ma il salvataggio finale resta vincolato al form e alla conferma dell'utente. La funzionalità soddisfa RF-08 senza trasformare la catalogazione assistita in un processo automatico non verificabile.
 
 \section{Geolocalizzazione, query spaziali e visualizzazione cartografica}
 \label{sec:implementazione-geolocalizzazione}
 
-% Descrivere:
-% - geocoding e autocomplete;
-% - salvataggio di coordinate private/pubbliche;
-% - query PostGIS per raggio e distanza;
-% - fallback in TypeScript se applicabile;
-% - MapLibre, marker, cluster e adattamenti mobile.
+La geolocalizzazione è implementata attraverso una catena composta da inserimento dell'indirizzo, geocoding, approssimazione delle coordinate, persistenza e interrogazione spaziale. L'utente non inserisce manualmente latitudine e longitudine: compila un indirizzo, eventualmente assistito da autocomplete, e il server invoca il pacchetto \filepath{packages/geo}. Il provider principale è Geoapify quando la chiave è configurata; in caso contrario, o in caso di fallimento, il sistema prova Nominatim/OpenStreetMap come fallback. Se nessun provider restituisce coordinate, il libro può comunque essere salvato con l'indirizzo descrittivo, ma non partecipa alle ricerche territoriali basate su coordinate.
 
-% ==================================================
-% 5.6 Richieste e dashboard
-% ==================================================
+Il pacchetto geografico normalizza le coordinate e genera la versione pubblica approssimata arrotondando latitudine e longitudine a tre decimali. Le due rappresentazioni vengono salvate separatamente in \codeinline{BookLocation}: \codeinline{latitude} e \codeinline{longitude} rappresentano il dato preciso interno, mentre \codeinline{publicLatitude} e \codeinline{publicLongitude} sono usati per mappa e discovery. Questa distinzione implementa la strategia di minimizzazione discussa nel Capitolo~\ref{chap:progettazione-architettura} e consente di soddisfare RNF-01 e RNF-02.
+
+La ricerca per prossimità sui libri persistiti è eseguita tramite query SQL geospaziali invocate da \prisma{}. Poiché gli operatori spaziali necessari non sono esposti direttamente dal modello \prisma{} in modo sufficiente per il caso d'uso, il repository usa SQL grezzo parametrizzato con funzioni \postgis{}. La query costruisce punti geografici a partire dalle coordinate pubbliche, filtra i risultati entro il raggio richiesto con \codeinline{ST\_DWithin}, calcola la distanza con \codeinline{ST\_Distance}, esclude il libro di origine quando necessario, considera soltanto libri pubblici e disponibili, e ordina i risultati per distanza crescente.
+
+Il prototipo mantiene anche un fallback sui dati dimostrativi non persistiti, per i quali la distanza viene calcolata in \typescript{} tramite formula haversine. Questo fallback non sostituisce il comportamento principale basato su database, ma permette di mantenere coerente l'esperienza anche in presenza di dati mock. Nel caso dei dati reali, la responsabilità del filtro spaziale resta invece nel database, scelta più adatta a un'evoluzione con dataset più ampi.
+
+La visualizzazione cartografica è realizzata con \maplibre{}. La mappa mostra il punto di ricerca o il libro di origine e i libri disponibili nelle vicinanze usando le sole coordinate pubbliche. I risultati sono rappresentati tramite sorgente GeoJSON, marker, cluster e popup con collegamento al dettaglio della scheda. L'interfaccia include controlli per vista 2D/3D e gestione della camera; sui viewport compatti riduce i comportamenti più pesanti, come rotazione automatica e impostazioni tridimensionali iniziali, e rispetta \codeinline{prefers-reduced-motion}. In questo modo la componente cartografica supporta RF-11 e RF-12 senza sacrificare l'usabilità mobile prevista da RNF-10.
 
 \section{Richieste tra utenti, dashboard e amministrazione}
 \label{sec:implementazione-richieste-dashboard}
 
-% Collegare le funzionalità implementate ai requisiti:
-% - invio richiesta;
-% - vincoli su proprietario/autenticazione/disponibilità;
-% - gestione delle richieste ricevute e inviate;
-% - dashboard utente;
-% - dashboard amministrativa.
+Il flusso delle richieste trasforma la discovery di un libro in un'interazione gestibile tra utenti. Nel dettaglio del libro, un utente autenticato può inviare una richiesta di consultazione, prestito o informazione. La server action recupera la sessione, verifica che il libro esista come risorsa pubblica e richiedibile, controlla che il richiedente non coincida con il proprietario e valida tipo e messaggio della richiesta. Solo dopo questi controlli viene creata una riga \codeinline{LoanRequest} con stato iniziale \codeinline{pending}.
+
+La gestione delle richieste è divisa in due prospettive. Il proprietario visualizza le richieste ricevute nella dashboard e può accettare o rifiutare solo quelle ancora in attesa. L'aggiornamento dello stato richiede che l'utente autenticato corrisponda al proprietario persistito della richiesta. Il richiedente, invece, dispone di una vista sulle richieste inviate e può cancellare quelle ancora \codeinline{pending}. Anche questa operazione è vincolata all'identificativo del richiedente, così da impedire modifiche su richieste di altri utenti.
+
+La dashboard personale aggrega informazioni operative utili all'utente: numero di libri pubblicati, distinzione tra libri pubblici e privati, visualizzazioni totali, richieste ricevute, richieste pendenti, richieste accettate e libri più visualizzati. Questi dati sono calcolati tramite query e aggregazioni sul database, non tramite stato client. La dashboard non ha quindi solo funzione di navigazione, ma fornisce una sintesi dell'attività collegata alla collezione dell'utente.
+
+L'area amministrativa è accessibile soltanto a utenti con ruolo \codeinline{admin} nella sessione. Essa presenta metriche aggregate del prototipo, tra cui numero di utenti, libri, libri pubblici e privati, richieste per stato, visualizzazioni totali, ultimi utenti registrati e libri pubblicati più recentemente. Nel contesto della tesi, questa funzionalità non viene presentata come strumento gestionale completo per una piattaforma in produzione, ma come supporto alla verifica dello stato del prototipo e all'osservabilità funzionale prevista da RNF-12.
+
+Nel complesso, il Capitolo 5 mostra come i requisiti definiti nel Capitolo~\ref{chap:requisiti} siano stati realizzati attraverso una combinazione di route protette, server action, validazione, repository persistenti, pacchetti condivisi e controlli di autorizzazione. La sezione successiva dell'elaborato può quindi concentrarsi sulla validazione: non più sulla descrizione delle componenti, ma sulla verifica del loro comportamento rispetto ai requisiti funzionali e non funzionali.

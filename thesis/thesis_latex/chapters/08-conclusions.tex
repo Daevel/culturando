@@ -1,35 +1,31 @@
 \chapter{Conclusioni}
 \label{chap:conclusioni}
 
-% ==================================================
-% 8.1 Sintesi del lavoro
-% ==================================================
-
 \section{Sintesi del lavoro svolto}
 \label{sec:sintesi-lavoro}
 
-% Riprendere il problema iniziale, gli obiettivi e il
-% contributo del prototipo senza introdurre nuove informazioni.
+La tesi ha affrontato il problema della scarsa accessibilità del patrimonio librario privato, considerando il libro fisico come una risorsa distribuita che può acquisire valore collettivo se descritta, resa ricercabile e collegata a un canale di interazione. Il lavoro non ha perseguito la digitalizzazione dei contenuti, ma la rappresentazione informativa delle copie possedute dagli utenti e la loro scoperta controllata tramite criteri bibliografici e geografici.
 
-% ==================================================
-% 8.2 Contributo progettuale
-% ==================================================
+Il percorso seguito ha collegato analisi, progettazione, implementazione e validazione. Dopo aver individuato attori, casi d'uso e requisiti, il progetto ha definito un'architettura web modulare, un modello dati coerente con il dominio applicativo e una strategia di gestione della posizione basata sulla separazione tra coordinate interne e coordinate pubbliche approssimate. L'implementazione ha poi tradotto tali scelte in un prototipo basato su applicazione web, database relazionale con supporto geospaziale, autenticazione, gestione dei libri, ricerca, mappa e richieste tra utenti.
+
+Gli obiettivi iniziali risultano raggiunti nella misura propria di un prototipo universitario. La piattaforma consente di catalogare libri appartenenti a utenti privati, pubblicarli con visibilità controllata, renderli ricercabili tramite catalogo e ricerca territoriale, visualizzarli su mappa e avviare richieste di consultazione, prestito o informazione. La validazione automatica ha confermato la correttezza statica e la producibilità della build, mentre la validazione funzionale completa resta affidata agli scenari manuali definiti nel capitolo dedicato.
 
 \section{Contributo progettuale}
 \label{sec:contributo-progettuale}
 
-% Evidenziare il contributo informatico della tesi:
-% - progettazione di una piattaforma geolocalizzata;
-% - gestione di cataloghi librari privati;
-% - integrazione tra discovery, richieste e privacy;
-% - realizzazione modulare e validabile del prototipo.
+Il contributo principale del lavoro è la progettazione e realizzazione di una piattaforma geolocalizzata orientata alla condivisione controllata di risorse librarie fisiche. L'aspetto informatico rilevante non risiede in una singola tecnologia, ma nell'integrazione di più responsabilità: gestione degli account, persistenza del catalogo, ricerca bibliografica, discovery geografica, tutela della posizione e workflow di richiesta.
 
-% ==================================================
-% 8.3 Considerazioni finali
-% ==================================================
+La modellazione del dominio ha permesso di distinguere le entità centrali del sistema: utenti, libri, immagini, posizioni, statistiche e richieste. Questa separazione rende espliciti i vincoli di proprietà e autorizzazione, evitando che il catalogo venga trattato come un semplice elenco pubblico privo di regole operative. Ogni libro resta associato a un proprietario, ogni richiesta collega richiedente e proprietario, e le operazioni protette richiedono una sessione coerente con il ruolo dell'utente.
+
+Un secondo contributo riguarda la gestione della prossimità geografica. Il sistema dimostra come un requisito di localizzazione possa essere integrato in una piattaforma di catalogazione senza esporre direttamente la posizione precisa. La scelta di usare coordinate pubbliche approssimate nelle funzioni di discovery rappresenta una soluzione semplice ma coerente con il principio di minimizzazione: il dato geografico viene usato per rendere utile la ricerca, non per pubblicare l'indirizzo del proprietario.
+
+Il terzo contributo è architetturale. L'organizzazione modulare del repository separa l'applicazione web dalle parti riutilizzabili e rende più chiara la corrispondenza tra requisiti e componenti tecnici. Questa impostazione facilita la manutenzione del prototipo, consente di isolare le dipendenze esterne e rende più controllabile l'evoluzione futura del sistema.
 
 \section{Considerazioni finali}
 \label{sec:considerazioni-finali}
 
-% Chiudere collegando risultati, limiti e possibili evoluzioni.
-% Non aggiungere claim non discussi nei capitoli precedenti.
+Il risultato ottenuto mostra che la condivisione di libri appartenenti a collezioni private può essere affrontata tramite una piattaforma web che combina catalogazione, ricerca e interazione tra utenti. La dimensione geografica aggiunge utilità pratica, perché collega la disponibilità del libro alla possibilità concreta di raggiungerlo; allo stesso tempo, richiede scelte progettuali attente per non trasformare la posizione in un'informazione esposta in modo eccessivo.
+
+Il prototipo mantiene consapevolmente un perimetro limitato. Non pretende di essere una piattaforma produttiva completa, né di fornire una soluzione definitiva ai problemi di privacy geografica. La sua utilità sta nel dimostrare un modello realizzabile e verificabile, nel quale la discovery territoriale viene integrata con autenticazione, proprietà dei contenuti, richieste e approssimazione delle coordinate. I limiti individuati non annullano il contributo del lavoro, ma ne definiscono il campo di validità.
+
+Le evoluzioni future più rilevanti riguardano il completamento della validazione funzionale, l'automazione dei test, il rafforzamento delle tecniche di tutela geografica e l'estensione del ciclo di vita delle richieste. Tali sviluppi permetterebbero di passare da un prototipo accademico a una piattaforma più robusta, mantenendo però il principio centrale emerso dal progetto: rendere visibili e condivisibili risorse fisiche distribuite senza rinunciare al controllo da parte degli utenti che le possiedono.
