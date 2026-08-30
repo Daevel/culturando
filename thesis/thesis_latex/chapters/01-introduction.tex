@@ -1,295 +1,39 @@
 \chapter{Introduzione}
 \label{chap:introduzione}
 
-% ==================================================
-% 1.1 Contesto e motivazioni
-% ==================================================
-
 \section{Contesto e motivazioni}
 \label{sec:contesto-motivazioni}
 
-% --------------------------------------------------
-% Paragrafo 1
-% Il patrimonio librario privato come risorsa
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre il dominio applicativo della tesi.
-%
-% Contenuti:
-% - patrimonio librario posseduto da utenti privati;
-% - valore culturale e informativo dei libri;
-% - differenza tra disponibilità fisica e accessibilità;
-% - patrimonio privato come possibile risorsa condivisa.
-%
-% Fonti:
-% - patrimonio culturale/librario;
-% - accessibilità delle risorse culturali;
-% - eventuale digitalizzazione del patrimonio.
-%
-% Da evitare:
-% - riferimenti a Next.js;
-% - riferimenti a Nx;
-% - riferimenti a PostGIS;
-% - descrizione tecnica di Culturando.
+Il patrimonio librario posseduto da utenti privati costituisce una risorsa culturale distribuita, spesso significativa dal punto di vista informativo ma difficilmente accessibile al di fuori della sfera personale del proprietario. Un libro fisico, infatti, può avere valore non soltanto per chi lo conserva, ma anche per altri utenti interessati alla consultazione, allo studio o al prestito. Tuttavia, il semplice possesso di una risorsa non ne implica la visibilità: in assenza di strumenti di catalogazione e pubblicazione, una collezione privata resta normalmente non individuabile dall'esterno.
 
+Il problema affrontato in questa tesi nasce da questa distanza tra disponibilità fisica e accessibilità effettiva. Molti volumi presenti in collezioni personali potrebbero essere utili a una comunità di lettori, studenti o appassionati, ma non esiste necessariamente un meccanismo attraverso cui tali libri possano essere cercati, localizzati e richiesti. La questione non riguarda la digitalizzazione del contenuto dei libri, né la sostituzione delle biblioteche tradizionali, bensì la possibilità di rappresentare digitalmente l'esistenza di copie fisiche appartenenti a utenti privati e di renderle scopribili in modo controllato.
 
-% --------------------------------------------------
-% Paragrafo 2
-% Il problema della visibilità e dell'accessibilità
-% --------------------------------------------------
-%
-% Obiettivo:
-% restringere il problema generale al caso affrontato
-% dalla tesi.
-%
-% Contenuti:
-% - molti patrimoni librari privati non sono
-%   individuabili dall'esterno;
-% - differenza tra possesso, scoperta e accesso;
-% - difficoltà per un utente di sapere se un determinato
-%   volume è disponibile presso un altro privato.
+Gli strumenti software permettono di affrontare questo problema introducendo una rappresentazione strutturata delle collezioni: metadati bibliografici, stato di disponibilità, visibilità pubblica e canali di interazione tra utenti. Attraverso un catalogo digitale, il patrimonio librario privato può essere trasformato da insieme isolato di oggetti fisici a risorsa potenzialmente consultabile all'interno di una comunità. La ricerca testuale consente di individuare un volume per titolo, autore o altri attributi bibliografici; la gestione degli utenti e delle richieste permette invece di passare dalla sola scoperta all'interazione con il proprietario.
 
+In questo scenario assume particolare rilievo la dimensione geografica. I libri considerati dal progetto sono beni materiali: la possibilità concreta di consultarli o prenderli in prestito dipende anche dalla distanza tra chi possiede il volume e chi lo cerca. La prossimità territoriale diventa quindi un criterio rilevante di discovery. Tale impostazione riconduce il sistema alla categoria dei \locationbasedservices{}, nei quali l'informazione geografica contribuisce alla selezione o all'ordinamento dei risultati. Al tempo stesso, l'utilizzo della posizione introduce un vincolo progettuale rilevante: la piattaforma deve offrire utilità geografica senza esporre in modo indiscriminato la posizione precisa degli utenti, coerentemente con i rischi discussi nella letteratura sui servizi basati sulla localizzazione \cite{jiang2021locationprivacy,rasheed2024locationqueryprivacy}.
 
-% --------------------------------------------------
-% Paragrafo 3
-% Il ruolo degli strumenti digitali
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre il software come strumento attraverso
-% cui affrontare il problema.
-%
-% Contenuti:
-% - catalogazione digitale;
-% - indicizzazione;
-% - ricerca;
-% - collegamento tra utenti;
-% - discovery;
-% - possibile condivisione.
-%
-% Introdurre gradualmente Culturando, senza descriverne
-% ancora architettura o tecnologie.
-
-
-% --------------------------------------------------
-% Paragrafo 4
-% La dimensione geografica
-% --------------------------------------------------
-%
-% Obiettivo:
-% motivare l'introduzione della geolocalizzazione.
-%
-% Contenuti:
-% - i libri sono beni fisici;
-% - la distanza tra proprietario e utente interessato
-%   influenza la possibilità di consultazione/prestito;
-% - introduzione del concetto di prossimità;
-% - ricerca locale;
-% - Location-Based Services.
-%
-% Fonti:
-% - definizione e caratteristiche dei Location-Based
-%   Services;
-% - sistemi location-aware.
-
-% --------------------------------------------------
-% Paragrafo 5
-% Presentazione del progetto Culturando
-% --------------------------------------------------
-%
-% Presentare Culturando come piattaforma web
-% geolocalizzata realizzata per affrontare il problema
-% discusso nei paragrafi precedenti.
-%
-% Il prototipo consente di:
-%
-% - rappresentare digitalmente collezioni librarie private;
-% - pubblicare libri;
-% - effettuare ricerche bibliografiche;
-% - individuare libri attraverso criteri geografici;
-% - supportare richieste di consultazione o prestito;
-% - limitare l'esposizione della posizione precisa.
-%
-% Non introdurre ancora stack e dettagli implementativi.
-
-
-% ==================================================
-% 1.2 Obiettivi
-% ==================================================
+\projectname{} nasce come prototipo web geolocalizzato per affrontare questo insieme di esigenze. Il sistema consente a utenti privati di registrarsi, rappresentare digitalmente i propri libri, pubblicarli in un catalogo, renderli ricercabili tramite criteri bibliografici e geografici, e ricevere richieste di consultazione, prestito o informazione. Una parte centrale della soluzione riguarda la tutela della posizione: il progetto distingue tra coordinate precise, usate internamente quando necessario, e coordinate pubbliche approssimate, utilizzate per la visualizzazione e la ricerca geografica. In questo modo il prototipo mira a conciliare discovery territoriale e limitazione dell'esposizione dei dati sensibili.
 
 \section{Obiettivi del progetto}
 \label{sec:obiettivi-progetto}
 
-% --------------------------------------------------
-% Obiettivo generale
-% --------------------------------------------------
-%
-% Definire come obiettivo generale:
-%
-% progettare e realizzare un prototipo funzionale
-% di piattaforma web geolocalizzata per rendere
-% catalogabili, individuabili e condivisibili
-% patrimoni librari appartenenti a utenti privati.
+L'obiettivo generale del progetto è progettare e realizzare un prototipo funzionale di piattaforma web geolocalizzata per rendere catalogabili, individuabili e condivisibili patrimoni librari appartenenti a utenti privati. Tale obiettivo traduce il tema del lavoro in un sistema software concreto, nel quale la gestione del libro fisico viene collegata alla ricerca digitale, alla prossimità geografica e all'interazione tra utenti.
 
+Il primo obiettivo funzionale riguarda la catalogazione. La piattaforma deve permettere a un utente registrato di costruire una rappresentazione digitale della propria collezione libraria, associando a ciascun libro metadati essenziali quali titolo, autore, descrizione, ISBN, lingua, editore, categorie, immagini e stato di disponibilità. La catalogazione non ha lo scopo di riprodurre il contenuto dell'opera, ma di descrivere il bene fisico in modo sufficiente a renderlo identificabile e gestibile.
 
-% --------------------------------------------------
-% Obiettivi funzionali principali
-% --------------------------------------------------
-%
-% 1. Catalogazione
-% 2. Discovery
-% 3. Geolocalizzazione
-% 4. Condivisione
-%
-% La privacy della posizione rappresenta
-% un requisito trasversale della soluzione.
-%
-% Funzionalità come catalogazione assistita,
-% statistiche e amministrazione possono essere
-% menzionate come estensioni implementate
-% del prototipo, senza elevarle a obiettivi
-% principali della traccia.
+Il secondo obiettivo riguarda la discovery bibliografica. I libri pubblicati devono poter essere individuati da altri utenti attraverso ricerche testuali e criteri di filtro coerenti con il dominio applicativo. La ricerca rappresenta il passaggio fondamentale tra catalogazione individuale e valore comunitario: senza meccanismi di individuazione, la collezione rimarrebbe una semplice lista privata.
 
+Il terzo obiettivo è l'integrazione della prossimità geografica. Poiché la consultazione o il prestito di un libro fisico richiedono una relazione spaziale tra utenti, il sistema deve consentire la ricerca di libri disponibili in un'area determinata. Questo implica la gestione di indirizzi, coordinate, raggi di ricerca e ordinamento per distanza, mantenendo però separata la posizione operativa interna dalla posizione esposta pubblicamente.
 
-% --------------------------------------------------
-% Obiettivi progettuali trasversali
-% --------------------------------------------------
-%
-% - privacy;
-% - sicurezza;
-% - modularità;
-% - manutenibilità;
-% - estendibilità;
-% - riproducibilità dell'ambiente di sviluppo.
+Il quarto obiettivo riguarda la condivisione controllata. La piattaforma deve supportare l'invio e la gestione di richieste tra utenti, evitando che la pubblicazione di un libro comporti automaticamente l'esposizione di recapiti personali. Il proprietario deve poter ricevere una richiesta, accettarla o rifiutarla, mentre l'utente interessato deve poter seguire lo stato della propria interazione.
 
-
-% ==================================================
-% 1.3 Metodologia
-% ==================================================
+Accanto agli obiettivi funzionali, il progetto considera alcuni obiettivi trasversali. La privacy della posizione è il vincolo principale, perché la geolocalizzazione aumenta l'utilità del sistema ma può introdurre rischi se progettata in modo ingenuo. Sono inoltre rilevanti la sicurezza dell'autenticazione, la separazione delle responsabilità tra le parti del sistema, la manutenibilità del codice, la riproducibilità dell'ambiente di sviluppo e la possibilità di estendere il prototipo con servizi opzionali, come catalogazione assistita, provider esterni di geocoding o meccanismi di archiviazione delle immagini.
 
 \section{Metodologia e struttura dell'elaborato}
 \label{sec:metodologia-struttura}
 
-% Percorso effettivamente seguito:
-%
-% analisi
-% -> definizione requisiti
-% -> progettazione
-% -> implementazione del prototipo
-% -> testing/validazione
-% -> valutazione dei risultati.
+Il lavoro è stato sviluppato seguendo un percorso progettuale incrementale. In primo luogo è stato analizzato il problema della scarsa visibilità del patrimonio librario privato e sono stati individuati gli attori principali del sistema. Successivamente sono stati definiti i requisiti funzionali e non funzionali, con particolare attenzione alla relazione tra catalogazione, ricerca, geolocalizzazione e tutela della posizione. La fase di progettazione ha quindi tradotto tali requisiti in un'architettura applicativa e in un modello dei dati coerenti con il dominio. Infine, il prototipo è stato implementato e predisposto per una validazione funzionale basata su casi d'uso rappresentativi.
 
-% --------------------------------------------------
-% Paragrafo 6
-% Obiettivo generale
-% --------------------------------------------------
-%
-% Obiettivo:
-% tradurre la traccia PW 14 nell'obiettivo generale
-% del progetto.
-%
-% Concetto:
-%
-% piattaforma software
-% -> digitalizzazione patrimonio librario
-% -> discovery
-% -> prossimità geografica
-% -> condivisione
+La tesi è organizzata in otto capitoli. Il Capitolo~\ref{chap:stato-arte} introduce il contesto applicativo, discutendo digitalizzazione del patrimonio librario, discovery, servizi geolocalizzati e privacy della posizione. Il Capitolo~\ref{chap:requisiti} formalizza l'analisi del problema attraverso attori, casi d'uso, requisiti funzionali, requisiti non funzionali e vincoli progettuali. Il Capitolo~\ref{chap:progettazione-architettura} descrive le scelte architetturali, il modello dei dati, la gestione della geolocalizzazione e l'integrazione con servizi esterni. Il Capitolo~\ref{chap:implementazione} presenta gli aspetti implementativi più rilevanti del prototipo, collegando le scelte tecniche ai requisiti individuati.
 
-
-% --------------------------------------------------
-% Paragrafo 7
-% Obiettivi funzionali
-% --------------------------------------------------
-%
-% Organizzare gli obiettivi in quattro macro-aree.
-%
-% 1. Catalogazione
-%    - rappresentazione digitale della biblioteca
-%      personale.
-%
-% 2. Discovery
-%    - ricerca di libri appartenenti ad altri utenti.
-%
-% 3. Geolocalizzazione
-%    - utilizzo della prossimità geografica come
-%      criterio di ricerca.
-%
-% 4. Condivisione
-%    - supportare forme di consultazione o prestito.
-%
-% Nota:
-% descrivere questi elementi come obiettivi del sistema,
-% non necessariamente come funzionalità già completate.
-
-
-% --------------------------------------------------
-% Paragrafo 8
-% Obiettivi progettuali trasversali
-% --------------------------------------------------
-%
-% Contenuti:
-%
-% - privacy;
-% - sicurezza;
-% - modularità;
-% - manutenibilità;
-% - estendibilità;
-% - separazione delle responsabilità.
-%
-% Per la privacy:
-% introdurre l'obiettivo di evitare l'esposizione
-% indiscriminata della posizione esatta.
-%
-% Non spiegare ancora COME questi obiettivi vengono
-% raggiunti: questo appartiene al Capitolo 4.
-
-
-% --------------------------------------------------
-% Paragrafo 9
-% Percorso progettuale
-% --------------------------------------------------
-%
-% Descrivere il percorso seguito:
-%
-% analisi del problema
-% -> studio del contesto
-% -> definizione dei requisiti
-% -> progettazione
-% -> implementazione
-% -> testing
-% -> valutazione
-%
-% Evitare di definire questo processo come una
-% metodologia scientifica specifica se non ne viene
-% adottata formalmente una.
-
-
-% --------------------------------------------------
-% Paragrafo 10
-% Organizzazione della tesi
-% --------------------------------------------------
-%
-% Presentare sinteticamente i capitoli successivi.
-%
-% Capitolo 2:
-% contesto applicativo e stato dell'arte.
-%
-% Capitolo 3:
-% analisi del problema e requisiti.
-%
-% Capitolo 4:
-% progettazione e architettura.
-%
-% Capitolo 5:
-% implementazione.
-%
-% Capitolo 6:
-% testing e validazione.
-%
-% Capitolo 7:
-% risultati, limiti e sviluppi futuri.
-%
-% Capitolo 8:
-% conclusioni.
+Il Capitolo~\ref{chap:testing-validazione} è dedicato alla verifica del sistema mediante test funzionali e scenari manuali ripetibili. Il Capitolo~\ref{chap:risultati-discussione} discute i risultati ottenuti, i limiti del prototipo e le possibili evoluzioni future. Il Capitolo~\ref{chap:conclusioni} conclude il lavoro riassumendo il contributo progettuale e valutando il raggiungimento degli obiettivi iniziali.

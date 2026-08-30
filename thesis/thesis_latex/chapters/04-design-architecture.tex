@@ -1,96 +1,115 @@
 \chapter{Progettazione e architettura}
 \label{chap:progettazione-architettura}
 
-% ==================================================
-% 4.1 Visione architetturale
-% ==================================================
-
 \section{Visione architetturale del sistema}
 \label{sec:visione-architetturale}
 
-% Obiettivo:
-% spiegare le scelte architetturali come risposta ai
-% requisiti, non come elenco di cartelle.
-%
-% Contenuti attesi:
-% - applicazione web e monorepo;
-% - separazione tra app e pacchetti riutilizzabili;
-% - motivazione della modularità;
-% - relazione tra dominio, UI, persistenza, geolocalizzazione
-%   e servizi esterni.
-%
-% Verificare sempre contro il codice corrente prima di
-% descrivere pacchetti, feature o responsabilità.
+La progettazione di \projectname{} deriva dai requisiti individuati nel Capitolo~\ref{chap:requisiti}. Il sistema deve gestire utenti, libri, immagini, posizioni, richieste e statistiche; deve inoltre distinguere tra funzionalità pubbliche, come la consultazione del catalogo, e funzionalità protette, come la pubblicazione dei libri, la ricerca geografica e la gestione delle richieste. Per questo motivo l'architettura è stata organizzata come applicazione web modulare, con separazione tra interfaccia, logica di dominio, persistenza e funzionalità riutilizzabili.
 
-% ==================================================
-% 4.2 Stack tecnologico
-% ==================================================
+Il repository adotta una struttura \monorepo{} basata su \nx{} e \tech{pnpm}. La scelta del \monorepo{} non è motivata dalla dimensione attuale del prototipo, ma dall'esigenza di mantenere separabili le responsabilità e di predisporre il progetto a evoluzioni future. L'applicazione web principale si trova in \filepath{apps/web}, mentre i pacchetti condivisi sono collocati in \filepath{packages}. In questo modo componenti specifici della web app, come pagine, form e interazioni, restano separati da funzioni riutilizzabili, come accesso al database, tipi di dominio, geocoding, traduzioni e catalogazione assistita.
+
+La struttura architetturale distingue tre livelli principali. Il primo livello è quello applicativo, rappresentato dalle route \nextjs{} e dai componenti React specifici della web app. Il secondo livello è quello delle feature, nel quale sono isolate le funzionalità di dominio: autenticazione, libri, profilo, richieste, dashboard, amministrazione, geolocalizzazione e catalogazione assistita. Il terzo livello è quello dei pacchetti condivisi, che contiene codice non legato a una singola pagina o interazione. Questa separazione riduce l'accoppiamento tra le parti del sistema e rende più chiaro dove collocare nuove funzionalità.
+
+\begin{table}[H]
+    \centering
+    \caption{Responsabilità architetturali principali}
+    \label{tab:responsabilita-architetturali}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.28\textwidth}X}
+        \toprule
+        \textbf{Area} & \textbf{Responsabilità} \\
+        \midrule
+        Route web & Routing, layout, pagine e protezione server-side delle route. \\
+        Feature web & Logica applicativa organizzata per funzionalità: form, azioni server, validazioni e componenti di dominio. \\
+        Componenti UI & Componenti grafici generici, privi di conoscenza del dominio applicativo. \\
+        Database & Schema \prisma{}, client database e accesso alla persistenza. \\
+        Geolocalizzazione & Geocoding, normalizzazione e approssimazione delle coordinate. \\
+        Catalogazione assistita & Supporto a ISBN, metadati bibliografici e OCR opzionale. \\
+        Traduzioni & Dizionari e funzioni pure per l'internazionalizzazione. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Questa organizzazione permette di collegare ogni scelta architetturale a un requisito. La protezione delle route supporta i requisiti di autenticazione e autorizzazione; il pacchetto geografico isola le decisioni legate alla privacy della posizione; il pacchetto database centralizza il modello persistente; i dizionari condivisi riducono la duplicazione dei testi e preparano il sistema a ulteriori interfacce.
 
 \section{Stack tecnologico e criteri di scelta}
 \label{sec:stack-tecnologico}
 
-% Trattare tecnologie ricorrenti usando le macro definite
-% in config/commands.tex quando disponibili.
-%
-% Tecnologie da discutere solo se confermate dal repository:
-% - \nextjs, \reactjs, \typescript e \nx;
-% - \postgresql, \postgis e \prisma;
-% - \authjs;
-% - \maplibre;
-% - provider opzionali per geocoding, storage e OCR.
-%
-% Collegare ogni tecnologia al problema risolto.
+La web app è realizzata con \nextjs{}, \reactjs{} e \typescript{}. \nextjs{} è utilizzato per il routing tramite App Router, per la composizione delle pagine e per l'esecuzione server-side delle azioni che richiedono accesso alla sessione o al database \cite{nextjs}. \reactjs{} fornisce il modello a componenti per costruire interfacce riutilizzabili, mentre \typescript{} introduce tipizzazione statica e migliora la robustezza del codice applicativo.
 
-% ==================================================
-% 4.3 Modello dei dati
-% ==================================================
+La gestione del workspace è affidata a \nx{} e \tech{pnpm} \cite{nx}. \nx{} consente di organizzare applicazioni e pacchetti all'interno dello stesso repository, mantenendo confini architetturali espliciti. \tech{pnpm} gestisce le dipendenze del workspace e supporta la struttura a pacchetti dichiarata nel file \filepath{pnpm-workspace.yaml}. Questa combinazione è coerente con il requisito di modularità e con l'obiettivo di mantenere riutilizzabili le parti non specifiche della web app.
+
+La persistenza utilizza \postgresql{} con estensione \postgis{}, gestita tramite \prisma{} \cite{postgresql,postgis,prisma}. \postgresql{} è adatto al dominio relazionale del progetto, nel quale utenti, libri, immagini, posizioni, statistiche e richieste sono entità collegate. \postgis{} risponde al requisito di ricerca geografica, perché abilita operazioni spaziali come selezione entro un raggio e calcolo della distanza. \prisma{} fornisce lo schema applicativo e il client per le operazioni relazionali, mentre le query spaziali più specifiche vengono eseguite tramite SQL grezzo dove necessario.
+
+L'autenticazione è basata su \authjs{} con provider Credentials e sessione JWT \cite{authjs}. Questa scelta permette di collegare il login agli utenti persistiti nel database, verificare la password lato server e arricchire la sessione con identificativo, ruolo e preferenze necessarie all'interfaccia. La mappa interattiva utilizza \maplibre{}, libreria WebGL per la visualizzazione cartografica con marker, cluster, popup e modalità 2D/3D \cite{maplibre}. Le immagini vengono processate con \tech{Sharp}, usato per generare thumbnail WebP, mentre i servizi esterni opzionali sono incapsulati dietro adapter o azioni server.
 
 \section{Modello dei dati e persistenza}
 \label{sec:modello-dati}
 
-% Derivare questa sezione da packages/db/prisma/schema.prisma.
-%
-% Contenuti attesi:
-% - utenti e verifica email;
-% - libri e metadati bibliografici;
-% - immagini e thumbnail;
-% - coordinate private e pubbliche;
-% - statistiche;
-% - richieste di consultazione/prestito;
-% - ruoli e vincoli principali.
-%
-% Non inventare entità non presenti nello schema corrente.
+Il modello dei dati è definito nello schema \prisma{} del pacchetto \filepath{packages/db}. La progettazione segue le entità centrali del dominio: utente, libro, posizione, immagini, statistiche e richieste. La separazione in modelli distinti evita di concentrare informazioni eterogenee in un'unica tabella e permette di applicare vincoli specifici, come l'unicità del nickname, l'associazione uno-a-uno tra libro e posizione, e le relazioni con cancellazione a cascata per le entità dipendenti.
 
-% ==================================================
-% 4.4 Geolocalizzazione e privacy
-% ==================================================
+Il modello \codeinline{User} rappresenta l'account applicativo. Oltre a email, nome e password hash, contiene il ruolo, la preferenza di saluto, i dati descrittivi del profilo, il domicilio e la visibilità pubblica del profilo. Il campo \codeinline{emailVerifiedAt} è rilevante per il requisito di verifica account: un utente registrato ma non verificato non può autenticarsi. I token di conferma sono modellati separatamente in \codeinline{EmailVerificationToken}, che memorizza l'hash del token e la scadenza.
+
+Il modello \codeinline{Book} descrive la scheda del libro appartenente a un utente. Contiene metadati bibliografici, stato di disponibilità, visibilità e condizione fisica. La posizione è separata nel modello \codeinline{BookLocation}, che conserva sia coordinate precise sia coordinate pubbliche approssimate. Le immagini sono rappresentate da \codeinline{BookImage}, con distinzione tra origine dell'immagine, immagine principale e thumbnail. Il modello \codeinline{BookStats} raccoglie il conteggio delle visualizzazioni, evitando di sovraccaricare la scheda libro con dati di natura statistica.
+
+Le interazioni tra utenti sono modellate tramite \codeinline{LoanRequest}. Ogni richiesta collega un libro, un richiedente e un proprietario; include inoltre il tipo di richiesta e uno stato. Gli stati previsti sono \codeinline{pending}, \codeinline{accepted}, \codeinline{rejected}, \codeinline{cancelled} e \codeinline{completed}. Questa modellazione consente di verificare le regole di proprietà e autorizzazione: il richiedente non deve coincidere con il proprietario, il proprietario può gestire le richieste ricevute e il richiedente può cancellare quelle ancora in attesa.
+
+\begin{table}[H]
+    \centering
+    \caption{Entità principali del modello persistente}
+    \label{tab:modello-dati}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.24\textwidth}X}
+        \toprule
+        \textbf{Entità} & \textbf{Ruolo nel sistema} \\
+        \midrule
+        \codeinline{User} & Account, profilo, ruolo, preferenze e dati descrittivi dell'utente. \\
+        Token email & Token temporaneo per la conferma dell'indirizzo email. \\
+        \codeinline{Book} & Scheda bibliografica e operativa di un libro posseduto da un utente. \\
+        \codeinline{BookLocation} & Posizione del libro, con separazione tra coordinate precise e pubbliche. \\
+        \codeinline{BookImage} & Immagini del libro, origine, immagine principale e thumbnail. \\
+        \codeinline{BookStats} & Statistiche essenziali, in particolare numero di visualizzazioni. \\
+        \codeinline{LoanRequest} & Richieste di consultazione, prestito o informazione tra utenti. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
 \section{Progettazione della geolocalizzazione e tutela della posizione}
 \label{sec:progettazione-geolocalizzazione-privacy}
 
-% Spiegare la scelta di separare coordinate precise e
-% coordinate pubbliche approssimate.
-%
-% Contenuti attesi:
-% - geocoding dell'indirizzo;
-% - approssimazione delle coordinate;
-% - uso delle coordinate pubbliche per mappe e discovery;
-% - query spaziali e ordinamento per distanza;
-% - trade-off tra utilità e protezione.
+La geolocalizzazione è progettata come funzione di discovery e non come esposizione dell'indirizzo preciso dell'utente. Quando un libro viene creato o modificato, l'indirizzo inserito viene inviato al livello geografico, che tenta di ottenere coordinate tramite geocoding. Il risultato contiene due rappresentazioni: le coordinate precise, conservate internamente quando disponibili, e le coordinate pubbliche approssimate. Nel codice corrente l'approssimazione avviene arrotondando latitudine e longitudine a tre cifre decimali.
 
-% ==================================================
-% 4.5 Integrazione con servizi esterni
-% ==================================================
+La separazione tra coordinate precise e pubbliche risponde direttamente ai requisiti RNF-01 e RNF-02. Le coordinate precise possono essere utili come dato interno, ma non devono diventare l'informazione usata per la visualizzazione pubblica o per la discovery. La mappa e la ricerca geografica utilizzano \codeinline{publicLatitude} e \codeinline{publicLongitude}, non \codeinline{latitude} e \codeinline{longitude}. In questo modo il sistema mantiene una relazione spaziale sufficiente per cercare libri vicini, riducendo al tempo stesso la granularità del dato esposto.
+
+La ricerca per prossimità si basa su un'origine geografica e su un raggio selezionabile. L'origine può derivare da un indirizzo cercato dall'utente oppure dalla posizione pubblica approssimata di un libro. Il sistema considera soltanto libri pubblici, disponibili e dotati di coordinate pubbliche. Per i dati persistiti, la selezione entro il raggio e l'ordinamento per distanza sono eseguiti tramite funzioni spaziali di \postgis{}, in particolare \codeinline{ST\_DWithin} e \codeinline{ST\_Distance}. La scelta di delegare questi calcoli al database consente di mantenere coerente il filtro geografico con la persistenza e di ordinare i risultati in base alla distanza approssimata.
+
+Il compromesso progettuale è esplicito: ridurre la precisione della posizione può diminuire l'accuratezza del punto mostrato sulla mappa, ma protegge meglio il proprietario del libro. Per il dominio applicativo di \projectname{}, tale perdita di precisione è accettabile, perché l'obiettivo della mappa non è guidare l'utente fino a un indirizzo esatto, ma permettere di capire se una risorsa si trova in un'area ragionevolmente vicina.
 
 \section{Servizi esterni e strategie di fallback}
 \label{sec:servizi-esterni-fallback}
 
-% Descrivere solo integrazioni realmente presenti:
-% - geocoding/autocomplete;
-% - Open Library;
-% - OCR opzionale;
-% - storage immagini;
-% - invio email.
-%
-% Evidenziare dove il sistema resta funzionante in modalità
-% locale o degradata e dove richiede configurazione esplicita.
+Alcune funzionalità del prototipo dipendono da servizi esterni o da configurazioni opzionali. Per evitare che tali dipendenze rendano fragile l'applicazione in ambiente locale, la progettazione adotta adapter e fallback. Il geocoding utilizza Geoapify quando la variabile \codeinline{GEOAPIFY\_API\_KEY} è configurata; in caso contrario, o in caso di fallimento, viene utilizzato Nominatim/OpenStreetMap come soluzione di riserva. L'applicazione non importa direttamente il provider nelle feature: la logica è incapsulata nel pacchetto \filepath{packages/geo}.
+
+La catalogazione assistita utilizza il pacchetto \filepath{packages/ai}. Il recupero dei metadati bibliografici è basato su Open Library quando l'utente fornisce un ISBN, mentre l'OCR è opzionale e può essere collegato a un endpoint Cloudflare configurato tramite variabili d'ambiente \cite{openlibrary,cloudflareworkers}. Il principio progettuale è che i dati suggeriti non vengano salvati automaticamente: l'utente deve poterli verificare e applicare al form.
+
+La gestione delle immagini segue la stessa logica. Se Cloudflare R2 è configurato, copertine e thumbnail vengono salvate nello storage remoto; in caso contrario, il sistema utilizza il filesystem locale dell'applicazione web. La generazione delle thumbnail avviene in modo uniforme tramite \tech{Sharp}, indipendentemente dalla destinazione finale del file. Anche l'invio delle email è configurabile: con SMTP completo il sistema invia messaggi reali, mentre in sviluppo può usare la modalità console per stampare il link di verifica nei log.
+
+\begin{table}[H]
+    \centering
+    \caption{Servizi esterni e comportamento degradato}
+    \label{tab:servizi-fallback}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.24\textwidth}p{0.30\textwidth}X}
+        \toprule
+        \textbf{Funzionalità} & \textbf{Servizio principale} & \textbf{Fallback o comportamento locale} \\
+        \midrule
+        Geocoding & Geoapify & Nominatim/OpenStreetMap. \\
+        Metadati libro & Open Library & Nessun dato automatico; compilazione manuale. \\
+        OCR & Endpoint Cloudflare configurabile & Mock o assenza di riconoscimento automatico. \\
+        Immagini & Cloudflare R2 & Salvataggio locale nel filesystem della web app. \\
+        Email & SMTP & Provider console in ambiente di sviluppo. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Questa impostazione consente al prototipo di rimanere eseguibile localmente e, al tempo stesso, di integrare servizi più robusti quando disponibili. La progettazione dei fallback non elimina i limiti dei provider esterni, ma impedisce che essi diventino parte inseparabile del dominio applicativo.

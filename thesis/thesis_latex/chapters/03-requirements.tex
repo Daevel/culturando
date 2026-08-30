@@ -1,105 +1,155 @@
 \chapter{Analisi dei requisiti}
 \label{chap:requisiti}
 
-% ==================================================
-% 3.1 Analisi del problema
-% ==================================================
-
 \section{Analisi del problema}
 \label{sec:analisi-problema}
 
-% Obiettivo:
-% tradurre il problema introdotto nei Capitoli 1 e 2 in
-% esigenze progettuali verificabili.
-%
-% Contenuti attesi:
-% - attori principali del sistema;
-% - patrimonio librario privato come risorsa gestita;
-% - discovery bibliografica e territoriale;
-% - vincoli di privacy sulla posizione;
-% - interazione tra proprietario e utente interessato.
-%
-% Non descrivere ancora l'architettura tecnica: le scelte
-% implementative appartengono ai Capitoli 4 e 5.
+Il problema introdotto nei capitoli precedenti può essere ricondotto alla gestione di una risorsa fisica distribuita: il libro appartenente a una collezione privata. Tale risorsa possiede caratteristiche bibliografiche, uno stato di disponibilità, un proprietario e una collocazione territoriale. Il sistema deve quindi rappresentare il libro come entità informativa, consentirne la pubblicazione controllata e permettere ad altri utenti di individuarlo attraverso criteri testuali e geografici.
 
-% ==================================================
-% 3.2 Attori e casi d'uso
-% ==================================================
+La difficoltà principale non consiste soltanto nel salvare una scheda libro, ma nel collegare tre esigenze: catalogazione, discovery e interazione. La catalogazione permette al proprietario di descrivere la propria collezione; la discovery consente a un altro utente di trovare libri pertinenti; l'interazione trasforma il risultato della ricerca in una richiesta gestibile. In assenza di uno di questi elementi, il sistema resterebbe incompleto: un catalogo non ricercabile avrebbe utilità limitata, mentre una ricerca priva di canale di richiesta non supporterebbe realmente la condivisione.
+
+La dimensione geografica aggiunge un vincolo specifico. Poiché i libri sono beni fisici, la distanza tra proprietario e utente interessato può determinare la fattibilità della consultazione o del prestito. Tuttavia, la posizione associata a un libro privato può rivelare informazioni personali sul proprietario. Il sistema deve quindi trattare la localizzazione come requisito funzionale per la ricerca e, allo stesso tempo, come requisito non funzionale di privacy.
+
+L'analisi dei requisiti considera il prototipo come applicazione web destinata a utenti autenticati e visitatori. Il catalogo pubblico è consultabile come vetrina del patrimonio disponibile, mentre le funzionalità che producono effetti persistenti, come pubblicazione di libri, modifica del profilo, ricerca geografica protetta e richieste, richiedono autenticazione. Tale distinzione permette di separare la fase di esplorazione pubblica dalla gestione personale e dalle interazioni tra utenti.
 
 \section{Attori e casi d'uso}
 \label{sec:attori-casi-uso}
 
-% Attori previsti:
-% - visitatore non autenticato;
-% - utente registrato;
-% - proprietario di libri;
-% - amministratore.
-%
-% Casi d'uso da derivare dal prototipo reale:
-% - registrazione e conferma email;
-% - autenticazione;
-% - gestione profilo;
-% - pubblicazione, modifica ed eliminazione libro;
-% - consultazione catalogo pubblico;
-% - ricerca geografica protetta;
-% - invio e gestione di richieste;
-% - consultazione dashboard e statistiche;
-% - accesso al pannello amministrativo.
+Gli attori individuati derivano dai ruoli effettivamente presenti nel prototipo e dalle responsabilità applicative emerse dall'analisi del dominio.
 
-% ==================================================
-% 3.3 Requisiti funzionali
-% ==================================================
+\begin{itemize}
+    \item \textbf{Visitatore non autenticato}: può accedere alle pagine pubbliche e consultare il catalogo, ma non può creare contenuti, inviare richieste o accedere alle aree protette.
+    \item \textbf{Utente registrato}: dispone di un account verificato, può accedere alla dashboard, gestire il profilo, pubblicare libri, cercare disponibilità geografiche e inviare richieste.
+    \item \textbf{Proprietario di libri}: è un utente registrato che possiede una o più schede libro e può modificarle, eliminarle e gestire le richieste ricevute.
+    \item \textbf{Amministratore}: è un utente con ruolo specifico che può accedere alla dashboard amministrativa e consultare metriche aggregate del prototipo.
+\end{itemize}
+
+I principali casi d'uso sono sintetizzati in \cref{tab:casi-uso}. Gli identificativi sono mantenuti stabili per permettere il collegamento con i requisiti funzionali e con la successiva matrice di validazione.
+
+\begin{table}[H]
+    \centering
+    \caption{Casi d'uso principali del sistema}
+    \label{tab:casi-uso}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.15\textwidth}p{0.24\textwidth}X}
+        \toprule
+        \textbf{ID} & \textbf{Attore} & \textbf{Descrizione} \\
+        \midrule
+        UC-01 & Visitatore & Registrarsi e confermare l'indirizzo email tramite link di verifica. \\
+        UC-02 & Utente registrato & Autenticarsi e accedere alle aree protette dell'applicazione. \\
+        UC-03 & Utente registrato & Modificare profilo, dati descrittivi, domicilio e visibilità pubblica. \\
+        UC-04 & Proprietario & Pubblicare un libro con metadati, immagini, stato, visibilità e posizione. \\
+        UC-05 & Proprietario & Modificare o eliminare un libro posseduto. \\
+        UC-06 & Visitatore o utente & Consultare il catalogo pubblico e cercare libri per metadati bibliografici. \\
+        UC-07 & Utente registrato & Cercare libri disponibili vicino a un indirizzo o a un'area geografica. \\
+        UC-08 & Utente registrato & Visualizzare risultati geografici in forma testuale e cartografica. \\
+        UC-09 & Utente registrato & Inviare una richiesta di consultazione, prestito o informazione per un libro pubblico. \\
+        UC-10 & Proprietario & Accettare o rifiutare richieste ricevute sui propri libri. \\
+        UC-11 & Utente registrato & Consultare le richieste inviate e cancellare quelle ancora in attesa. \\
+        UC-12 & Utente registrato & Consultare dashboard personale, statistiche e libri pubblicati. \\
+        UC-13 & Amministratore & Accedere alla dashboard amministrativa con statistiche aggregate. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
 \section{Requisiti funzionali}
 \label{sec:requisiti-funzionali}
 
-% I requisiti devono essere numerati in modo stabile
-% (RF-01, RF-02, ...), collegabili ai casi d'uso e ai test
-% del Capitolo 6.
-%
-% Scrivere solo requisiti supportati dal codice corrente o
-% chiaramente identificati come pianificati.
-%
-% Aree funzionali:
-% - account e autenticazione;
-% - catalogazione libraria;
-% - immagini e copertine;
-% - catalogazione assistita da ISBN/OCR;
-% - ricerca e discovery;
-% - ricerca per prossimità;
-% - richieste di consultazione/prestito;
-% - dashboard utente;
-% - amministrazione.
+I requisiti funzionali descrivono i comportamenti osservabili che il prototipo deve supportare. La numerazione RF-01, RF-02 e successive viene utilizzata come riferimento stabile per la progettazione, l'implementazione e la validazione.
 
-% ==================================================
-% 3.4 Requisiti non funzionali
-% ==================================================
+\begin{longtable}{p{0.12\textwidth}p{0.28\textwidth}p{0.48\textwidth}}
+    \caption{Requisiti funzionali del prototipo}
+    \label{tab:requisiti-funzionali} \\
+    \toprule
+    \textbf{ID} & \textbf{Area} & \textbf{Requisito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Area} & \textbf{Requisito} \\
+    \midrule
+    \endhead
+    RF-01 & Account & Il sistema deve consentire la registrazione di un nuovo utente tramite nome, email, password e preferenza di saluto. \\
+    RF-02 & Verifica email & Il sistema deve generare un token di verifica email e consentire l'accesso solo agli utenti con account confermato. \\
+    RF-03 & Autenticazione & Il sistema deve permettere il login tramite credenziali e proteggere dashboard, profilo, impostazioni, ricerca geografica e funzioni operative. \\
+    RF-04 & Profilo & L'utente autenticato deve poter modificare i dati del profilo, inclusi nome, nickname, avatar, biografia, domicilio e visibilità pubblica. \\
+    RF-05 & Catalogazione & Il proprietario deve poter creare una scheda libro con metadati bibliografici, stato di disponibilità, visibilità, condizione fisica e indirizzo. \\
+    RF-06 & Immagini & Il sistema deve supportare immagini associate al libro, distinguendo immagine principale, immagini caricate dall'utente, immagini esterne e thumbnail quando disponibili. \\
+    RF-07 & Modifica ed eliminazione & Il proprietario deve poter modificare ed eliminare esclusivamente i libri di cui è titolare. \\
+    RF-08 & Catalogazione assistita & Il sistema deve supportare funzioni di assistenza alla compilazione tramite ISBN, recupero metadati e OCR opzionale, lasciando all'utente la conferma dei dati proposti. \\
+    RF-09 & Catalogo pubblico & Il sistema deve mostrare un catalogo consultabile dei libri, con dettaglio della scheda, metadati, immagini, disponibilità e conteggio delle visualizzazioni. \\
+    RF-10 & Ricerca testuale & Il sistema deve consentire la ricerca dei libri per campi bibliografici e descrittivi, tra cui titolo, autore, ISBN, editore, città, categoria e descrizione. \\
+    RF-11 & Ricerca geografica & L'utente autenticato deve poter cercare libri disponibili entro un raggio configurabile a partire da un indirizzo o da un'area. \\
+    RF-12 & Mappa & Il sistema deve visualizzare i risultati geografici su mappa interattiva, con marker, cluster, popup informativi e modalità di visualizzazione 2D/3D. \\
+    RF-13 & Richieste & L'utente autenticato deve poter inviare richieste di tipo consultazione, prestito o informazione per libri pubblici e disponibili di altri utenti. \\
+    RF-14 & Gestione richieste & Il proprietario deve poter accettare o rifiutare richieste ricevute, mentre il richiedente deve poter cancellare richieste ancora in stato pending. \\
+    RF-15 & Regole di proprietà & Il sistema deve impedire la creazione di richieste verso libri appartenenti allo stesso utente richiedente. \\
+    RF-16 & Dashboard personale & L'utente autenticato deve poter consultare un'area personale con libri pubblicati, richieste e statistiche d'uso. \\
+    RF-17 & Amministrazione & Il sistema deve consentire l'accesso a una dashboard amministrativa solo agli utenti con ruolo admin. \\
+    RF-18 & Impostazioni & L'utente deve poter modificare preferenze applicative supportate dal prototipo, come la lingua dell'interfaccia. \\
+    \bottomrule
+\end{longtable}
+
+La tracciabilità iniziale tra requisiti e casi d'uso è riportata in \cref{tab:tracciabilita-requisiti-casi-uso}. Tale matrice non sostituisce la validazione, ma permette di verificare che ogni requisito sia collegato ad almeno uno scenario osservabile.
+
+\begin{table}[H]
+    \centering
+    \caption{Tracciabilità tra requisiti funzionali e casi d'uso}
+    \label{tab:tracciabilita-requisiti-casi-uso}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.27\textwidth}X}
+        \toprule
+        \textbf{Requisito} & \textbf{Casi d'uso collegati} \\
+        \midrule
+        RF-01, RF-02, RF-03 & UC-01, UC-02 \\
+        RF-04, RF-18 & UC-03 \\
+        RF-05, RF-06, RF-07, RF-08 & UC-04, UC-05 \\
+        RF-09, RF-10 & UC-06 \\
+        RF-11, RF-12 & UC-07, UC-08 \\
+        RF-13, RF-14, RF-15 & UC-09, UC-10, UC-11 \\
+        RF-16 & UC-12 \\
+        RF-17 & UC-13 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
 
 \section{Requisiti non funzionali}
 \label{sec:requisiti-non-funzionali}
 
-% Requisiti non funzionali da trattare:
-% - privacy della posizione;
-% - sicurezza dell'autenticazione;
-% - modularità e manutenibilità;
-% - riproducibilità dell'ambiente;
-% - accessibilità e responsività essenziali;
-% - internazionalizzazione;
-% - affidabilità dei fallback verso provider esterni.
-%
-% Evitare requisiti non misurabili o non verificabili.
+I requisiti non funzionali precisano qualità, vincoli e proprietà trasversali che influenzano la progettazione. In questo progetto assumono particolare importanza privacy, sicurezza e manutenibilità, perché la piattaforma gestisce account utente, contenuti pubblicabili e dati di posizione.
 
-% ==================================================
-% 3.5 Vincoli e assunzioni
-% ==================================================
+\begin{longtable}{p{0.13\textwidth}p{0.30\textwidth}p{0.45\textwidth}}
+    \caption{Requisiti non funzionali}
+    \label{tab:requisiti-non-funzionali} \\
+    \toprule
+    \textbf{ID} & \textbf{Categoria} & \textbf{Requisito} \\
+    \midrule
+    \endfirsthead
+    \toprule
+    \textbf{ID} & \textbf{Categoria} & \textbf{Requisito} \\
+    \midrule
+    \endhead
+    RNF-01 & Privacy geografica & Il sistema non deve esporre pubblicamente le coordinate precise associate alla posizione di un libro. \\
+    RNF-02 & Minimizzazione & Le informazioni geografiche pubbliche devono essere ridotte alla granularità necessaria per discovery e mappa. \\
+    RNF-03 & Sicurezza account & Le password devono essere memorizzate in forma non reversibile e il login deve rifiutare account non verificati. \\
+    RNF-04 & Autorizzazione & Le operazioni su profilo, libri, richieste e amministrazione devono verificare identità, proprietà o ruolo dell'utente. \\
+    RNF-05 & Validazione input & I dati inseriti nei form devono essere validati prima della persistenza, con messaggi coerenti per l'utente. \\
+    RNF-06 & Modularità & Il sistema deve mantenere separate route, componenti di dominio, componenti UI generici e pacchetti riutilizzabili. \\
+    RNF-07 & Manutenibilità & Le funzionalità devono essere organizzate per feature e supportare evoluzioni successive senza duplicazione non necessaria. \\
+    RNF-08 & Riproducibilità & L'ambiente locale deve essere avviabile tramite configurazione e comandi documentati, includendo database e servizi opzionali. \\
+    RNF-09 & Degrado controllato & Le integrazioni esterne opzionali devono prevedere fallback o comportamento degradato quando non configurate. \\
+    RNF-10 & Usabilità responsiva & Le pagine principali, il catalogo, la dashboard e la mappa devono restare utilizzabili su viewport desktop e mobile. \\
+    RNF-11 & Internazionalizzazione & I testi applicativi devono essere centralizzati in dizionari riutilizzabili quando presenti. \\
+    RNF-12 & Osservabilità funzionale & Il prototipo deve esporre statistiche essenziali su libri, richieste e visualizzazioni, utili alla valutazione dell'uso del sistema. \\
+    \bottomrule
+\end{longtable}
 
 \section{Vincoli e assunzioni progettuali}
 \label{sec:vincoli-assunzioni}
 
-% Descrivere i vincoli che influenzano la progettazione:
-% - prototipo universitario;
-% - esecuzione locale e servizi configurabili;
-% - uso di provider esterni opzionali;
-% - necessità di non esporre coordinate precise;
-% - limiti della validazione manuale rispetto a una suite
-%   automatizzata completa.
+Il primo vincolo è la natura prototipale del progetto. \projectname{} è sviluppato come elaborato universitario e come prototipo funzionale: deve dimostrare la fattibilità del modello applicativo, ma non pretende di coprire tutti i requisiti operativi di una piattaforma pubblica in produzione. Aspetti come moderazione avanzata, notifiche complete, messaggistica interna estesa o procedure amministrative complesse possono essere considerati sviluppi successivi.
+
+Il secondo vincolo riguarda l'ambiente di esecuzione. Il sistema è progettato per essere riproducibile localmente, con database relazionale e supporto geospaziale avviabili tramite l'ambiente di sviluppo. Alcuni servizi esterni sono configurabili ma opzionali: geocoding, OCR, storage delle immagini e invio email possono dipendere da credenziali o provider specifici. L'analisi dei requisiti considera quindi anche il comportamento in modalità degradata o locale, purché coerente con gli obiettivi del prototipo.
+
+Un ulteriore vincolo riguarda la privacy della posizione. Il sistema assume che la ricerca geografica debba essere utile senza pubblicare coordinate precise. Per questa ragione, i requisiti distinguono tra dato geografico interno e dato geografico pubblico. La progettazione tecnica di questa separazione è discussa nel Capitolo~\ref{chap:progettazione-architettura}, mentre la sua validazione viene trattata nel Capitolo~\ref{chap:testing-validazione}.
+
+Infine, la validazione prevista per il prototipo combina controlli statici, build e scenari manuali ripetibili. Non viene assunta la presenza di una suite automatizzata completa di test unitari, di integrazione ed end-to-end. Questa scelta costituisce un limite metodologico, ma è coerente con l'obiettivo di verificare i flussi principali del sistema in relazione ai requisiti definiti in questo capitolo.

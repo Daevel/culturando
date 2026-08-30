@@ -1,420 +1,84 @@
 \chapter{Contesto applicativo e stato dell'arte}
 \label{chap:stato-arte}
 
-% ==================================================
-% 2.1 Digitalizzazione e condivisione
-% ==================================================
-
 \section{Digitalizzazione e condivisione del patrimonio librario}
 \label{sec:digitalizzazione-patrimonio}
 
-% --------------------------------------------------
-% Paragrafo 1
-% Dal patrimonio fisico alla rappresentazione digitale
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre il concetto di rappresentazione digitale
-% di un patrimonio librario fisico.
-%
-% Chiarire esplicitamente che la tesi NON riguarda la
-% digitalizzazione del contenuto dei libri o la creazione
-% di una biblioteca di ebook.
-%
-% Contenuti:
-% - libri come beni fisici;
-% - rappresentazione tramite metadati;
-% - titolo, autore, ISBN, descrizione, disponibilità;
-% - catalogo digitale di una collezione fisica.
-%
-% Fonti:
-% - digital libraries;
-% - patrimonio culturale digitale.
+Nel dominio considerato da questa tesi, la digitalizzazione non coincide con la trasformazione del contenuto dei libri in formato elettronico. Il progetto non mira a costruire una biblioteca digitale di testi consultabili online, né a sostituire il libro fisico con un ebook. L'oggetto principale resta il volume materiale posseduto da un utente privato; ciò che viene digitalizzato è la sua rappresentazione informativa, cioè l'insieme dei dati necessari per descriverlo, organizzarne la disponibilità e renderlo individuabile.
 
+La rappresentazione digitale di una collezione fisica richiede metadati sufficientemente strutturati. Titolo, autore, ISBN, editore, lingua, anno di pubblicazione, categoria, descrizione e stato di disponibilità sono esempi di attributi che permettono al sistema di distinguere un libro da un altro e di supportare operazioni di ricerca. A questi dati possono aggiungersi immagini o copertine, utili per il riconoscimento visivo, ma non essenziali quanto i metadati bibliografici per la costruzione di un catalogo interrogabile.
 
-% --------------------------------------------------
-% Paragrafo 2
-% Accessibilità e discovery
-% --------------------------------------------------
-%
-% Obiettivo:
-% mostrare che rappresentare una risorsa digitalmente
-% non equivale automaticamente a renderla facilmente
-% individuabile.
-%
-% Contenuti:
-% - metadatazione;
-% - indicizzazione;
-% - ricerca;
-% - information retrieval;
-% - accessibilità;
-% - discovery.
-%
-% Fonti:
-% - letteratura su accesso digitale al patrimonio;
-% - eventuale riferimento istituzionale Europeana.
+La sola catalogazione, tuttavia, non garantisce accessibilità. Una collezione può essere rappresentata digitalmente ma rimanere isolata se non viene indicizzata, pubblicata o collegata a meccanismi di ricerca. Nel passaggio da archivio personale a risorsa condivisibile diventa quindi centrale il concetto di discovery: l'utente interessato deve poter formulare una ricerca, ottenere risultati pertinenti e comprendere se un determinato libro sia disponibile presso un altro soggetto. In questo senso, la metadatazione è una condizione necessaria ma non sufficiente; occorre anche un modello applicativo che renda tali metadati utilizzabili in un contesto comunitario.
 
-
-% --------------------------------------------------
-% Paragrafo 3
-% Dalla catalogazione alla condivisione
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre il passaggio dal catalogo personale
-% al catalogo utilizzabile all'interno di una community.
-%
-% Flusso concettuale:
-%
-% catalogazione
-% -> visibilità
-% -> discovery
-% -> interazione
-% -> condivisione
-%
-% Introdurre il concetto di social cataloging.
-%
-% Non approfondire ancora le singole piattaforme.
-
-
-% ==================================================
-% 2.2 Location-Based Services
-% ==================================================
+La condivisione del patrimonio librario privato introduce un ulteriore livello rispetto alla gestione individuale della collezione. Il catalogo personale diventa parte di un ambiente in cui altri utenti possono scoprire i libri, consultarne le informazioni e avviare una richiesta. Questo modello si avvicina al concetto di catalogazione sociale, nel quale la descrizione delle risorse non rimane confinata al singolo proprietario, ma contribuisce alla costruzione di un insieme informativo utile alla comunità. Per \projectname{}, tale passaggio è fondamentale: il valore del sistema non risiede soltanto nella gestione privata della biblioteca personale, ma nella possibilità di trasformare collezioni distribuite in risorse visibili e richiedibili.
 
 \section{Sistemi geolocalizzati e Location-Based Services}
 \label{sec:location-based-services}
 
-% --------------------------------------------------
-% Paragrafo 4
-% Definizione di LBS
-% --------------------------------------------------
-%
-% Obiettivo:
-% fornire una definizione accademicamente supportata
-% di Location-Based Service.
-%
-% Contenuti:
-% - utilizzo dell'informazione geografica;
-% - servizio dipendente dal contesto spaziale;
-% - posizione come input del sistema.
-%
-% Fonti:
-% - survey / letteratura scientifica sui LBS.
+I \locationbasedservices{} sono sistemi nei quali l'informazione geografica dell'utente, di una risorsa o di un evento contribuisce al funzionamento del servizio. La posizione può essere usata come input per filtrare risultati, ordinarli, visualizzarli su una mappa o adattare l'esperienza al contesto spaziale. Nel caso di una piattaforma libraria, la posizione non descrive soltanto un punto sulla carta, ma fornisce un'indicazione sulla fattibilità pratica di una consultazione o di un prestito.
 
+Un modello concettuale generale di servizio geolocalizzato comprende almeno quattro elementi: un utente o una richiesta, una posizione di riferimento, un insieme di risorse localizzate e una logica di elaborazione spaziale. Applicando tale modello al dominio di \projectname{}, l'utente specifica un luogo o un'area di interesse; il sistema confronta tale informazione con la localizzazione pubblica dei libri disponibili; infine restituisce un insieme di risultati coerenti con la distanza o il raggio selezionato.
 
-% --------------------------------------------------
-% Paragrafo 5
-% Componenti concettuali
-% --------------------------------------------------
-%
-% Modello:
-%
-% Utente
-% -> Posizione
-% -> Sistema informativo
-% -> Elaborazione spaziale
-% -> Risultati contestualizzati
-%
-% Collegare successivamente il modello generale
-% al dominio librario:
-%
-% posizione utente
-% -> ricerca geografica
-% -> libri disponibili nell'area.
+La prossimità geografica introduce criteri diversi dalla ricerca testuale. In una ricerca bibliografica tradizionale, la pertinenza dipende soprattutto dalla corrispondenza tra query e metadati. In una ricerca spaziale, invece, assumono rilievo la distanza, il raggio massimo, la posizione di origine e la distribuzione territoriale delle risorse. Il risultato non è semplicemente il libro che corrisponde meglio a una stringa, ma il libro che soddisfa determinati vincoli informativi e si trova entro un'area utile per l'utente.
 
-
-% --------------------------------------------------
-% Figura opzionale
-% --------------------------------------------------
-%
-% Figura:
-% modello concettuale di Location-Based Service.
-%
-% File previsto:
-%
-% figures/chapter-02/lbs-concept.pdf
-%
-% Inserire solo se la figura aggiunge reale valore
-% esplicativo.
-
-
-% --------------------------------------------------
-% Paragrafo 6
-% Prossimità e ricerca spaziale
-% --------------------------------------------------
-%
-% Contenuti:
-% - distanza;
-% - ricerca entro un raggio;
-% - filtri geografici;
-% - ordinamento per prossimità.
-%
-% NON introdurre ancora PostGIS.
-%
-% In questo capitolo viene definito il problema.
-% La tecnologia scelta per risolverlo verrà presentata
-% nel Capitolo 4.
-
-
-% ==================================================
-% 2.3 Stato dell'arte
-% ==================================================
+Nel progetto questa dimensione è motivata dalla natura fisica dei libri. A differenza di una risorsa interamente digitale, un volume cartaceo deve essere recuperato, consultato o scambiato in un luogo. La distanza tra proprietario e richiedente non è quindi un dettaglio accessorio, ma una variabile che può determinare la praticabilità dell'interazione. Il ruolo della geolocalizzazione consiste nel rendere esplicita questa variabile, trasformandola in un criterio di discovery controllato.
 
 \section{Soluzioni esistenti e approcci comparabili}
 \label{sec:soluzioni-esistenti}
 
-% --------------------------------------------------
-% Criterio metodologico
-% --------------------------------------------------
-%
-% Non analizzare i sistemi come semplici competitor.
-%
-% Individuare invece approcci e capacità rilevanti
-% rispetto al problema affrontato da Culturando.
-
+Il confronto con soluzioni esistenti non viene impostato come analisi commerciale di concorrenti, ma come osservazione di approcci applicativi affini. Le piattaforme considerate evidenziano funzionalità rilevanti per il problema trattato: catalogazione personale, pubblicazione di collezioni, interazione comunitaria, circolazione fisica dei libri e uso della dimensione territoriale.
 
 \subsection{Catalogazione e gestione di collezioni personali}
 \label{subsec:catalogazione-collezioni}
 
-% --------------------------------------------------
-% LibraryThing
-% --------------------------------------------------
-%
-% Aspetti da analizzare:
-% - catalogazione personale;
-% - metadatazione;
-% - community;
-% - raccomandazioni;
-% - privacy delle collezioni;
-% - componente LibraryThing Local.
-%
-% Punto di confronto:
-%
-% LibraryThing Local utilizza la dimensione territoriale
-% principalmente per luoghi legati ai libri:
-% biblioteche, librerie e little libraries.
-%
-% Culturando punta invece alla discovery geografica
-% di libri appartenenti a utenti privati.
-%
-% Fonte:
-% documentazione ufficiale LibraryThing.
+LibraryThing rappresenta un esempio noto di piattaforma orientata alla catalogazione personale e alla dimensione comunitaria del libro \cite{librarything}. L'utente può organizzare la propria collezione, arricchirla con metadati e partecipare a un ambiente sociale costruito intorno ai libri. Un elemento rilevante per questa tesi è la presenza di funzionalità locali, come LibraryThing Local, che collegano il dominio librario a luoghi fisici quali biblioteche, librerie ed eventi \cite{librarythinglocal}. La dimensione territoriale è quindi presente, ma è principalmente associata a luoghi culturali o commerciali collegati al libro, non alla localizzazione di singoli volumi posseduti da utenti privati.
 
-
-% --------------------------------------------------
-% Libib
-% --------------------------------------------------
-%
-% Aspetti da analizzare:
-% - cataloghi domestici;
-% - ISBN;
-% - metadatazione automatica;
-% - pubblicazione delle collezioni;
-% - gestione del lending nelle funzionalità avanzate.
-%
-% Punto di confronto:
-% catalogazione privata e condivisione del catalogo.
-%
-% Fonte:
-% documentazione ufficiale Libib.
-
+Libib si colloca invece nell'ambito della gestione di cataloghi personali e domestici \cite{libib}. La piattaforma permette di organizzare collezioni, utilizzare identificatori come l'ISBN e pubblicare cataloghi consultabili. Il suo interesse, rispetto a \projectname{}, riguarda il tema della catalogazione privata resa accessibile tramite strumenti digitali. Tuttavia, il modello concettuale resta centrato soprattutto sulla gestione e sulla pubblicazione del catalogo, mentre la ricerca per prossimità geografica di copie fisiche appartenenti ad altri utenti non costituisce l'asse principale del confronto.
 
 \subsection{Condivisione fisica e dimensione territoriale}
 \label{subsec:condivisione-territoriale}
 
-% --------------------------------------------------
-% BookCrossing
-% --------------------------------------------------
-%
-% Modello:
-%
-% registrazione libro
-% -> rilascio
-% -> ritrovamento
-% -> tracking
-%
-% Aspetti:
-% - identificativo del libro;
-% - community;
-% - rilascio;
-% - ricerca geografica;
-% - crossing zones.
-%
-% Differenza concettuale:
-%
-% BookCrossing:
-% il libro viene rilasciato e circola.
-%
-% Culturando:
-% il proprietario conserva il libro e può renderlo
-% disponibile per consultazione o prestito.
+BookCrossing adotta un modello differente, basato sulla circolazione fisica del libro \cite{bookcrossing}. Il volume viene registrato, identificato e poi rilasciato affinché altri utenti possano trovarlo, leggerlo e rimetterlo in circolazione. La componente comunitaria e geografica è rilevante, perché il percorso del libro può essere seguito attraverso luoghi e passaggi successivi. La differenza rispetto a \projectname{} è sostanziale: in BookCrossing il libro è pensato per muoversi e cambiare temporaneamente possessore nel contesto di un rilascio pubblico; in \projectname{} il proprietario conserva il controllo della copia e decide se renderla disponibile per consultazione, prestito o semplice richiesta informativa.
 
-
-% --------------------------------------------------
-% Little Free Library
-% --------------------------------------------------
-%
-% Aspetti:
-% - punti fisici di scambio;
-% - community;
-% - mappa;
-% - ricerca "near me";
-% - indicazioni geografiche.
-%
-% Differenza:
-%
-% oggetto geolocalizzato:
-% biblioteca comunitaria.
-%
-% Culturando:
-% libro / disponibilità di un utente privato.
-
+Little Free Library propone un altro modello territoriale, fondato su punti fisici di scambio distribuiti nello spazio urbano o locale \cite{littlefreelibrary}. La mappa permette di individuare piccole biblioteche comunitarie vicine, intese come luoghi nei quali i libri possono essere depositati o prelevati. Anche in questo caso la geolocalizzazione è centrale, ma l'oggetto localizzato è il punto di scambio, non il singolo libro appartenente a una collezione privata digitale. Il sistema valorizza la prossimità e la comunità, ma attraverso infrastrutture fisiche condivise anziché attraverso cataloghi personali geolocalizzati.
 
 \subsection{Analisi comparativa}
 \label{subsec:analisi-comparativa}
 
-% La riga relativa a Culturando deve descrivere
-% il prototipo effettivamente realizzato.
-%
-% Dimensioni:
-%
-% - catalogazione personale;
-% - discovery;
-% - interazione/condivisione;
-% - componente geografica;
-% - oggetto geolocalizzato.
-%
-% Culturando:
-%
-% - catalogazione: implementata;
-% - discovery: implementata;
-% - richieste tra utenti: implementate;
-% - ricerca geografica: implementata;
-% - visualizzazione cartografica: implementata;
-% - oggetto geografico: libro appartenente
-%   a un utente privato.
+Le soluzioni considerate mostrano che catalogazione, comunità e territorio possono combinarsi in modi diversi. LibraryThing enfatizza la catalogazione personale e la dimensione sociale; Libib si concentra sulla gestione e pubblicazione di collezioni; BookCrossing valorizza la circolazione fisica del libro; Little Free Library organizza la condivisione intorno a punti territoriali di scambio. \projectname{} si colloca all'intersezione di questi approcci, ma adotta un oggetto geografico diverso: non il luogo culturale, non la biblioteca comunitaria e non il percorso di un libro rilasciato, bensì la disponibilità approssimata di un volume appartenente a un utente privato.
 
-% ==================================================
-% 2.4 Privacy
-% ==================================================
+\begin{table}[H]
+    \centering
+    \caption{Confronto concettuale tra approcci comparabili}
+    \label{tab:confronto-soluzioni}
+    \small
+    \begin{tabularx}{\textwidth}{p{0.21\textwidth}XX}
+        \toprule
+        \textbf{Soluzione} & \textbf{Approccio principale} & \textbf{Differenza rispetto a \projectname{}} \\
+        \midrule
+        LibraryThing & Catalogazione personale, comunità e luoghi collegati al dominio librario & La componente territoriale riguarda soprattutto luoghi ed eventi, non la disponibilità approssimata di singoli libri privati \\
+        Libib & Gestione e pubblicazione di cataloghi personali & La prossimità geografica non è il criterio centrale di discovery nel modello considerato \\
+        BookCrossing & Rilascio, circolazione e tracciamento del libro fisico & Il libro circola nello spazio; in \projectname{} resta controllato dal proprietario \\
+        Little Free Library & Punti fisici di scambio consultabili su mappa & L'oggetto geolocalizzato è la biblioteca comunitaria, non il libro di un singolo utente \\
+        \projectname{} & Catalogazione privata, ricerca bibliografica e discovery geografica & L'oggetto geolocalizzato è la disponibilità approssimata di un libro privato \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+La tabella non intende stabilire una superiorità tra sistemi, ma chiarire il posizionamento progettuale. \projectname{} integra catalogazione privata, discovery testuale, ricerca per prossimità e gestione delle richieste, mantenendo come vincolo specifico la protezione della posizione precisa dell'utente.
 
 \section{Geolocalizzazione e tutela della privacy}
 \label{sec:privacy-geolocalizzazione}
 
-% --------------------------------------------------
-% Paragrafo 7
-% Il dato di posizione
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre la posizione come informazione che può
-% costituire dato personale.
-%
-% Fonti:
-% - GDPR;
-% - Commissione Europea;
-% - eventuali linee guida EDPB.
-%
-% Evitare una trattazione giuridica approfondita.
-%
-% Il punto centrale è la conseguenza progettuale per
-% un sistema informatico location-aware.
+La posizione geografica è un'informazione delicata perché può contribuire all'identificazione di abitudini, luoghi frequentati o contesti personali. In un sistema location-aware, la localizzazione non è soltanto un dato tecnico utile al calcolo della distanza: può diventare un elemento sensibile se associato a un profilo utente, a una risorsa posseduta o a una sequenza di interazioni. Per questo motivo, la progettazione di servizi geolocalizzati richiede attenzione alla minimizzazione dell'esposizione e al controllo della granularità del dato.
 
+La letteratura sulla location privacy evidenzia il compromesso tra utilità del servizio e rischio di esposizione \cite{jiang2021locationprivacy,rasheed2024locationqueryprivacy,oktay2024locationprivacy}. Coordinate più precise consentono risultati più accurati, ma aumentano anche la possibilità di inferire informazioni personali. Al contrario, una localizzazione più approssimata riduce il dettaglio disponibile e quindi può limitare il rischio, pur introducendo una perdita di precisione nel servizio. La scelta progettuale deve quindi bilanciare accuratezza, usabilità e tutela dell'utente.
 
-% --------------------------------------------------
-% Paragrafo 8
-% Location privacy
-% --------------------------------------------------
-%
-% Contenuti:
-% - utilità dei LBS;
-% - esposizione della posizione;
-% - possibilità di inferenza;
-% - relazione tra precisione e rischio.
-%
-% Trade-off:
-%
-% precisione
-% -> maggiore utilità del servizio
-%
-% ma anche
-%
-% precisione
-% -> maggiore esposizione potenziale.
-%
-% Fonti:
-% survey accademiche sulla location privacy.
-
-
-% --------------------------------------------------
-% Paragrafo 9
-% Strategie generali
-% --------------------------------------------------
-%
-% Presentare a livello concettuale:
-%
-% - minimizzazione;
-% - riduzione della granularità;
-% - approssimazione;
-% - spatial cloaking;
-% - controllo dell'utente;
-% - pseudonimizzazione quando applicabile.
-%
-% Non descrivere tecniche che Culturando non utilizzerà
-% come se facessero parte dell'implementazione.
-%
-% Le scelte concrete del progetto verranno discusse
-% nel Capitolo 4.
-
-
-% ==================================================
-% 2.5 Sintesi
-% ==================================================
+Tra le strategie generali adottabili rientrano la minimizzazione dei dati raccolti, la riduzione della granularità spaziale, l'approssimazione delle coordinate, lo spatial cloaking e il controllo da parte dell'utente sulle informazioni rese visibili. Non tutte queste tecniche sono necessariamente appropriate per ogni sistema. Nel caso di \projectname{}, l'esigenza principale è consentire la discovery entro un'area geografica senza mostrare la posizione esatta del proprietario del libro. La soluzione concreta adottata dal prototipo verrà descritta nel Capitolo~\ref{chap:progettazione-architettura}, dove la tutela della posizione è collegata al modello dei dati e alle query spaziali.
 
 \section{Sintesi dello stato dell'arte e posizionamento del progetto}
 \label{sec:posizionamento-culturando}
 
-% --------------------------------------------------
-% Paragrafo 10
-% Sintesi delle soluzioni analizzate
-% --------------------------------------------------
-%
-% Riassumere le caratteristiche principali:
-%
-% LibraryThing:
-% catalogazione + community + servizi locali.
-%
-% Libib:
-% gestione e pubblicazione di collezioni personali.
-%
-% BookCrossing:
-% condivisione, circolazione e tracking geografico.
-%
-% Little Free Library:
-% punti fisici di scambio e discovery geografica.
-%
-% Non introdurre nuove funzionalità.
+L'analisi svolta mostra che il dominio della condivisione libraria può essere affrontato da prospettive diverse. Alcune piattaforme privilegiano la catalogazione e la gestione personale della collezione; altre valorizzano la dimensione comunitaria, la circolazione fisica del libro o la presenza di punti territoriali di scambio. La geolocalizzazione compare in più forme, ma non sempre è associata alla disponibilità approssimata di singoli libri appartenenti a utenti privati.
 
-
-% --------------------------------------------------
-% Paragrafo 11
-% Posizionamento di Culturando
-% --------------------------------------------------
-%
-% Evidenziare l'intersezione:
-%
-% catalogazione privata
-% + discovery
-% + geolocalizzazione
-% + condivisione
-% + tutela della posizione.
-%
-% Non affermare che Culturando "supera" o "sostituisce"
-% le soluzioni esistenti.
-%
-% Il progetto adotta un modello applicativo differente.
-%
-% Chiusura del capitolo:
-%
-% Il confronto consente di derivare le esigenze che
-% verranno formalizzate come requisiti nel Capitolo 3.
+Il posizionamento di \projectname{} deriva dall'intersezione tra cinque elementi: catalogazione privata, pubblicazione controllata, discovery bibliografica, ricerca geografica e tutela della posizione. Il progetto non intende sostituire le piattaforme esistenti, ma esplorare un modello applicativo specifico nel quale il patrimonio librario privato diventa ricercabile in base sia ai metadati sia alla prossimità, senza rendere pubbliche coordinate precise. Questa analisi fornisce la base per la formalizzazione dei requisiti nel Capitolo~\ref{chap:requisiti}.
