@@ -65,6 +65,7 @@ db
 geo
 ai
 translation
+thesis
 docs
 tooling
 repo
@@ -107,6 +108,7 @@ feat(packages): add shared config package
 refactor(auth): move auth copy into feature constants
 fix(ui): correct input checkbox usage
 docs(project): add architecture context
+docs(thesis): correct LaTeX structure
 chore(repo): update workspace configuration
 ```
 
@@ -253,6 +255,7 @@ db
 geo
 ai
 translation
+thesis
 project
 repo
 tooling
@@ -403,6 +406,44 @@ Examples:
 docs(project): add Culturando architecture context
 docs(git): add commit conventions skill
 ```
+
+---
+
+### When to use `thesis`
+
+Use for thesis source, LaTeX structure and academic thesis maintenance:
+
+```txt
+thesis/thesis_latex
+```
+
+Prefer `docs(thesis)` for thesis documentation changes, LaTeX source changes, bibliography fixes and structural thesis maintenance.
+
+Examples:
+
+```txt
+docs(thesis): add modular LaTeX thesis structure
+docs(thesis): document geolocation architecture
+docs(thesis): update testing and validation chapter
+docs(thesis): fix bibliography references
+docs(thesis): correct LaTeX structure
+```
+
+Do not treat thesis prose or LaTeX maintenance as a runtime `feat` unless there is a specific non-documentation reason.
+
+---
+
+### OpenCode workflow scopes
+
+Changes to agent infrastructure and project workflows may use scopes such as:
+
+```txt
+docs(agents): update repository orchestration rules
+docs(workflow): integrate thesis synchronization before push
+docs(project): update project context
+```
+
+Do not rewrite Git history merely to rename older commits. Apply these conventions going forward.
 
 ---
 

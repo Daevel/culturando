@@ -1,443 +1,87 @@
-\chapter{Contesto applicativo e stato dell'arte}
-\label{chap:stato-arte}
+\chapter{Implementazione}
+\label{chap:implementazione}
 
 % ==================================================
-% 2.1 Digitalizzazione e condivisione
+% 5.1 Organizzazione del codice
 % ==================================================
 
-\section{Digitalizzazione e condivisione del patrimonio librario}
-\label{sec:digitalizzazione-patrimonio}
+\section{Organizzazione del codice applicativo}
+\label{sec:organizzazione-codice}
 
-% --------------------------------------------------
-% Paragrafo 1
-% Dal patrimonio fisico alla rappresentazione digitale
-% --------------------------------------------------
-%
 % Obiettivo:
-% introdurre il concetto di rappresentazione digitale
-% di un patrimonio librario fisico.
+% mostrare come l'architettura del Capitolo 4 viene
+% realizzata nel repository.
 %
-% Chiarire esplicitamente che la tesi NON riguarda la
-% digitalizzazione del contenuto dei libri o la creazione
-% di una biblioteca di ebook.
-%
-% Contenuti:
-% - libri come beni fisici;
-% - rappresentazione tramite metadati;
-% - titolo, autore, ISBN, descrizione, disponibilità;
-% - catalogo digitale di una collezione fisica.
-%
-% Fonti:
-% - digital libraries;
-% - patrimonio culturale digitale.
-
-
-% --------------------------------------------------
-% Paragrafo 2
-% Accessibilità e discovery
-% --------------------------------------------------
-%
-% Obiettivo:
-% mostrare che rappresentare una risorsa digitalmente
-% non equivale automaticamente a renderla facilmente
-% individuabile.
-%
-% Contenuti:
-% - metadatazione;
-% - indicizzazione;
-% - ricerca;
-% - information retrieval;
-% - accessibilità;
-% - discovery.
-%
-% Fonti:
-% - letteratura su accesso digitale al patrimonio;
-% - eventuale riferimento istituzionale Europeana.
-
-
-% --------------------------------------------------
-% Paragrafo 3
-% Dalla catalogazione alla condivisione
-% --------------------------------------------------
-%
-% Obiettivo:
-% introdurre il passaggio dal catalogo personale
-% al catalogo utilizzabile all'interno di una community.
-%
-% Flusso concettuale:
-%
-% catalogazione
-% -> visibilità
-% -> discovery
-% -> interazione
-% -> condivisione
-%
-% Introdurre il concetto di social cataloging.
-%
-% Non approfondire ancora le singole piattaforme.
-
+% Non trasformare la sezione in una lista di file: spiegare
+% le responsabilità implementative e le dipendenze tra moduli.
 
 % ==================================================
-% 2.2 Location-Based Services
+% 5.2 Autenticazione e profilo
 % ==================================================
 
-\section{Sistemi geolocalizzati e Location-Based Services}
-\label{sec:location-based-services}
+\section{Autenticazione, conferma email e profilo utente}
+\label{sec:implementazione-auth-profilo}
 
-% --------------------------------------------------
-% Paragrafo 4
-% Definizione di LBS
-% --------------------------------------------------
-%
-% Obiettivo:
-% fornire una definizione accademicamente supportata
-% di Location-Based Service.
-%
-% Contenuti:
-% - utilizzo dell'informazione geografica;
-% - servizio dipendente dal contesto spaziale;
-% - posizione come input del sistema.
-%
-% Fonti:
-% - survey / letteratura scientifica sui LBS.
-
-
-% --------------------------------------------------
-% Paragrafo 5
-% Componenti concettuali
-% --------------------------------------------------
-%
-% Modello:
-%
-% Utente
-% -> Posizione
-% -> Sistema informativo
-% -> Elaborazione spaziale
-% -> Risultati contestualizzati
-%
-% Collegare successivamente il modello generale
-% al dominio librario:
-%
-% posizione utente
-% -> ricerca geografica
-% -> libri disponibili nell'area.
-
-
-% --------------------------------------------------
-% Figura opzionale
-% --------------------------------------------------
-%
-% Figura:
-% modello concettuale di Location-Based Service.
-%
-% File previsto:
-%
-% figures/chapter-02/lbs-concept.pdf
-%
-% Inserire solo se la figura aggiunge reale valore
-% esplicativo.
-
-
-% --------------------------------------------------
-% Paragrafo 6
-% Prossimità e ricerca spaziale
-% --------------------------------------------------
-%
-% Contenuti:
-% - distanza;
-% - ricerca entro un raggio;
-% - filtri geografici;
-% - ordinamento per prossimità.
-%
-% NON introdurre ancora PostGIS.
-%
-% In questo capitolo viene definito il problema.
-% La tecnologia scelta per risolverlo verrà presentata
-% nel Capitolo 4.
-
+% Descrivere il flusso reale:
+% - registrazione;
+% - hash della password;
+% - token di conferma email;
+% - login con sessione;
+% - protezione delle route;
+% - gestione profilo e preferenza di saluto.
 
 % ==================================================
-% 2.3 Stato dell'arte
+% 5.3 Catalogazione libraria
 % ==================================================
 
-\section{Soluzioni esistenti e approcci comparabili}
-\label{sec:soluzioni-esistenti}
+\section{Catalogazione libraria e gestione delle immagini}
+\label{sec:implementazione-catalogazione}
 
-% --------------------------------------------------
-% Criterio metodologico
-% --------------------------------------------------
-%
-% Non analizzare i sistemi come semplici competitor.
-%
-% Individuare invece approcci e capacità rilevanti
-% rispetto al problema affrontato da Culturando.
-
-
-\subsection{Catalogazione e gestione di collezioni personali}
-\label{subsec:catalogazione-collezioni}
-
-% --------------------------------------------------
-% LibraryThing
-% --------------------------------------------------
-%
-% Aspetti da analizzare:
-% - catalogazione personale;
-% - metadatazione;
-% - community;
-% - raccomandazioni;
-% - privacy delle collezioni;
-% - componente LibraryThing Local.
-%
-% Punto di confronto:
-%
-% LibraryThing Local utilizza la dimensione territoriale
-% principalmente per luoghi legati ai libri:
-% biblioteche, librerie e little libraries.
-%
-% Culturando punta invece alla discovery geografica
-% di libri appartenenti a utenti privati.
-%
-% Fonte:
-% documentazione ufficiale LibraryThing.
-
-
-% --------------------------------------------------
-% Libib
-% --------------------------------------------------
-%
-% Aspetti da analizzare:
-% - cataloghi domestici;
-% - ISBN;
-% - metadatazione automatica;
-% - pubblicazione delle collezioni;
-% - gestione del lending nelle funzionalità avanzate.
-%
-% Punto di confronto:
-% catalogazione privata e condivisione del catalogo.
-%
-% Fonte:
-% documentazione ufficiale Libib.
-
-
-\subsection{Condivisione fisica e dimensione territoriale}
-\label{subsec:condivisione-territoriale}
-
-% --------------------------------------------------
-% BookCrossing
-% --------------------------------------------------
-%
-% Modello:
-%
-% registrazione libro
-% -> rilascio
-% -> ritrovamento
-% -> tracking
-%
-% Aspetti:
-% - identificativo del libro;
-% - community;
-% - rilascio;
-% - ricerca geografica;
-% - crossing zones.
-%
-% Differenza concettuale:
-%
-% BookCrossing:
-% il libro viene rilasciato e circola.
-%
-% Culturando:
-% il proprietario conserva il libro e può renderlo
-% disponibile per consultazione o prestito.
-
-
-% --------------------------------------------------
-% Little Free Library
-% --------------------------------------------------
-%
-% Aspetti:
-% - punti fisici di scambio;
-% - community;
-% - mappa;
-% - ricerca "near me";
-% - indicazioni geografiche.
-%
-% Differenza:
-%
-% oggetto geolocalizzato:
-% biblioteca comunitaria.
-%
-% Culturando:
-% libro / disponibilità di un utente privato.
-
-
-\subsection{Analisi comparativa}
-\label{subsec:analisi-comparativa}
-
-% La riga relativa a Culturando deve descrivere
-% il prototipo effettivamente realizzato.
-%
-% Dimensioni:
-%
-% - catalogazione personale;
-% - discovery;
-% - interazione/condivisione;
-% - componente geografica;
-% - oggetto geolocalizzato.
-%
-% Culturando:
-%
-% - catalogazione: implementata;
-% - discovery: implementata;
-% - richieste tra utenti: implementate;
-% - ricerca geografica: implementata;
-% - visualizzazione cartografica: implementata;
-% - oggetto geografico: libro appartenente
-%   a un utente privato.
-
-
-\section{Sintesi dello stato dell'arte e posizionamento del progetto}
-\label{sec:posizionamento-culturando}
-
-% La conclusione non deve più descrivere Culturando
-% come semplice proposta progettuale.
-%
-% Presentarlo come prototipo funzionale che integra:
-%
-% catalogazione privata
-% +
-% discovery bibliografica
-% +
-% ricerca geografica
-% +
-% condivisione tramite richieste
-% +
-% protezione della precisione geografica.
-%
-% I dettagli tecnici della soluzione privacy
-% vengono rimandati ai Capitoli 4 e 5.
-
+% Contenuti attesi:
+% - creazione, modifica ed eliminazione libri;
+% - persistenza tramite repository e Prisma;
+% - gestione di copertine, immagini e thumbnail;
+% - visibilità e disponibilità;
+% - statistiche di visualizzazione.
 
 % ==================================================
-% 2.4 Privacy
+% 5.4 Catalogazione assistita
 % ==================================================
 
-\section{Geolocalizzazione e tutela della privacy}
-\label{sec:privacy-geolocalizzazione}
+\section{Catalogazione assistita tramite ISBN, OCR e metadati esterni}
+\label{sec:implementazione-catalogazione-assistita}
 
-% --------------------------------------------------
-% Paragrafo 7
-% Il dato di posizione
-% --------------------------------------------------
+% Derivare la descrizione dal codice in packages/ai e dalle
+% server action della feature libri.
 %
-% Obiettivo:
-% introdurre la posizione come informazione che può
-% costituire dato personale.
-%
-% Fonti:
-% - GDPR;
-% - Commissione Europea;
-% - eventuali linee guida EDPB.
-%
-% Evitare una trattazione giuridica approfondita.
-%
-% Il punto centrale è la conseguenza progettuale per
-% un sistema informatico location-aware.
-
-
-% --------------------------------------------------
-% Paragrafo 8
-% Location privacy
-% --------------------------------------------------
-%
-% Contenuti:
-% - utilità dei LBS;
-% - esposizione della posizione;
-% - possibilità di inferenza;
-% - relazione tra precisione e rischio.
-%
-% Trade-off:
-%
-% precisione
-% -> maggiore utilità del servizio
-%
-% ma anche
-%
-% precisione
-% -> maggiore esposizione potenziale.
-%
-% Fonti:
-% survey accademiche sulla location privacy.
-
-
-% --------------------------------------------------
-% Paragrafo 9
-% Strategie generali
-% --------------------------------------------------
-%
-% Presentare a livello concettuale:
-%
-% - minimizzazione;
-% - riduzione della granularità;
-% - approssimazione;
-% - spatial cloaking;
-% - controllo dell'utente;
-% - pseudonimizzazione quando applicabile.
-%
-% Non descrivere tecniche che Culturando non utilizzerà
-% come se facessero parte dell'implementazione.
-%
-% Le scelte concrete del progetto verranno discusse
-% nel Capitolo 4.
-
+% Principio da evidenziare:
+% il sistema propone dati, ma il salvataggio resta sotto
+% controllo esplicito dell'utente.
 
 % ==================================================
-% 2.5 Sintesi
+% 5.5 Geolocalizzazione e ricerca nearby
 % ==================================================
 
-\section{Sintesi dello stato dell'arte e posizionamento del progetto}
-\label{sec:posizionamento-culturando}
+\section{Geolocalizzazione, query spaziali e visualizzazione cartografica}
+\label{sec:implementazione-geolocalizzazione}
 
-% --------------------------------------------------
-% Paragrafo 10
-% Sintesi delle soluzioni analizzate
-% --------------------------------------------------
-%
-% Riassumere le caratteristiche principali:
-%
-% LibraryThing:
-% catalogazione + community + servizi locali.
-%
-% Libib:
-% gestione e pubblicazione di collezioni personali.
-%
-% BookCrossing:
-% condivisione, circolazione e tracking geografico.
-%
-% Little Free Library:
-% punti fisici di scambio e discovery geografica.
-%
-% Non introdurre nuove funzionalità.
+% Descrivere:
+% - geocoding e autocomplete;
+% - salvataggio di coordinate private/pubbliche;
+% - query PostGIS per raggio e distanza;
+% - fallback in TypeScript se applicabile;
+% - MapLibre, marker, cluster e adattamenti mobile.
 
+% ==================================================
+% 5.6 Richieste e dashboard
+% ==================================================
 
-% --------------------------------------------------
-% Paragrafo 11
-% Posizionamento di Culturando
-% --------------------------------------------------
-%
-% Evidenziare l'intersezione:
-%
-% catalogazione privata
-% + discovery
-% + geolocalizzazione
-% + condivisione
-% + tutela della posizione.
-%
-% Non affermare che Culturando "supera" o "sostituisce"
-% le soluzioni esistenti.
-%
-% Il progetto adotta un modello applicativo differente.
-%
-% Chiusura del capitolo:
-%
-% Il confronto consente di derivare le esigenze che
-% verranno formalizzate come requisiti nel Capitolo 3.
+\section{Richieste tra utenti, dashboard e amministrazione}
+\label{sec:implementazione-richieste-dashboard}
+
+% Collegare le funzionalità implementate ai requisiti:
+% - invio richiesta;
+% - vincoli su proprietario/autenticazione/disponibilità;
+% - gestione delle richieste ricevute e inviate;
+% - dashboard utente;
+% - dashboard amministrativa.

@@ -9,7 +9,7 @@ description: Git push, pre-push, project knowledge, internal documentation. Use 
 
 This skill defines the behavior that every agent must follow **before launching a push** in the **Culturando** project.
 
-The goal is not only to verify that the commit is correct, but also to keep the project skills and context documents up to date, so that every future agent is aware of the real state of the application, the installed libraries, the introduced features and the architectural decisions that were made.
+The goal is not only to verify that the commit is correct, but also to keep the project skills, context documents and thesis synchronization state up to date, so that every future agent is aware of the real state of the application, the installed libraries, the introduced features, the architectural decisions that were made and the academic thesis impact of those changes.
 
 This skill must be executed after:
 
@@ -22,15 +22,19 @@ Before the push, the agent must ask itself:
 
 > Do the changes just committed change anything that future agents need to know?
 
-If the answer is yes, it must update the relevant skill or context document before the push.
+It must also ask:
+
+> Do these commits introduce or modify functionality, architecture, data structures, geolocation, privacy, AI, testing, deployment or other project behavior that materially affects the thesis?
+
+If either answer is yes, it must update the relevant skill, context document or thesis source before the push.
 
 ---
 
 ## Fundamental principle
 
-The code and the project knowledge must remain synchronized.
+The code, the project knowledge and the thesis must remain synchronized.
 
-Every time the project evolves, the internal documentation for the agents must evolve too.
+Every time the project evolves, the internal documentation for the agents and the academic thesis state must be evaluated too.
 
 Example:
 
@@ -85,10 +89,12 @@ the agent must verify:
 2. Have I understood which files were modified?
 3. Have I created coherent commits separated by area?
 4. Do the changes introduce new project knowledge?
-5. Are the internal skills/documents still up to date?
-6. If necessary, have I updated the relevant skill?
-7. Have I also committed the skill/documentation update?
-8. Have I run or suggested the appropriate technical checks?
+5. Do the changes materially affect the thesis?
+6. Are the internal skills/documents still up to date?
+7. Is the thesis still synchronized with the project where academically relevant?
+8. If necessary, have I updated the relevant skill, context document or thesis source?
+9. Have I also committed the synchronization update?
+10. Have I run or suggested the appropriate technical checks?
 ```
 
 ---
@@ -156,10 +162,19 @@ The agent must identify whether the commits introduce:
 - changes to the roadmap;
 - changes to the technical stack;
 - changes to commit management;
-- changes to the development workflows.
+- changes to the development workflows;
+- changes that affect the academic thesis, including functionality, requirements, architecture, persistence, authentication, geolocation, privacy, AI/cataloging, testing, deployment or limitations.
 ```
 
 If one of these is present, the documentation/skill must be evaluated.
+
+Thesis impact is governed by:
+
+```txt
+.opencode/skills/thesis-latex-maintainer/SKILL.md
+```
+
+Do not duplicate the thesis-maintenance rules here. Delegate thesis relevance analysis, thesis synchronization and LaTeX validation to `thesis-latex-maintainer`.
 
 ---
 
@@ -174,6 +189,7 @@ The project knowledge files may include, for example:
 other future project skills
 README.md
 docs/*
+thesis/thesis_latex/**
 ```
 
 The main project context skill is:
@@ -221,6 +237,30 @@ This must be updated when the following change:
 - skill update criteria;
 - mandatory checklists;
 - criteria for deciding whether to update the knowledge base or not.
+
+The thesis maintainer skill is:
+
+```txt
+.opencode/skills/thesis-latex-maintainer/SKILL.md
+```
+
+This governs academic thesis synchronization and LaTeX validation. Use it before push when commits materially affect functionality, requirements, architecture, persistence/data model, authentication, geolocation, privacy, AI/cataloging, user workflows, testing/validation, deployment or project limitations.
+
+If thesis impact is confirmed:
+
+```txt
+1. run thesis impact analysis through thesis-latex-maintainer;
+2. synchronize the appropriate existing thesis location if needed;
+3. validate LaTeX with the configured toolchain when thesis files change;
+4. commit the thesis update with a docs(thesis) commit;
+5. continue this pre-push workflow.
+```
+
+If thesis impact is not confirmed:
+
+```txt
+do not touch the thesis and continue this pre-push workflow.
+```
 
 ---
 
@@ -505,12 +545,14 @@ When an agent is about to push, it must follow this order:
 2. Check the local commits not yet pushed.
 3. Analyze the files included in the commits.
 4. Understand whether the commits change the stack, architecture, features or conventions.
-5. If no skill update is needed, proceed to the pre-push checks.
-6. If a skill update is needed, modify the relevant file.
-7. Commit the skill change with a docs(...) commit.
-8. Run or suggest the technical checks.
-9. Re-check git status.
-10. Proceed with git push.
+5. Evaluate thesis impact through thesis-latex-maintainer criteria.
+6. If no skill, project knowledge or thesis update is needed, proceed to the pre-push checks.
+7. If a skill or project knowledge update is needed, modify the relevant file.
+8. If a thesis update is academically required, synchronize the thesis and validate LaTeX.
+9. Commit synchronization changes with coherent docs(...) commits.
+10. Run or suggest the technical checks.
+11. Re-check git status.
+12. Proceed with git push.
 ```
 
 ---
@@ -537,14 +579,20 @@ Knowledge impact:
 - Does this introduce new features? yes/no
 - Does this change conventions? yes/no
 
+Thesis impact:
+- Does this materially affect functionality, requirements, architecture, persistence, authentication, geolocation, privacy, AI/cataloging, testing, deployment or limitations? yes/no
+- Does the thesis already represent the new state? yes/no
+- Did any thesis statement become obsolete? yes/no
+
 Skill updates required:
 - .opencode/skills/project-context/SKILL.md: yes/no
 - .opencode/skills/git-commits/SKILL.md: yes/no
 - .opencode/skills/pre-push-sync-knowledge/SKILL.md: yes/no
+- thesis/thesis_latex/**: yes/no, delegated to thesis-latex-maintainer
 
 Action:
-- update skill before push
-- or proceed without skill update
+- update skill, context document or thesis before push
+- or proceed without synchronization updates
 ```
 
 ---
@@ -704,6 +752,13 @@ If the change only concerns Markdown documentation, the following may be enough:
 git status
 ```
 
+If the change concerns `thesis/thesis_latex/**`, validate the LaTeX project according to `thesis-latex-maintainer`, preferably with:
+
+```bash
+cd thesis/thesis_latex
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+```
+
 If the change concerns packages, config, Next.js or TypeScript, always prefer:
 
 ```bash
@@ -721,7 +776,8 @@ The push may only be suggested when:
 - git status is clean or contains only intentional changes not included;
 - the commits are separated correctly;
 - the skills/documents are updated if necessary;
-- any skill updates have been committed;
+- thesis synchronization has been evaluated and completed if necessary;
+- any skill, documentation or thesis synchronization updates have been committed;
 - the appropriate technical checks have been run or recommended.
 ```
 
@@ -732,7 +788,7 @@ The push may only be suggested when:
 When the agent concludes the pre-push analysis, it must respond with a phrase similar to:
 
 ```txt
-The push is ready: the commits are coherent, no skill updates are needed and the status is clean.
+The push is ready: the commits are coherent, project knowledge and thesis synchronization have been evaluated, no synchronization updates are needed and the status is clean.
 ```
 
 Or:
@@ -741,11 +797,17 @@ Or:
 Before the push it is necessary to update .opencode/skills/project-context/SKILL.md, because this change introduces a new architectural decision that future agents must know.
 ```
 
+Or:
+
+```txt
+Before the push it is necessary to run thesis synchronization through thesis-latex-maintainer, because these commits materially change a thesis-relevant project behavior.
+```
+
 ---
 
 ## Concluding principle
 
-Every push must leave the project in a coherent state not only at the code level, but also at the knowledge level.
+Every push must leave the project in a coherent state at the code, project-knowledge and thesis-synchronization levels.
 
 A future agent must be able to read the project skills and understand:
 

@@ -5,9 +5,20 @@ dist
 tmp
 out-tsc
 
-# latex related
-thesis/thesis_latex/*.log
+# LaTeX generated files
+thesis/thesis_latex/**/*.aux
+thesis/thesis_latex/**/*.bbl
+thesis/thesis_latex/**/*.bcf
+thesis/thesis_latex/**/*.blg
+thesis/thesis_latex/**/*.fdb_latexmk
+thesis/thesis_latex/**/*.fls
+thesis/thesis_latex/**/*.lof
+thesis/thesis_latex/**/*.lot
 thesis/thesis_latex/**/*.log
+thesis/thesis_latex/**/*.out
+thesis/thesis_latex/**/*.run.xml
+thesis/thesis_latex/**/*.synctex.gz
+thesis/thesis_latex/**/*.toc
 
 # dependencies
 node_modules
