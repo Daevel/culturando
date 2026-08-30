@@ -38,12 +38,12 @@ const nextAuth = NextAuth({
         const userId = String(token.id ?? token.sub ?? "");
         const profile = userId
           ? await prisma.user.findUnique({
-            where: { id: userId },
-            select: {
-              avatarUrl: true,
-              nickname: true,
-            },
-          })
+              where: { id: userId },
+              select: {
+                avatarUrl: true,
+                nickname: true,
+              },
+            })
           : null;
 
         session.user.id = userId;
@@ -107,7 +107,6 @@ export const handlers: NextAuthResult["handlers"] = nextAuth.handlers;
 export const signIn: NextAuthResult["signIn"] = nextAuth.signIn;
 export const signOut: NextAuthResult["signOut"] = nextAuth.signOut;
 export const auth: NextAuthResult["auth"] = nextAuth.auth;
-
 
 function getOptionalString(value: unknown) {
   return typeof value === "string" && value.trim() ? value : undefined;
