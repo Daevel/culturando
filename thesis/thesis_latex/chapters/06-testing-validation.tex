@@ -1,0 +1,345 @@
+\chapter{Testing e validazione}
+\label{chap:testing-validazione}
+
+% ==================================================
+% 6.1 Strategia
+% ==================================================
+
+\section{Strategia di verifica}
+\label{sec:strategia-testing}
+
+
+\subsection{Obiettivi della validazione}
+\label{subsec:obiettivi-validazione}
+
+% Obiettivo:
+% verificare che il prototipo soddisfi i requisiti
+% definiti nel Capitolo 3.
+%
+% La validazione deve dimostrare:
+%
+% - correttezza statica del progetto;
+% - producibilità della build;
+% - eseguibilità dei flussi core;
+% - correttezza dei comportamenti geografici;
+% - applicazione delle misure privacy.
+%
+% Relazione:
+%
+% Requisito
+% -> Implementazione
+% -> Caso di test
+% -> Esito
+
+
+\subsection{Livelli di verifica adottati}
+\label{subsec:livelli-testing}
+
+% 1. Verifica statica
+%
+% - TypeScript
+% - ESLint
+% - Nx module boundaries
+% - Biome
+%
+% 2. Verifica di build e integrazione
+%
+% - build Next.js/Nx
+% - avvio ambiente
+% - database/PostGIS
+%
+% 3. Validazione funzionale
+%
+% - scenari utente
+% - geolocalizzazione
+% - richieste
+% - privacy
+%
+% Dichiarare esplicitamente che il prototipo
+% corrente non dispone di una suite automatizzata
+% completa di unit/integration/E2E test.
+
+
+% ==================================================
+% 6.2 Qualità statica
+% ==================================================
+
+\section{Verifica statica e qualità del codice}
+\label{sec:verifica-statica}
+
+\subsection{Type checking}
+\label{subsec:typechecking}
+
+% VQ-01 — SUPERATO
+%
+% Comando:
+%
+% pnpm exec tsc -p apps/web/tsconfig.json --noEmit
+%
+% Il controllo si è concluso senza produrre
+% errori o diagnostiche TypeScript.
+
+
+\subsection{Linting e convenzioni}
+\label{subsec:linting}
+
+% VQ-02 — SUPERATO
+%
+% pnpm lint
+%
+% Nx ha completato correttamente il target lint
+% dell'applicazione web.
+%
+%
+% VQ-03 — SUPERATO
+%
+% pnpm biome:ci
+%
+% 170 file verificati.
+% Nessuna correzione necessaria.
+
+
+\subsection{Verifica della build}
+\label{subsec:build-validation}
+
+% VQ-04 — SUPERATO
+%
+% pnpm build
+%
+% Risultati:
+%
+% - compilazione completata;
+% - controllo TypeScript completato;
+% - page data raccolti;
+% - 14/14 pagine statiche generate;
+% - ottimizzazione finale completata;
+% - tutte le route applicative riconosciute.
+
+
+\subsection{Riproducibilità dell'ambiente}
+\label{subsec:environment-validation}
+
+% VQ-05 — SUPERATO
+%
+% pnpm dev:fresh
+%
+% Verificati con successo:
+%
+% - installazione dipendenze;
+% - avvio PostgreSQL/PostGIS;
+% - inizializzazione PostGIS;
+% - generazione Prisma Client;
+% - sincronizzazione schema;
+% - seed database;
+% - avvio Next.js.
+%
+% Osservazione non bloccante:
+% configurazione Prisma package.json deprecata
+% nelle versioni future.
+
+\section{Validazione dei requisiti funzionali}
+\label{sec:validazione-funzionale}
+
+
+\subsection{Account e autenticazione}
+\label{subsec:test-auth}
+
+% TC-AUTH-01
+% Registrazione valida.
+%
+% TC-AUTH-02
+% Email duplicata.
+%
+% TC-AUTH-03
+% Conferma email con token valido.
+%
+% TC-AUTH-04
+% Token invalido o scaduto.
+%
+% Collegare:
+%
+% RF-01
+% RF-02
+% RF-03
+% RNF-03
+% RNF-04
+
+
+\subsection{Gestione del patrimonio librario}
+\label{subsec:test-books}
+
+% TC-BOOK-01
+% Creazione libro.
+%
+% TC-BOOK-02
+% Modifica.
+%
+% TC-BOOK-03
+% Eliminazione.
+%
+% TC-BOOK-04
+% Visibilità privata.
+%
+% TC-BOOK-05
+% Gestione ISBN duplicato.
+
+
+\subsection{Ricerca e discovery}
+\label{subsec:test-search}
+
+% TC-SEARCH-01
+% Ricerca bibliografica/testuale.
+%
+% TC-SEARCH-02
+% Accesso alla ricerca nearby senza autenticazione.
+%
+% Atteso:
+% redirect al login.
+
+
+\subsection{Condivisione e richieste}
+\label{subsec:test-requests}
+
+% TC-REQ-01
+% Creazione richiesta valida.
+%
+% TC-REQ-02
+% Richiesta relativa al proprio libro.
+%
+% TC-REQ-03
+% Richiesta senza autenticazione.
+%
+% TC-REQ-04
+% Libro non disponibile/non valido.
+%
+% TC-REQ-05
+% Aggiornamento stato richiesta.
+
+
+% ==================================================
+% 6.4 Geolocalizzazione
+% ==================================================
+
+\section{Validazione della geolocalizzazione e della privacy}
+\label{sec:validazione-geolocalizzazione}
+
+
+\subsection{Geocoding e fallback}
+\label{subsec:test-geocoding}
+
+% TC-GEO-01
+%
+% Geoapify configurato
+% -> coordinate.
+%
+% TC-GEO-02
+%
+% Geoapify non disponibile
+% -> fallback Nominatim.
+
+
+\subsection{Approssimazione delle coordinate}
+\label{subsec:test-coordinate-privacy}
+
+% TC-PRIV-01
+%
+% Verificare la trasformazione:
+%
+% coordinate precise
+% -> coordinate pubbliche a 3 decimali.
+%
+%
+% TC-PRIV-02
+%
+% Verificare che discovery e mappa utilizzino
+% publicLatitude/publicLongitude
+% e non latitude/longitude.
+
+
+\subsection{Ricerca per prossimità}
+\label{subsec:test-nearby}
+
+% Raggi supportati:
+%
+% 5 km
+% 10 km
+% 25 km
+% 50 km
+%
+% TC-GEO-03
+% Libro interno al raggio.
+%
+% TC-GEO-04
+% Libro esterno al raggio.
+%
+% TC-GEO-05
+% Libro privato escluso.
+%
+% TC-GEO-06
+% Libro indisponibile escluso.
+%
+% TC-GEO-07
+% Ordinamento per distanza.
+
+
+\subsection{Visualizzazione cartografica}
+\label{subsec:test-map}
+
+% TC-MAP-01
+% Marker basati su coordinate pubbliche.
+%
+% TC-MAP-02
+% Marker / popup / cluster / modalità 2D-3D.
+%
+% TC-MAP-03
+% Comportamento con prefers-reduced-motion.
+
+
+% ==================================================
+% 6.5 Tracciabilità
+% ==================================================
+
+\section{Tracciabilità e sintesi della validazione}
+\label{sec:tracciabilita-testing}
+
+% Creare la matrice:
+%
+% requisito
+% -> caso d'uso
+% -> caso di test
+% -> esito.
+%
+% Gli esiti devono essere compilati solo
+% in seguito all'esecuzione effettiva dei test.
+
+\begin{longtable}{p{0.13\textwidth} p{0.16\textwidth} p{0.27\textwidth} p{0.24\textwidth}}
+    \caption{Matrice di tracciabilità della validazione}
+    \label{tab:validation-traceability} \\
+
+    \toprule
+    \textbf{Requisito} &
+    \textbf{Caso d'uso} &
+    \textbf{Caso di test} &
+    \textbf{Esito} \\
+    \midrule
+    \endfirsthead
+
+    \toprule
+    \textbf{Requisito} &
+    \textbf{Caso d'uso} &
+    \textbf{Caso di test} &
+    \textbf{Esito} \\
+    \midrule
+    \endhead
+
+    RF-01 & UC-01 & TC-AUTH-01 & Da verificare \\
+    RF-02 & UC-01 & TC-AUTH-03 & Da verificare \\
+    RF-05 & UC-03 & TC-BOOK-01 & Da verificare \\
+    RF-08 & UC-03 & TC-PRIV-01 & Da verificare \\
+    RF-12 & UC-06 & TC-GEO-03, TC-GEO-04 & Da verificare \\
+    RF-13 & UC-06 & TC-MAP-01, TC-MAP-02 & Da verificare \\
+    RF-14 & UC-07 & TC-REQ-01 & Da verificare \\
+    RF-15 & UC-07 & TC-REQ-02, TC-REQ-03, TC-REQ-04 & Da verificare \\
+
+    \bottomrule
+\end{longtable}

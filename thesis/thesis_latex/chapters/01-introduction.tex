@@ -1,0 +1,302 @@
+\chapter{Introduzione}
+\label{chap:introduzione}
+
+% ==================================================
+% 1.1 Contesto e motivazioni
+% ==================================================
+
+\section{Contesto e motivazioni}
+\label{sec:contesto-motivazioni}
+
+% --------------------------------------------------
+% Paragrafo 1
+% Il patrimonio librario privato come risorsa
+% --------------------------------------------------
+%
+% Obiettivo:
+% introdurre il dominio applicativo della tesi.
+%
+% Contenuti:
+% - patrimonio librario posseduto da utenti privati;
+% - valore culturale e informativo dei libri;
+% - differenza tra disponibilità fisica e accessibilità;
+% - patrimonio privato come possibile risorsa condivisa.
+%
+% Fonti:
+% - patrimonio culturale/librario;
+% - accessibilità delle risorse culturali;
+% - eventuale digitalizzazione del patrimonio.
+%
+% Da evitare:
+% - riferimenti a Next.js;
+% - riferimenti a Nx;
+% - riferimenti a PostGIS;
+% - descrizione tecnica di Culturando.
+
+
+% --------------------------------------------------
+% Paragrafo 2
+% Il problema della visibilità e dell'accessibilità
+% --------------------------------------------------
+%
+% Obiettivo:
+% restringere il problema generale al caso affrontato
+% dalla tesi.
+%
+% Contenuti:
+% - molti patrimoni librari privati non sono
+%   individuabili dall'esterno;
+% - differenza tra possesso, scoperta e accesso;
+% - difficoltà per un utente di sapere se un determinato
+%   volume è disponibile presso un altro privato.
+
+
+% --------------------------------------------------
+% Paragrafo 3
+% Il ruolo degli strumenti digitali
+% --------------------------------------------------
+%
+% Obiettivo:
+% introdurre il software come strumento attraverso
+% cui affrontare il problema.
+%
+% Contenuti:
+% - catalogazione digitale;
+% - indicizzazione;
+% - ricerca;
+% - collegamento tra utenti;
+% - discovery;
+% - possibile condivisione.
+%
+% Introdurre gradualmente Culturando, senza descriverne
+% ancora architettura o tecnologie.
+
+
+% --------------------------------------------------
+% Paragrafo 4
+% La dimensione geografica
+% --------------------------------------------------
+%
+% Obiettivo:
+% motivare l'introduzione della geolocalizzazione.
+%
+% Contenuti:
+% - i libri sono beni fisici;
+% - la distanza tra proprietario e utente interessato
+%   influenza la possibilità di consultazione/prestito;
+% - introduzione del concetto di prossimità;
+% - ricerca locale;
+% - Location-Based Services.
+%
+% Fonti:
+% - definizione e caratteristiche dei Location-Based
+%   Services;
+% - sistemi location-aware.
+
+% --------------------------------------------------
+% Paragrafo 5
+% Presentazione del progetto Culturando
+% --------------------------------------------------
+%
+% Presentare Culturando come piattaforma web
+% geolocalizzata realizzata per affrontare il problema
+% discusso nei paragrafi precedenti.
+%
+% Il prototipo consente di:
+%
+% - rappresentare digitalmente collezioni librarie private;
+% - pubblicare libri;
+% - effettuare ricerche bibliografiche;
+% - individuare libri attraverso criteri geografici;
+% - supportare richieste di consultazione o prestito;
+% - limitare l'esposizione della posizione precisa.
+%
+% Non introdurre ancora stack e dettagli implementativi.
+
+
+% ==================================================
+% 1.2 Obiettivi
+% ==================================================
+
+\section{Obiettivi del progetto}
+\label{sec:obiettivi-progetto}
+
+% --------------------------------------------------
+% Obiettivo generale
+% --------------------------------------------------
+%
+% Definire come obiettivo generale:
+%
+% progettare e realizzare un prototipo funzionale
+% di piattaforma web geolocalizzata per rendere
+% catalogabili, individuabili e condivisibili
+% patrimoni librari appartenenti a utenti privati.
+
+
+% --------------------------------------------------
+% Obiettivi funzionali principali
+% --------------------------------------------------
+%
+% 1. Catalogazione
+% 2. Discovery
+% 3. Geolocalizzazione
+% 4. Condivisione
+%
+% La privacy della posizione rappresenta
+% un requisito trasversale della soluzione.
+%
+% Funzionalità come catalogazione assistita,
+% statistiche e amministrazione possono essere
+% menzionate come estensioni implementate
+% del prototipo, senza elevarle a obiettivi
+% principali della traccia.
+
+
+% --------------------------------------------------
+% Obiettivi progettuali trasversali
+% --------------------------------------------------
+%
+% - privacy;
+% - sicurezza;
+% - modularità;
+% - manutenibilità;
+% - estendibilità;
+% - riproducibilità dell'ambiente di sviluppo.
+
+
+% ==================================================
+% 1.3 Metodologia
+% ==================================================
+
+\section{Metodologia e struttura dell'elaborato}
+\label{sec:metodologia-struttura}
+
+% Percorso effettivamente seguito:
+%
+% analisi
+% -> definizione requisiti
+% -> progettazione
+% -> implementazione del prototipo
+% -> testing/validazione
+% -> valutazione dei risultati.
+
+% --------------------------------------------------
+% Paragrafo 6
+% Obiettivo generale
+% --------------------------------------------------
+%
+% Obiettivo:
+% tradurre la traccia PW 14 nell'obiettivo generale
+% del progetto.
+%
+% Concetto:
+%
+% piattaforma software
+% -> digitalizzazione patrimonio librario
+% -> discovery
+% -> prossimità geografica
+% -> condivisione
+
+
+% --------------------------------------------------
+% Paragrafo 7
+% Obiettivi funzionali
+% --------------------------------------------------
+%
+% Organizzare gli obiettivi in quattro macro-aree.
+%
+% 1. Catalogazione
+%    - rappresentazione digitale della biblioteca
+%      personale.
+%
+% 2. Discovery
+%    - ricerca di libri appartenenti ad altri utenti.
+%
+% 3. Geolocalizzazione
+%    - utilizzo della prossimità geografica come
+%      criterio di ricerca.
+%
+% 4. Condivisione
+%    - supportare forme di consultazione o prestito.
+%
+% Nota:
+% descrivere questi elementi come obiettivi del sistema,
+% non necessariamente come funzionalità già completate.
+
+
+% --------------------------------------------------
+% Paragrafo 8
+% Obiettivi progettuali trasversali
+% --------------------------------------------------
+%
+% Contenuti:
+%
+% - privacy;
+% - sicurezza;
+% - modularità;
+% - manutenibilità;
+% - estendibilità;
+% - separazione delle responsabilità.
+%
+% Per la privacy:
+% introdurre l'obiettivo di evitare l'esposizione
+% indiscriminata della posizione esatta.
+%
+% Non spiegare ancora COME questi obiettivi vengono
+% raggiunti: questo appartiene al Capitolo 4.
+
+
+% ==================================================
+% 1.3 Metodologia e struttura dell'elaborato
+% ==================================================
+
+\section{Metodologia e struttura dell'elaborato}
+\label{sec:metodologia-struttura}
+
+% --------------------------------------------------
+% Paragrafo 9
+% Percorso progettuale
+% --------------------------------------------------
+%
+% Descrivere il percorso seguito:
+%
+% analisi del problema
+% -> studio del contesto
+% -> definizione dei requisiti
+% -> progettazione
+% -> implementazione
+% -> testing
+% -> valutazione
+%
+% Evitare di definire questo processo come una
+% metodologia scientifica specifica se non ne viene
+% adottata formalmente una.
+
+
+% --------------------------------------------------
+% Paragrafo 10
+% Organizzazione della tesi
+% --------------------------------------------------
+%
+% Presentare sinteticamente i capitoli successivi.
+%
+% Capitolo 2:
+% contesto applicativo e stato dell'arte.
+%
+% Capitolo 3:
+% analisi del problema e requisiti.
+%
+% Capitolo 4:
+% progettazione e architettura.
+%
+% Capitolo 5:
+% implementazione.
+%
+% Capitolo 6:
+% testing e validazione.
+%
+% Capitolo 7:
+% risultati, limiti e sviluppi futuri.
+%
+% Capitolo 8:
+% conclusioni.

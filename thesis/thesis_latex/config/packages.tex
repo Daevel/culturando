@@ -1,0 +1,106 @@
+% ==================================================
+% Lingua e codifica
+% ==================================================
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[italian]{babel}
+
+% Migliora la qualità tipografica del testo.
+\usepackage{microtype}
+
+% ==================================================
+% Layout pagina
+% ==================================================
+
+\usepackage[
+    a4paper,
+    top=2.8cm,
+    bottom=2.8cm,
+    left=3.2cm,
+    right=2.5cm
+]{geometry}
+
+\usepackage{setspace}
+
+% Interlinea leggermente aumentata.
+\setstretch{1.35}
+
+% Paragrafi in stile accademico tradizionale.
+\setlength{\parindent}{1.25cm}
+\setlength{\parskip}{0pt}
+
+% ==================================================
+% Matematica
+% ==================================================
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+% ==================================================
+% Immagini e figure
+% ==================================================
+
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\graphicspath{
+    {figures/}
+}
+
+% ==================================================
+% Tabelle
+% ==================================================
+
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% ==================================================
+% Liste
+% ==================================================
+
+\usepackage{enumitem}
+
+% ==================================================
+% Colori
+% ==================================================
+
+\usepackage{xcolor}
+
+% ==================================================
+% Codice sorgente
+% ==================================================
+
+\usepackage{listings}
+
+% ==================================================
+% Citazioni e bibliografia
+% ==================================================
+
+\usepackage{csquotes}
+
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sorting=none
+]{biblatex}
+
+% ==================================================
+% Collegamenti e riferimenti
+% ==================================================
+
+\usepackage[
+    hidelinks,
+    unicode=true
+]{hyperref}
+
+\usepackage[
+    nameinlink,
+    noabbrev
+]{cleveref}

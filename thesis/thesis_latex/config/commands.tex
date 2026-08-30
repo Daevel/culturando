@@ -1,0 +1,104 @@
+% ==================================================
+% Nome del progetto
+% ==================================================
+
+\newcommand{\projectname}{\textit{Culturando}}
+
+% ==================================================
+% Terminologia tecnica
+% ==================================================
+
+\newcommand{\tech}[1]{\texttt{#1}}
+
+\newcommand{\filepath}[1]{\texttt{#1}}
+
+\newcommand{\codeinline}[1]{\texttt{#1}}
+
+% ==================================================
+% Termini ricorrenti
+% ==================================================
+
+\newcommand{\locationbasedservice}{
+    Location-Based Service
+}
+
+\newcommand{\locationbasedservices}{
+    Location-Based Services
+}
+
+% ==================================================
+% Modalità draft
+% ==================================================
+
+\newif\ifthesisdraft
+
+% Durante la scrittura:
+\thesisdrafttrue
+
+% Per la versione finale:
+% \thesisdraftfalse
+
+\newcommand{\thesistodo}[1]{%
+    \ifthesisdraft
+        \textcolor{red}{[TODO: #1]}%
+    \fi
+}
+
+% ==================================================
+% Acronimi ricorrenti
+% ==================================================
+
+\newcommand{\lbs}{LBS}
+\newcommand{\gdpr}{GDPR}
+
+% ==================================================
+% Architettura
+% ==================================================
+
+\newcommand{\monorepo}{monorepo}
+
+\newcommand{\postgis}{\tech{PostGIS}}
+\newcommand{\postgresql}{\tech{PostgreSQL}}
+\newcommand{\prisma}{\tech{Prisma}}
+\newcommand{\nextjs}{\tech{Next.js}}
+\newcommand{\nx}{\tech{Nx}}
+
+% ==================================================
+% Codice sorgente
+% ==================================================
+
+\lstdefinestyle{thesiscode}{
+    basicstyle=\ttfamily\small,
+    numbers=left,
+    numberstyle=\tiny,
+    numbersep=8pt,
+    frame=single,
+    breaklines=true,
+    breakatwhitespace=false,
+    showstringspaces=false,
+    tabsize=2,
+    columns=fullflexible
+}
+
+\lstset{
+    style=thesiscode
+}
+
+% ==================================================
+% Tecnologie principali
+% ==================================================
+
+\newcommand{\reactjs}{\tech{React}}
+\newcommand{\typescript}{\tech{TypeScript}}
+
+\newcommand{\authjs}{\tech{Auth.js}}
+\newcommand{\maplibre}{\tech{MapLibre GL JS}}
+
+% ==================================================
+% Testing
+% ==================================================
+
+\newcommand{\testid}[1]{\textbf{#1}}
+\newcommand{\testpass}{\textbf{Superato}}
+\newcommand{\testfail}{\textbf{Non superato}}
+\newcommand{\testna}{\textbf{Non applicabile}}

@@ -1,0 +1,90 @@
+\documentclass[
+    12pt,
+    a4paper,
+    oneside
+]{report}
+
+% --------------------------------------------------
+% Configurazione
+% --------------------------------------------------
+
+\input{config/packages}
+\input{config/metadata}
+\input{config/commands}
+
+% --------------------------------------------------
+% Bibliografia
+% --------------------------------------------------
+
+\addbibresource{bibliography/references.bib}
+
+% --------------------------------------------------
+% Documento
+% --------------------------------------------------
+
+\begin{document}
+
+% ==================================================
+% Front matter
+% ==================================================
+
+\pagenumbering{roman}
+
+\input{frontmatter/titlepage}
+
+\clearpage
+\input{frontmatter/abstract}
+
+\clearpage
+\input{frontmatter/acknowledgements}
+
+\clearpage
+\tableofcontents
+
+\clearpage
+\listoffigures
+
+\clearpage
+\listoftables
+
+% Se necessario
+% \clearpage
+% \input{frontmatter/acronyms}
+
+% ==================================================
+% Corpo della tesi
+% ==================================================
+
+\clearpage
+\pagenumbering{arabic}
+
+\include{chapters/01-introduction}
+\include{chapters/02-context-state-of-art}
+\include{chapters/03-requirements}
+\include{chapters/04-design-architecture}
+\include{chapters/05-implementation}
+\include{chapters/06-testing-validation}
+\include{chapters/07-result-discussion}
+\include{chapters/08-conclusions}
+
+% ==================================================
+% Bibliografia
+% ==================================================
+
+\clearpage
+
+\printbibliography[
+    heading=bibintoc,
+    title={Bibliografia}
+]
+
+% ==================================================
+% Appendici
+% ==================================================
+
+% Attivare solo se realmente necessarie.
+%
+% \appendix
+% \include{appendices/appendix-a}
+
+\end{document}

@@ -5,6 +5,10 @@ dist
 tmp
 out-tsc
 
+# latex related
+thesis/thesis_latex/*.log
+thesis/thesis_latex/**/*.log
+
 # dependencies
 node_modules
 
