@@ -4,7 +4,6 @@ import maplibregl from "maplibre-gl";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const mapStyleUrl = "https://tiles.openfreemap.org/styles/liberty";
 const cinematicPitch = 62;
@@ -235,75 +234,75 @@ export function NearbyMap({
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="px-4 sm:px-6">
-        <CardTitle>{title}</CardTitle>
+    <section className="relative left-1/2 w-screen -translate-x-1/2 space-y-4">
+      <div className="mx-auto w-full max-w-6xl px-[var(--page-padding-x)]">
+        <h2 className="text-2xl font-semibold tracking-tight">{title}</h2>
         <p className="text-sm text-muted-foreground">{description}</p>
-      </CardHeader>
-      <CardContent className="px-4 sm:px-6">
-        {points.length > 0 ? (
-          <div className="relative overflow-hidden rounded-lg border bg-muted">
-            <div
-              aria-label={title}
-              className="h-[360px] touch-pan-x touch-pan-y sm:h-[420px] md:h-[520px]"
-              ref={containerRef}
-              role="img"
-            />
-            <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-2 md:inset-x-auto md:bottom-auto md:left-3 md:top-3 md:max-w-[calc(100%-1.5rem)]">
-              <Button
-                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
-                onClick={() => {
-                  if (isRotationActive) {
-                    pauseRotation();
-                  } else {
-                    resumeRotation();
-                  }
-                }}
-                size="sm"
-                type="button"
-                variant="secondary"
-              >
-                {isRotationActive ? pauseRotationLabel : resumeRotationLabel}
-              </Button>
-              <Button
-                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
-                onClick={resetCamera}
-                size="sm"
-                type="button"
-                variant="secondary"
-              >
-                {resetCameraLabel}
-              </Button>
-              <Button
-                className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
-                onClick={toggleViewMode}
-                size="sm"
-                type="button"
-                variant="secondary"
-              >
-                {is3dMode ? switchTo2dLabel : switchTo3dLabel}
-              </Button>
-            </div>
-            <div className="absolute left-3 top-3 rounded-lg border bg-background/90 px-3 py-2 text-xs text-foreground shadow-sm backdrop-blur md:bottom-3 md:top-auto">
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="h-3.5 w-3.5 rounded-full border-2 border-background bg-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.22)]" />
-                  <span>{legendOriginLabel}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="h-3.5 w-3.5 rounded-full border-2 border-background bg-foreground shadow-[0_0_0_4px_hsl(0_0%_0%/0.12)]" />
-                  <span>{legendNearbyLabel}</span>
-                </div>
+      </div>
+      {points.length > 0 ? (
+        <div className="relative overflow-hidden border-y bg-muted">
+          <div
+            aria-label={title}
+            className="h-[360px] touch-pan-x touch-pan-y sm:h-[420px] md:h-[520px]"
+            ref={containerRef}
+            role="img"
+          />
+          <div className="absolute inset-x-3 bottom-3 flex flex-wrap gap-2 md:inset-x-auto md:bottom-auto md:left-3 md:top-3 md:max-w-[calc(100%-1.5rem)]">
+            <Button
+              className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
+              onClick={() => {
+                if (isRotationActive) {
+                  pauseRotation();
+                } else {
+                  resumeRotation();
+                }
+              }}
+              size="sm"
+              type="button"
+              variant="secondary"
+            >
+              {isRotationActive ? pauseRotationLabel : resumeRotationLabel}
+            </Button>
+            <Button
+              className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
+              onClick={resetCamera}
+              size="sm"
+              type="button"
+              variant="secondary"
+            >
+              {resetCameraLabel}
+            </Button>
+            <Button
+              className="flex-1 bg-background/90 shadow-sm backdrop-blur md:flex-none"
+              onClick={toggleViewMode}
+              size="sm"
+              type="button"
+              variant="secondary"
+            >
+              {is3dMode ? switchTo2dLabel : switchTo3dLabel}
+            </Button>
+          </div>
+          <div className="absolute left-3 top-3 rounded-lg border bg-background/90 px-3 py-2 text-xs text-foreground shadow-sm backdrop-blur md:bottom-3 md:top-auto">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded-full border-2 border-background bg-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.22)]" />
+                <span>{legendOriginLabel}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="h-3.5 w-3.5 rounded-full border-2 border-background bg-foreground shadow-[0_0_0_4px_hsl(0_0%_0%/0.12)]" />
+                <span>{legendNearbyLabel}</span>
               </div>
             </div>
           </div>
-        ) : (
-          <div className="rounded-lg border bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
+        </div>
+      ) : (
+        <div className="mx-auto w-full max-w-6xl px-[var(--page-padding-x)]">
+          <div className="border-y bg-muted/40 px-4 py-10 text-center text-sm text-muted-foreground">
             {emptyState}
           </div>
-        )}
-      </CardContent>
-    </Card>
+        </div>
+      )}
+    </section>
   );
 }
 
@@ -502,10 +501,10 @@ function add3dBuildingsLayer(map: maplibregl.Map) {
 
 function getPopupHtml(point: NearbyMapPoint, detailLabel: string) {
   const detailLink = point.href
-    ? `<a href="${escapeHtml(point.href)}" style="display:inline-flex;margin-top:8px;font-weight:600;color:#111827;text-decoration:underline;">${escapeHtml(detailLabel)}</a>`
+    ? `<a href="${escapeHtml(point.href)}" style="display:inline-flex;margin-top:8px;font-weight:700;color:#1d4ed8;text-decoration:underline;text-underline-offset:2px;">${escapeHtml(detailLabel)}</a>`
     : "";
 
-  return `<strong>${escapeHtml(point.title)}</strong><br /><span>${escapeHtml(point.subtitle)}</span>${detailLink}`;
+  return `<div style="min-width:180px;max-width:260px;color:#111827;background:#ffffff;line-height:1.4;color-scheme:light;"><strong style="display:block;color:#111827;font-size:14px;">${escapeHtml(point.title)}</strong><span style="display:block;margin-top:2px;color:#4b5563;font-size:13px;">${escapeHtml(point.subtitle)}</span>${detailLink}</div>`;
 }
 
 function escapeHtml(value: string) {
