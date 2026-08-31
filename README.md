@@ -162,6 +162,34 @@ culturando/
 └── pnpm-workspace.yaml
 ```
 
+## Thesis
+
+The repository includes the university thesis as a LaTeX project under `thesis/thesis_latex/`.
+
+### Prerequisites
+
+- A TeX distribution with `latexmk` and `biber`:
+  - **macOS** — MacTeX (`brew install --cask mactex`)
+  - **Linux** — TeX Live (`sudo apt install texlive-full`)
+  - **Windows** — MiKTeX or TeX Live
+
+### Build
+
+From the thesis directory:
+
+```bash
+cd thesis/thesis_latex
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+```
+
+The compiled PDF is output as `thesis/thesis_latex/main.pdf`.
+
+### Editor alternatives
+
+- **VS Code** — install the [LaTeX Workshop](https://marketplace.visualstudio.com/items?itemName=James-Yu.latex-workshop) extension.
+- **TeXstudio** — open `main.tex` directly.
+- **Overleaf** — upload the `thesis/thesis_latex/` contents as a new project.
+
 ## Additional Information
 
 ### Database
