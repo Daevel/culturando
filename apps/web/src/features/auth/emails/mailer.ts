@@ -4,7 +4,8 @@ export function createMailerTransporter() {
   const host = process.env.SMTP_HOST?.trim();
   const port = Number(process.env.SMTP_PORT ?? 587);
   const user = process.env.SMTP_USER?.trim();
-  const pass = process.env.SMTP_PASSWORD;
+  const rawPass = process.env.SMTP_PASSWORD;
+  const pass = rawPass === "$RESEND_API_KEY" ? process.env.RESEND_API_KEY : rawPass;
   const secure = process.env.SMTP_SECURE === "true";
 
   if (!host || !user || !pass) {
