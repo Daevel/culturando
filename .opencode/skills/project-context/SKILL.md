@@ -728,16 +728,17 @@ Supported email variables:
 
 ```txt
 EMAIL_PROVIDER=console
-SMTP_HOST=""
-SMTP_PORT="587"
-SMTP_USER=""
-SMTP_PASSWORD=""
+RESEND_API_KEY=""
+SMTP_HOST="smtp.resend.com"
+SMTP_PORT="465"
+SMTP_USER="resend"
+SMTP_PASSWORD="$RESEND_API_KEY"
 SMTP_FROM="Culturando <noreply@culturando.app>"
-SMTP_SECURE="false"
+SMTP_SECURE="true"
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-In local development `EMAIL_PROVIDER=console` avoids SMTP sending and prints the verification link in the server logs.
+In local development `EMAIL_PROVIDER=console` avoids SMTP sending and prints the verification link in the server logs. To send real transactional email through Resend, use `EMAIL_PROVIDER=resend` or leave it different from `console`; the app still sends through Nodemailer SMTP. When `SMTP_PASSWORD="$RESEND_API_KEY"`, the mailer resolves it from `RESEND_API_KEY` at runtime. Until `culturando.app` is verified in Resend, local manual testing can use `SMTP_FROM="Culturando <onboarding@resend.dev>"`.
 
 ### 7.4 Zod validation
 
