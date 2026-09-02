@@ -1,38 +1,76 @@
 \begin{titlepage}
+    \thispagestyle{empty}
 
-    \centering
-    \vspace*{2cm}
+    \begin{tikzpicture}[remember picture, overlay]
+        \node[anchor=center, inner sep=0pt] at (current page.center) {%
+            \includegraphics[width=\paperwidth]{frontmatter/assets/pegaso-frontespizio.jpg}%
+        };
 
-    {\Large\scshape \universityname}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16cm,
+            font=\rmfamily\bfseries\fontsize{16pt}{19pt}\selectfont
+        ] at ([yshift=-4.55cm]current page.north) {\universityname};
 
-    \vspace{0.5cm}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16cm,
+            font=\rmfamily\fontsize{16pt}{19pt}\selectfont
+        ] at ([yshift=-5.95cm]current page.north) {Corso di laurea in};
 
-    {\large \degreecourse}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16cm,
+            font=\rmfamily\fontsize{16pt}{19pt}\selectfont
+        ] at ([yshift=-6.65cm]current page.north) {\degreecourse};
 
-    \vspace{0.3cm}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16cm,
+            font=\rmfamily\fontsize{16pt}{19pt}\selectfont
+        ] at ([yshift=-7.95cm]current page.north) {Insegnamento di};
 
-    {\large \departmentname}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16cm,
+            font=\rmfamily\fontsize{16pt}{19pt}\selectfont
+        ] at ([yshift=-8.65cm]current page.north) {\teachingname};
 
-    \vspace{4cm}
+        \node[
+            anchor=north,
+            align=center,
+            text width=16.8cm,
+            font=\rmfamily\bfseries\fontsize{18pt}{22pt}\selectfont
+        ] at ([yshift=-11.70cm]current page.north) {\thesistitle};
 
-    {\LARGE\bfseries \thesistitle\par}
+        \node[
+            anchor=north west,
+            align=left,
+            text width=7.6cm,
+            font=\rmfamily\fontsize{14pt}{17pt}\selectfont
+        ] at ([xshift=2.05cm,yshift=-20.80cm]current page.north west) {%
+            \textbf{RELATORE:}\\[0.2cm]
+            \thesisadvisor
+        };
 
-    \if\relax\detokenize{\thesissubtitle}\relax\else
-        \vspace{0.5cm}
-        {\Large \thesissubtitle\par}
-    \fi
+        \node[
+            anchor=north west,
+            align=left,
+            text width=7.6cm,
+            font=\rmfamily\fontsize{14pt}{17pt}\selectfont
+        ] at ([xshift=11.45cm,yshift=-20.80cm]current page.north west) {%
+            \textbf{CANDIDATO:}\\[0.2cm]
+            \thesisauthor\\
+            \studentid
+        };
+    \end{tikzpicture}
 
-    \vspace{4cm}
-
-    {\large
-    \begin{tabular}{r l}
-        \textbf{Laureando:} & \thesisauthor \\[4pt]
-        \textbf{Matricola:} & \studentid \\
-    \end{tabular}
-    }
-
-    \vfill
-
-    {\large Anno Accademico \academicyear}
-
+    \null
 \end{titlepage}
+
+\setcounter{page}{2}

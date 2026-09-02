@@ -78,6 +78,14 @@ thesis/thesis_latex/appendices/
 
 Do not introduce a new organization merely because another layout could work. Do not add a `sections/` directory unless the thesis genuinely outgrows chapter-level organization and the restructuring is clearly justified.
 
+## Official Frontispiece Policy
+
+The thesis frontispiece is institution-controlled. Its source of truth is the official Università Telematica Pegaso template, combined only with thesis metadata from `thesis/thesis_latex/config/metadata.tex`.
+
+Preserve the official visual structure, institutional branding and required fields. Do not redesign, simplify, recolor, replace or automatically modify the extracted Pegaso frontispiece asset. Do not add fields that are not present in the official template, and do not remove required fields.
+
+Candidate, student ID, advisor, degree course, teaching name and thesis title must remain synchronized through metadata macros. Application-code changes normally have no frontispiece impact, while official template or metadata changes may require frontispiece synchronization and LaTeX validation.
+
 ## Editorial Comments Are Specifications
 
 Detailed comments in `.tex` files are editorial and architectural specifications. Treat them as the contract for unfinished sections.
