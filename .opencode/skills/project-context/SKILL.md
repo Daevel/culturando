@@ -54,6 +54,7 @@ Main stack:
 - `@culturando/assets` to centralize the shared public asset paths;
 - `@culturando/translation` for shared dictionaries and textual keys;
 - Biome for linting and formatting;
+- Vitest, through the `@nx/vitest` inference plugin, for unit tests;
 - shared packages under `packages/*`.
 
 Stack planned for the following phases:
@@ -885,6 +886,23 @@ The packages contain shareable code, not specific to the single app.
 If something can be useful to the web, mobile, API or scripts, it may stay in `packages`.
 
 If it is only useful to the web app, it remains in `apps/web`.
+
+### 10.5 Testing rule
+
+Unit tests use Vitest, wired through the `@nx/vitest` inference plugin registered in `nx.json` (Jest is not used).
+
+- Any project with a `vitest.config.mts` gets an inferred `test` target (`vitest run`). Currently configured: `web` and `@culturando/geo`.
+- Run all tests with `pnpm test` (`nx run-many -t test`), or a single project with `nx test web` / `nx test @culturando/geo`.
+- Spec files are named `*.spec.ts` and live next to the file under test, not in a `__tests__` folder.
+- Import `describe`, `it` and `expect` explicitly from `vitest`.
+- The priority is pure logic: `packages/geo` coordinate approximation (privacy requirements RNF-01/RNF-02), `apps/web/src/lib/password.ts` and the Zod schemas under `features/*/schemas`.
+- A known, unfixed defect is documented with `it.fails(...)` plus a comment: the test asserts the correct behavior and starts failing once the defect is fixed, signalling that the marker must be removed.
+- `apps/web/package.json` declares `"nx": { "projectType": "application" }` because the Vitest plugin infers projects as libraries, which would make `@nx/enforce-module-boundaries` treat `web` as a buildable library. If lint reports those errors after changing Nx plugins, run `nx reset`.
+
+Known defects currently documented by `it.fails` tests:
+
+- `verifyPassword` accepts any password when the stored key is not valid hex (the decoded buffer is empty, so the comparison is between two empty buffers);
+- `normalizeCoordinates` / `approximateCoordinates` turn `null` coordinates into `(0, 0)` because `Number(null) === 0`.
 
 ## 11. Main future features
 
