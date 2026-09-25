@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+  NX_NO_CLOUD: "true"
+
+jobs:
+  checks:
+    name: Biome, lint, type-check, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      # Installs the pnpm version pinned in package.json#packageManager.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Biome CI
+        run: pnpm biome:ci
+
+      # Type-check and build import the generated Prisma Client.
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Lint
+        run: pnpm exec nx run-many -t lint
+
+      # No Nx typecheck target exists yet; web is the only project with a tsconfig.
+      - name: Type-check
+        run: pnpm exec tsc -p apps/web/tsconfig.json --noEmit
+
+      - name: Unit tests
+        run: pnpm exec nx run-many -t test
+
+      - name: Build
+        run: pnpm exec nx run-many -t build
+
+  migrations:
+    name: Prisma migrations
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        # Same image as docker-compose.yml.
+        image: postgis/postgis:17-3.5-alpine
+        env:
+          POSTGRES_USER: culturando
+          POSTGRES_PASSWORD: culturando
+          POSTGRES_DB: culturando
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U culturando -d culturando"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://culturando:culturando@localhost:5432/culturando
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm db:generate
+
+      - name: Apply migrations
+        run: pnpm db:migrate:deploy
+
+      # Fails when schema.prisma changed without a matching migration.
+      - name: Check schema drift
+        run: >-
+          pnpm exec prisma migrate diff
+          --from-url "$DATABASE_URL"
+          --to-schema-datamodel packages/db/prisma/schema.prisma
+          --exit-code
