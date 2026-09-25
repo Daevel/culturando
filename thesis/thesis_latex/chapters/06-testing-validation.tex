@@ -13,11 +13,11 @@
 
 La validazione di \projectname{} ha l'obiettivo di verificare che il prototipo realizzato sia coerente con i requisiti definiti nel Capitolo~\ref{chap:requisiti} e con le scelte implementative descritte nel Capitolo~\ref{chap:implementazione}. In particolare, la verifica non riguarda soltanto la capacità dell'applicazione di essere compilata, ma anche la corrispondenza tra requisiti funzionali, comportamenti osservabili e vincoli non funzionali, con attenzione specifica ad autenticazione, persistenza, geolocalizzazione e tutela della posizione.
 
-Il processo di validazione è stato organizzato su due livelli complementari. Il primo livello riguarda la qualità tecnica del codice: type checking, linting, controllo di formattazione e build di produzione. Questi controlli permettono di individuare errori statici, violazioni di convenzioni e problemi di integrazione prima dell'esecuzione manuale degli scenari utente. Il secondo livello riguarda la validazione funzionale del prototipo: registrazione, conferma email, login, gestione dei libri, catalogazione assistita, ricerca, richieste, dashboard e comportamento geografico.
+Il processo di validazione è stato organizzato su due livelli complementari. Il primo livello riguarda la qualità tecnica del codice: type checking, linting, controllo di formattazione, test unitari automatizzati e build di produzione. Questi controlli permettono di individuare errori statici, violazioni di convenzioni e problemi di integrazione prima dell'esecuzione manuale degli scenari utente. Il secondo livello riguarda la validazione funzionale del prototipo: registrazione, conferma email, login, gestione dei libri, catalogazione assistita, ricerca, richieste, dashboard e comportamento geografico.
 
 La relazione adottata è di tipo tracciabile: ogni requisito rilevante viene collegato a uno o più casi d'uso, a un controllo tecnico o funzionale e a un esito verificabile. Tale impostazione evita di presentare la validazione come una lista generica di prove e consente invece di mostrare in che modo le funzionalità implementate rispondano agli obiettivi stabiliti in fase di analisi.
 
-Nel contesto del presente elaborato, la validazione non viene presentata come una certificazione produttiva del sistema. Il progetto resta un prototipo universitario e non dispone di una suite automatizzata completa di test unitari, di integrazione ed end-to-end. La strategia adottata combina quindi controlli automatizzati disponibili nel repository e scenari manuali ripetibili, sufficienti a verificare i flussi principali e i vincoli progettuali più rilevanti.
+Nel contesto del presente elaborato, la validazione non viene presentata come una certificazione produttiva del sistema. Il progetto resta un prototipo universitario: dispone di una suite di test unitari automatizzati limitata alla logica pura, ma non di test di integrazione ed end-to-end. La strategia adottata combina quindi controlli automatizzati disponibili nel repository e scenari manuali ripetibili, sufficienti a verificare i flussi principali e i vincoli progettuali più rilevanti.
 
 
 \subsection{Livelli di verifica adottati}
@@ -35,6 +35,7 @@ I livelli di verifica adottati sono sintetizzati in \cref{tab:livelli-verifica}.
         \textbf{Livello} & \textbf{Strumenti o attività} & \textbf{Obiettivo} \\
         \midrule
         Verifica statica & \typescript{}, ESLint, Biome, regole \nx{} & Individuare errori di tipo, violazioni sintattiche, problemi di formattazione e incoerenze rispetto alle convenzioni del workspace. \\
+        Test unitari & \vitest{} tramite \nx{} & Verificare in modo automatico e ripetibile la logica pura: approssimazione delle coordinate pubbliche, hashing delle password e schemi di validazione dei form. \\
         Build e integrazione & Build \nextjs{} tramite \nx{} & Verificare che l'applicazione possa essere compilata in modalità produzione e che le route principali siano riconosciute dal framework. \\
         Ambiente locale & Script di sviluppo, database \postgresql{} e \postgis{} & Verificare la riproducibilità dell'ambiente necessario al prototipo e la disponibilità dei servizi locali. \\
         Scenari funzionali & Prove manuali sui flussi principali & Verificare requisiti osservabili relativi ad account, libri, ricerca, richieste, dashboard e geolocalizzazione. \\
@@ -83,7 +84,7 @@ La build di produzione è stata verificata con \codeinline{pnpm build}. Il coman
 Durante la build è stato prodotto un avviso non bloccante relativo al supporto incompleto dei project references TypeScript da parte del processo di build \nextjs{}, con tentativo di compilazione incrementale. L'avviso non ha impedito il completamento della build e non è stato classificato come errore funzionale del prototipo.
 
 \begin{longtable}{p{0.13\textwidth}p{0.27\textwidth}p{0.17\textwidth}p{0.31\textwidth}}
-    \caption{Esiti della verifica statica e di build}
+    \caption{Esiti della verifica statica, di build e dei test unitari}
     \label{tab:verifica-statica-build} \\
     \toprule
     \textbf{ID} & \textbf{Controllo} & \textbf{Esito} & \textbf{Osservazioni} \\
@@ -97,9 +98,19 @@ Durante la build è stato prodotto un avviso non bloccante relativo al supporto 
     \testid{VQ-02} & Linting ESLint/\nx{} & \testpass{} & Target lint dell'applicazione web completato da \nx{}. \\
     \testid{VQ-03} & Controllo Biome CI & \testpass{} & 170 file verificati dopo correzione formale; nessun fix applicato nello stato finale. \\
     \testid{VQ-04} & Build di produzione & \testpass{} & Build \nextjs{} completata; 14/14 pagine statiche generate; route applicative riconosciute. \\
+    \testid{VQ-06} & Test unitari \vitest{} & \testpass{} & 168 test superati in 7 file; 3 test documentano difetti noti (Sezione~\ref{subsec:unit-testing}). \\
     \bottomrule
 \end{longtable}
 
+
+\subsection{Test unitari}
+\label{subsec:unit-testing}
+
+I test unitari sono realizzati con \vitest{}, integrato nel \monorepo{} tramite il plugin \codeinline{@nx/vitest}. Il plugin deduce un target \codeinline{test} per ogni progetto che contiene un file di configurazione \vitest{}; la suite viene eseguita con \codeinline{pnpm test}, che invoca il target su tutti i progetti configurati. I file di test adottano la convenzione \codeinline{*.spec.ts} e sono collocati accanto al modulo verificato.
+
+La suite si concentra sulla logica pura, cioè sulle funzioni che non dipendono da database, rete o interfaccia e che possono quindi essere verificate in modo deterministico. Sono state considerate tre aree. La prima è l'approssimazione delle coordinate nel pacchetto \filepath{packages/geo}, che implementa RNF-01 e RNF-02: i test verificano l'arrotondamento a tre decimali, la gestione di valori non validi o fuori intervallo, l'idempotenza della trasformazione e la minore precisione del valore pubblico rispetto a quello interno. La seconda è l'hashing delle password in \filepath{apps/web/src/lib/password.ts}, collegato a RNF-03: i test verificano che salt casuali producano hash diversi per la stessa password, che la verifica accetti solo la password corretta e che hash malformati non generino eccezioni. La terza comprende gli schemi di validazione \tech{Zod} dei form di registrazione, login, libro, profilo e richiesta, collegati a RNF-05: per ciascuno schema sono verificati input valido, campi obbligatori mancanti e vincoli specifici, come i limiti di lunghezza della password e la coincidenza tra password e conferma.
+
+L'esecuzione ha prodotto 168 test superati, distribuiti su 7 file e due progetti \nx{}. Tre di questi test documentano difetti individuati durante la scrittura della suite e non ancora corretti. Essi descrivono il comportamento atteso e sono marcati come fallimenti previsti, in modo da segnalare automaticamente la correzione del difetto. Il primo riguarda la verifica della password: se la parte esadecimale dell'hash memorizzato non è valida, la chiave decodificata risulta vuota e il confronto accetta qualsiasi password. Il difetto non si manifesta con hash generati dall'applicazione, che hanno sempre formato corretto, ma rende la funzione non robusta rispetto a dati corrotti. Il secondo riguarda la normalizzazione delle coordinate: valori \codeinline{null} vengono convertiti nel punto $(0, 0)$ anziché essere rifiutati. Il caso è discusso nella Sezione~\ref{subsec:test-coordinate-privacy}.
 
 \subsection{Riproducibilità dell'ambiente}
 \label{subsec:environment-validation}
@@ -332,6 +343,8 @@ Il criterio di successo non consiste nell'ottenere una posizione anonima in sens
 
 La prova runtime dell'approssimazione ha verificato che coordinate precise come \codeinline{40.851234} e \codeinline{14.268789} vengono trasformate rispettivamente in \codeinline{40.851} e \codeinline{14.269}. L'ispezione delle query e dei componenti cartografici conferma inoltre che discovery e marker ricevono esclusivamente i campi pubblici approssimati.
 
+La trasformazione è inoltre verificata dai test unitari descritti nella Sezione~\ref{subsec:unit-testing}. Tali test hanno evidenziato un caso limite: coordinate \codeinline{null} vengono normalizzate nel punto $(0, 0)$ anziché produrre l'assenza di coordinate pubbliche. Il difetto non espone la posizione precisa e non viola quindi RNF-01, ma introduce un dato geografico errato. Nel flusso di geocoding il caso può verificarsi soltanto se il provider principale restituisce valori nulli per entrambe le rappresentazioni delle coordinate; esso rimane documentato come difetto noto.
+
 
 \subsection{Ricerca per prossimità}
 \label{subsec:test-nearby}
@@ -438,10 +451,10 @@ La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel 
     RF-17 & UC-13 & Accesso alla dashboard amministrativa con ruolo admin & \testpass{} \\
     RF-18 & UC-03 & Salvataggio impostazioni applicative & \testpass{} \\
     RNF-01 & UC-07, UC-08 & TC-PRIV-02, TC-MAP-01 & \testpass{} \\
-    RNF-02 & UC-07, UC-08 & TC-PRIV-01, TC-PRIV-03 & \testpass{} \\
-    RNF-03 & UC-01, UC-02 & TC-AUTH-01, TC-AUTH-03, TC-AUTH-04 & \testpass{} \\
+    RNF-02 & UC-07, UC-08 & TC-PRIV-01, TC-PRIV-03, VQ-06 & \testpass{} \\
+    RNF-03 & UC-01, UC-02 & TC-AUTH-01, TC-AUTH-03, TC-AUTH-04, VQ-06 & \testpass{} \\
     RNF-04 & UC-03--UC-13 & TC-REQ-02, TC-REQ-03, TC-REQ-05, TC-BOOK-02, TC-BOOK-03 & \testpass{} \\
-    RNF-05 & UC-01--UC-11 & VQ-01, TC-AUTH-02, TC-BOOK-05, TC-CAT-03, TC-CAT-05 & \testpass{} \\
+    RNF-05 & UC-01--UC-11 & VQ-01, VQ-06, TC-AUTH-02, TC-BOOK-05, TC-CAT-03, TC-CAT-05 & \testpass{} \\
     RNF-06 & Trasversale & VQ-02, VQ-03 & \testpass{} \\
     RNF-07 & Trasversale & VQ-02, VQ-03, VQ-04 & \testpass{} \\
     RNF-08 & Trasversale & VQ-04 e verifica ambiente locale & Parziale: VQ-04 superato \\
@@ -453,6 +466,6 @@ La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel 
     \bottomrule
 \end{longtable}
 
-La matrice mostra che la validazione automatica copre in modo diretto gli aspetti statici, architetturali e di build, mentre i requisiti funzionali di dominio sono stati verificati tramite sessioni manuali e controlli tecnici mirati. Questa distinzione è intenzionale: type checking, linting, Biome e build dimostrano la coerenza tecnica del progetto, ma la soddisfazione degli scenari d'uso richiede anche l'osservazione dei flussi di registrazione, catalogazione, richieste, discovery geografica e mappa.
+La matrice mostra che la validazione automatica copre in modo diretto gli aspetti statici, architetturali e di build, oltre alla logica pura verificata dai test unitari, mentre i requisiti funzionali di dominio sono stati verificati tramite sessioni manuali e controlli tecnici mirati. Questa distinzione è intenzionale: type checking, linting, Biome e build dimostrano la coerenza tecnica del progetto, ma la soddisfazione degli scenari d'uso richiede anche l'osservazione dei flussi di registrazione, catalogazione, richieste, discovery geografica e mappa.
 
 Gli elementi ancora parziali non invalidano il nucleo della validazione, ma delimitano l'interpretazione dei risultati. La chiamata live a Geoapify non è stata rieseguita nella sessione documentata, pur essendo presente il ramo applicativo del provider principale; inoltre RNF-08 rimane coperto dalla build locale ma non da una verifica completa di deploy produttivo. Questi aspetti rappresentano quindi punti residui di verifica operativa, distinti dai requisiti funzionali principali che risultano coperti dalla sessione di validazione.

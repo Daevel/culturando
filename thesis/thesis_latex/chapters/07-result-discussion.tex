@@ -30,7 +30,7 @@ La catalogazione assistita introduce un ulteriore trade-off. Il recupero automat
 \section{Limiti del prototipo}
 \label{sec:limiti-prototipo}
 
-Il primo limite è metodologico e riguarda la validazione. Il repository dispone di controlli automatici di tipo statico e di build, ma non di una suite completa di test unitari, di integrazione ed end-to-end. Di conseguenza, gli esiti positivi ottenuti non possono essere interpretati come prova esaustiva del comportamento applicativo. I casi funzionali descritti nel Capitolo~\ref{chap:testing-validazione} documentano una sessione controllata e ripetibile, ma restano dipendenti dall'osservazione manuale e da dati di prova locali.
+Il primo limite è metodologico e riguarda la validazione. Il repository dispone di controlli automatici di tipo statico e di build e di una suite di test unitari limitata alla logica pura, ma non di test di integrazione ed end-to-end. Di conseguenza, gli esiti positivi ottenuti non possono essere interpretati come prova esaustiva del comportamento applicativo. I casi funzionali descritti nel Capitolo~\ref{chap:testing-validazione} documentano una sessione controllata e ripetibile, ma restano dipendenti dall'osservazione manuale e da dati di prova locali.
 
 Un secondo limite riguarda la dipendenza da servizi esterni. La disponibilità e la qualità dei risultati di geocoding, metadati bibliografici e OCR dipendono da provider e configurazioni non interamente controllate dal prototipo. I fallback riducono la fragilità operativa, ma non eliminano la variabilità dei risultati. In particolare, provider geografici diversi possono restituire coordinate differenti per lo stesso indirizzo, e provider bibliografici esterni possono non coprire tutti gli ISBN inseriti dagli utenti.
 
