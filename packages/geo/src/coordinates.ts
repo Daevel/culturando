@@ -3,6 +3,10 @@ import type { Coordinates } from "@culturando/types";
 const publicPrecisionDecimals = 3;
 
 export function normalizeCoordinates(coordinates: Coordinates): Coordinates | null {
+  if (coordinates.latitude == null || coordinates.longitude == null) {
+    return null;
+  }
+
   const latitude = Number(coordinates.latitude);
   const longitude = Number(coordinates.longitude);
 

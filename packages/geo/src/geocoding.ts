@@ -126,7 +126,7 @@ async function fetchGeoapifyResult(address: GeocodingAddress): Promise<Geocoding
     const longitude = feature?.properties?.lon ?? feature?.geometry?.coordinates?.[0];
     const latitude = feature?.properties?.lat ?? feature?.geometry?.coordinates?.[1];
 
-    if (latitude === undefined || longitude === undefined) {
+    if (latitude == null || longitude == null) {
       return null;
     }
 

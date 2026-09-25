@@ -77,9 +77,7 @@ describe("normalizeCoordinates", () => {
     expect(normalizeCoordinates({} as Coordinates)).toBeNull();
   });
 
-  // Known issue: Number(null) === 0, so null coordinates are normalized to (0, 0)
-  // ("Null Island") instead of being rejected. Remove `.fails` once fixed.
-  it.fails("returns null for null coordinates instead of coercing them to 0", () => {
+  it("returns null for null coordinates instead of coercing them to 0", () => {
     expect(normalizeCoordinates(asCoordinates(null, null))).toBeNull();
   });
 });
@@ -171,8 +169,7 @@ describe("approximateCoordinates", () => {
     expect(approximateCoordinates(input as Coordinates)).toBeNull();
   });
 
-  // Known issue: see normalizeCoordinates; null becomes a public (0, 0) location.
-  it.fails("returns null for null coordinates instead of publishing (0, 0)", () => {
+  it("returns null for null coordinates instead of publishing (0, 0)", () => {
     expect(approximateCoordinates(asCoordinates(null, null))).toBeNull();
   });
 });
