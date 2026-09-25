@@ -899,10 +899,7 @@ Unit tests use Vitest, wired through the `@nx/vitest` inference plugin registere
 - A known, unfixed defect is documented with `it.fails(...)` plus a comment: the test asserts the correct behavior and starts failing once the defect is fixed, signalling that the marker must be removed.
 - `apps/web/package.json` declares `"nx": { "projectType": "application" }` because the Vitest plugin infers projects as libraries, which would make `@nx/enforce-module-boundaries` treat `web` as a buildable library. If lint reports those errors after changing Nx plugins, run `nx reset`.
 
-Known defects currently documented by `it.fails` tests:
-
-- `verifyPassword` accepts any password when the stored key is not valid hex (the decoded buffer is empty, so the comparison is between two empty buffers);
-- `normalizeCoordinates` / `approximateCoordinates` turn `null` coordinates into `(0, 0)` because `Number(null) === 0`.
+There are currently no open `it.fails` markers. The first test batch found two defects that are now fixed and covered by regular tests: `verifyPassword` rejects stored keys whose decoded length differs from the scrypt key length, and `normalizeCoordinates` treats `null` like a missing coordinate instead of coercing it to `0`.
 
 ## 11. Main future features
 
