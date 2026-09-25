@@ -902,7 +902,10 @@ Unit tests use Vitest, wired through the `@nx/vitest` inference plugin registere
 - A known, unfixed defect is documented with `it.fails(...)` plus a comment: the test asserts the correct behavior and starts failing once the defect is fixed, signalling that the marker must be removed.
 - `apps/web/package.json` declares `"nx": { "projectType": "application" }` because the Vitest plugin infers projects as libraries, which would make `@nx/enforce-module-boundaries` treat `web` as a buildable library. If lint reports those errors after changing Nx plugins, run `nx reset`.
 
-There are currently no open `it.fails` markers. The first test batch found two defects that are now fixed and covered by regular tests: `verifyPassword` rejects stored keys whose decoded length differs from the scrypt key length, and `normalizeCoordinates` treats `null` like a missing coordinate instead of coercing it to `0`.
+There are currently no open `it.fails` markers. The first test batch found two defects that are now fixed and covered by regular tests:
+
+- `verifyPassword` (`apps/web/src/lib/password.ts`) accepted any password when the stored hash had an invalid hex key, because the decoded key was empty; it now rejects stored keys whose decoded length differs from the scrypt key length.
+- `normalizeCoordinates` (`packages/geo/src/coordinates.ts`) coerced `null` coordinates to `(0, 0)` via `Number(null)`; it now returns `null` like for a missing coordinate, and the Geoapify guard in `packages/geo/src/geocoding.ts` rejects both `null` and `undefined` provider values.
 
 ### 10.6 Database migrations rule
 
