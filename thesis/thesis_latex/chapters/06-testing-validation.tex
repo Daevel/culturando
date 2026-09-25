@@ -46,6 +46,8 @@ I livelli di verifica adottati sono sintetizzati in \cref{tab:livelli-verifica}.
 
 La distinzione tra livelli è rilevante perché non tutti gli errori emergono nello stesso momento. Un progetto può superare la compilazione \typescript{} ma fallire la build di produzione; allo stesso modo, una build corretta non dimostra automaticamente che i vincoli di proprietà, disponibilità o privacy siano rispettati durante l'interazione utente. Per questa ragione la validazione del prototipo richiede sia strumenti automatici sia scenari applicativi mirati.
 
+Dal punto di vista operativo, verifica statica, test unitari e build sono eseguiti automaticamente da una pipeline di integrazione continua basata su GitHub Actions, attivata a ogni pull request e a ogni aggiornamento del ramo principale. La stessa pipeline applica le migration \prisma{} a un database \postgresql{}/\postgis{} temporaneo e segnala eventuali divergenze tra lo schema dichiarato e le migration versionate. I controlli automatici non dipendono quindi da un'esecuzione manuale; restano invece esclusi dalla pipeline il deploy e gli scenari funzionali, che continuano a richiedere l'applicazione in esecuzione.
+
 
 % ==================================================
 % 6.2 Qualità statica
