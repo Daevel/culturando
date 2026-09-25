@@ -446,13 +446,13 @@ Current responsibilities:
 - shared client exported as `prisma`;
 - local PostgreSQL through Docker Compose with the PostGIS image;
 - PostGIS extension initialized through the root `db:postgis` script;
-- root scripts for `db:up`, `db:down`, `db:logs`, `db:postgis`, `db:generate`, `db:push`, `db:migrate:dev` and `db:studio`.
+- root scripts for `db:up`, `db:down`, `db:logs`, `db:postgis`, `db:generate`, `db:push`, `db:migrate:dev`, `db:migrate:deploy` and `db:studio`;
+- Prisma Migrate history under `prisma/migrations`, starting from the `0_init` baseline generated from the schema.
 
 Future responsibilities:
 
 - shared queries;
-- seed;
-- migrations.
+- seed.
 
 Current structure:
 
@@ -460,6 +460,9 @@ Current structure:
 packages/db/
 ├── package.json
 ├── prisma/
+│   ├── migrations/
+│   │   ├── 0_init/migration.sql
+│   │   └── migration_lock.toml
 │   └── schema.prisma
 └── src/
     ├── client.ts
@@ -900,6 +903,24 @@ Unit tests use Vitest, wired through the `@nx/vitest` inference plugin registere
 - `apps/web/package.json` declares `"nx": { "projectType": "application" }` because the Vitest plugin infers projects as libraries, which would make `@nx/enforce-module-boundaries` treat `web` as a buildable library. If lint reports those errors after changing Nx plugins, run `nx reset`.
 
 There are currently no open `it.fails` markers. The first test batch found two defects that are now fixed and covered by regular tests: `verifyPassword` rejects stored keys whose decoded length differs from the scrypt key length, and `normalizeCoordinates` treats `null` like a missing coordinate instead of coercing it to `0`.
+
+### 10.6 Database migrations rule
+
+Prisma Migrate is the official schema workflow; `db:push` remains available only for quick local experiments.
+
+- Every change to `schema.prisma` must ship with a migration created by `pnpm db:migrate:dev` and committed under `packages/db/prisma/migrations`. CI fails when the schema and the migrations drift apart.
+- `pnpm db:migrate:deploy` applies committed migrations without prompts (CI, future deployments).
+- The `0_init` baseline does not create the PostGIS extension: it is enabled by the `postgis/postgis` image and by `db:postgis`. A managed database without PostGIS would need it added explicitly.
+- A local database created earlier with `db:push` has no migration history: verify it matches the schema (`prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel packages/db/prisma/schema.prisma --exit-code`), then mark the baseline as applied with `pnpm exec prisma migrate resolve --applied 0_init --schema packages/db/prisma/schema.prisma`. Otherwise `setup:dev` / `dev:fresh`, which now run `migrate dev`, will ask to reset it.
+
+### 10.7 Continuous integration rule
+
+GitHub Actions runs `.github/workflows/ci.yml` on pull requests to `main` and on pushes to `main`, without Nx Cloud:
+
+- `checks` job (fail-fast): `pnpm install --frozen-lockfile`, `biome:ci`, `db:generate`, `nx run-many -t lint`, `tsc -p apps/web/tsconfig.json --noEmit` (there is no Nx `typecheck` target), `nx run-many -t test`, `nx run-many -t build`;
+- `migrations` job: applies the Prisma migrations to an ephemeral `postgis/postgis:17-3.5-alpine` service container and fails on schema drift.
+
+Deployment is intentionally not part of CI yet.
 
 ## 11. Main future features
 
