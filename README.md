@@ -134,6 +134,7 @@ Root scripts from `package.json`:
 | `pnpm docker:reset` | Stop the containers and remove their volumes. |
 | `pnpm db:generate` | Generate the Prisma Client. |
 | `pnpm db:migrate` | Create/apply local Prisma migrations (dev). |
+| `pnpm db:migrate:deploy` | Apply committed Prisma migrations without prompts (CI and deployments). |
 | `pnpm db:push` | Sync the Prisma schema to the database. |
 | `pnpm db:seed` | Populate demo data. |
 | `pnpm db:reset` | Full reset of the local database. |
