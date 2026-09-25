@@ -124,6 +124,7 @@ Root scripts from `package.json`:
 | `pnpm build` | Build the web app. |
 | `pnpm start` | Start the built web app. |
 | `pnpm lint` | Run Nx ESLint for the web app. |
+| `pnpm test` | Run the Vitest unit tests of every Nx project (`nx run-many -t test`). |
 | `pnpm biome:check` | Run Biome checks. |
 | `pnpm biome:write` | Auto-fix formatting/lint with Biome. |
 | `pnpm biome:format` | Format files with Biome. |

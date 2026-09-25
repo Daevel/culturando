@@ -24,5 +24,8 @@
   },
   "devDependencies": {
     "@types/nodemailer": "^8.0.1"
+  },
+  "nx": {
+    "projectType": "application"
   }
 }
