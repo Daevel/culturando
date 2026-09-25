@@ -77,10 +77,7 @@ describe("verifyPassword", () => {
     );
   });
 
-  // Known issue: a non-hex key decodes to an empty Buffer, scrypt derives a
-  // zero-length key and timingSafeEqual(empty, empty) is true, so ANY password
-  // is accepted. Remove `.fails` once verifyPassword rejects empty/invalid keys.
-  it.fails("returns false when the stored key is not valid hex", async () => {
+  it("returns false when the stored key is not valid hex", async () => {
     await expect(verifyPassword("any-password", "somesalt:not-hex")).resolves.toBe(false);
   });
 });
