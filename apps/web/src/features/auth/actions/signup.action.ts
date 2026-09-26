@@ -2,7 +2,9 @@
 
 import { prisma } from "@culturando/db";
 
+import { getClientIp } from "@/lib/client-ip";
 import { hashPassword } from "@/lib/password";
+import { checkRateLimitPolicy } from "@/lib/rate-limit-policies";
 import { sendVerificationEmail } from "../emails/send-verification-email";
 import { createVerificationUrl } from "../lib/verification-url";
 import { validateSignupForm } from "../schemas/signup.schema";
@@ -45,6 +47,18 @@ export async function signupAction(
       success: false,
       errors: {},
       messageKey: "auth.signup.genericErrorMessage",
+    };
+  }
+
+  // Counted after validation (malformed submissions cost nothing) but before the duplicate
+  // check, which would otherwise be an unlimited account-enumeration probe.
+  const rateLimit = await checkRateLimitPolicy("signupIp", await getClientIp());
+
+  if (!rateLimit.allowed) {
+    return {
+      success: false,
+      errors: {},
+      messageKey: "auth.signup.rateLimitedMessage",
     };
   }
 

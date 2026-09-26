@@ -2,6 +2,8 @@ import { prisma } from "@culturando/db";
 import NextAuth, { type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
+import { clearLoginRateLimit, enforceLoginRateLimit } from "@/features/auth/lib/login-rate-limit";
+import { getClientIpFromHeaders } from "@/lib/client-ip";
 import { verifyPassword } from "@/lib/password";
 
 function isUserRole(value: unknown): value is "admin" | "user" {
@@ -64,7 +66,7 @@ const nextAuth = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const email = String(credentials?.email ?? "")
           .trim()
           .toLowerCase();
@@ -72,6 +74,8 @@ const nextAuth = NextAuth({
         if (!email || !password) {
           return null;
         }
+
+        await enforceLoginRateLimit({ ip: getClientIpFromHeaders(request.headers), email });
 
         const user = await prisma.user.findUnique({
           where: {
@@ -88,6 +92,8 @@ const nextAuth = NextAuth({
         if (!isValidPassword) {
           return null;
         }
+
+        await clearLoginRateLimit(email);
 
         return {
           id: user.id,
