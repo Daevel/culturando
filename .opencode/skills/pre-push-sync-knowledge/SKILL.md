@@ -766,6 +766,12 @@ pnpm build
 pnpm biome:check
 ```
 
+If a `package.json` dependency changes, verify the lockfile the way CI does (`pnpm install --frozen-lockfile`), but never against an already populated `node_modules`: pnpm's optimistic repeat install can answer "Already up to date" without comparing the lockfile specifiers with `package.json`. Run it from a clean checkout (for example a `git worktree` without `node_modules`), or disable the shortcut:
+
+```bash
+pnpm install --frozen-lockfile --config.optimistic-repeat-install=false
+```
+
 ---
 
 ## Final rule before the push
