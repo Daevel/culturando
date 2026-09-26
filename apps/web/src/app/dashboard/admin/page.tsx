@@ -4,6 +4,7 @@ import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { getAdminStats } from "@/features/admin/actions/admin-stats.repository";
 import { AdminDashboard } from "@/features/admin/components/AdminDashboard";
+import { isAdminSession } from "@/lib/authorization";
 
 export default async function DashboardAdminPage() {
   const session = await auth();
@@ -12,7 +13,7 @@ export default async function DashboardAdminPage() {
     redirect(routes.login);
   }
 
-  if (session.user.role !== "admin") {
+  if (!isAdminSession(session)) {
     notFound();
   }
 
