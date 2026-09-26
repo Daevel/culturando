@@ -80,7 +80,9 @@ export async function getAdminStats(): Promise<AdminStats> {
   ]);
 
   const getRequestsCountByStatus = (status: "accepted" | "cancelled" | "pending" | "rejected") =>
-    requestStats.find((item: { status: string; _count: { _all: number } }) => item.status === status)?._count._all ?? 0;
+    requestStats.find(
+      (item: { status: string; _count: { _all: number } }) => item.status === status,
+    )?._count._all ?? 0;
   return {
     usersCount,
     booksCount,
