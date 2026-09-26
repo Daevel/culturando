@@ -67,16 +67,17 @@ jobs:
         env:
           POSTGRES_USER: culturando
           POSTGRES_PASSWORD: culturando
-          POSTGRES_DB: culturando
+          # The "test" suffix is required by assertTestDatabase() in the integration tests.
+          POSTGRES_DB: culturando_test
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U culturando -d culturando"
+          --health-cmd "pg_isready -U culturando -d culturando_test"
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
     env:
-      DATABASE_URL: postgresql://culturando:culturando@localhost:5432/culturando
+      DATABASE_URL: postgresql://culturando:culturando@localhost:5432/culturando_test
     steps:
       - uses: actions/checkout@v5
 
@@ -95,6 +96,10 @@ jobs:
 
       - name: Apply migrations
         run: pnpm db:migrate:deploy
+
+      # Authorization tests for book/request server actions against the migrated DB.
+      - name: Integration tests
+        run: pnpm --filter web test:integration
 
       # Fails when schema.prisma changed without a matching migration.
       - name: Check schema drift
