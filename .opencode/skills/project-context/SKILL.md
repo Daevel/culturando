@@ -913,9 +913,11 @@ There are currently no open `it.fails` markers. The first test batch found two d
 
 Authorization integration tests (RNF-04) call the real server actions against a real PostgreSQL database:
 
-- Files are named `*.integration.spec.ts`, next to the action under test. Currently covered: `update-book`, `delete-book` (owner only), `create-loan-request` (not the owner, not anonymous), `update-loan-request-status` (owner only, pending only), `cancel-loan-request` (requester only, pending only). The admin gate is covered only by the `isAdminSession` unit test, not by an integration test.
+- Files are named `*.integration.spec.ts`, next to the action under test. Currently covered: `update-book`, `delete-book` (owner only), `create-loan-request` (not the owner, not anonymous), `update-loan-request-status` (owner only, pending only), `cancel-loan-request` (requester only, pending only). The admin gate is covered only by the `isAdminSession` unit test, not by an integration test. Rate limiting is covered by `lib/rate-limit.integration.spec.ts` (limiter), `features/auth/lib/login-rate-limit.integration.spec.ts`, `features/auth/actions/signup.action.integration.spec.ts` and an extra case in the loan request spec; `features/auth/lib/authorize-credentials.integration.spec.ts` checks the dummy-hash verification for unknown/unverified accounts (a spy on `verifyPassword`, no timing measurement).
 - They run through `apps/web/vitest.integration.config.mts` with `pnpm --filter web test:integration` (a `package.json` script, exposed by Nx as the `test:integration` target; `nx run-many -t test` does not run it). The config maps `@/` to `src/` and sets `fileParallelism: false` (Vitest 4 removed `poolOptions.singleFork`), because every test truncates the shared database.
-- Only `auth()` (`@/config/auth`), `next/cache` and, where needed, `next/navigation` (`redirect` rethrown as a catchable `REDIRECT:<path>` error) are mocked; results are asserted both on the action return value and on the persisted rows.
+- Only `auth()` (`@/config/auth`), `next/cache` and, where needed, `next/navigation` (`redirect` rethrown as a catchable `REDIRECT:<path>` error) are mocked (plus `next/headers` for actions that read the client IP); results are asserted both on the action return value and on the persisted rows.
+- `vitest.integration.config.mts` inlines `next-auth` (`server.deps.inline`): it imports `next/server` without an extension, which Node's ESM resolver rejects outside Next's bundler.
+- `createTestUser({ emailVerifiedAt: null })` creates an unverified user (the helper checks `in`, not `??`).
 - `apps/web/src/test/db-test-helpers.ts` provides `resetDatabase`, `createTestUser`, `createTestBook` and `createTestLoanRequest`. `resetDatabase` refuses to run unless `DATABASE_URL` contains `test`.
 - Locally, use a separate `culturando_test` database on the Docker container (host port 5433): `docker exec culturando-postgres psql -U culturando -d culturando -c "CREATE DATABASE culturando_test;"`, then `DATABASE_URL=postgresql://culturando:culturando@localhost:5433/culturando_test pnpm exec prisma migrate deploy --schema packages/db/prisma/schema.prisma` and run the suite with the same `DATABASE_URL`.
 - Server actions read `FormData` like the real forms submit it: an absent field is `null`, which `z.string().optional()` rejects, so tests must set optional fields to `""` as the browser does.
@@ -951,6 +953,21 @@ GitHub Actions runs `.github/workflows/ci.yml` on pull requests to `main` and on
 - `migrations` job: applies the Prisma migrations to an ephemeral `postgis/postgis:17-3.5-alpine` service container, runs `pnpm --filter web test:integration` against it, then fails on schema drift. The service database is named `culturando_test` so that the `db-test-helpers` guard accepts it.
 
 Deployment is intentionally not part of CI yet.
+
+### 10.8 Rate limiting and login hardening rule
+
+Abuse-prone actions are rate limited in application code, with counters in PostgreSQL (Vercel is serverless: in-memory state does not survive between invocations). There is no Vercel WAF rule and no external store (Upstash) for now.
+
+- `apps/web/src/lib/rate-limit.ts` exposes `checkRateLimit(key, limit, windowSeconds)` / `resetRateLimit(key)` behind a `RateLimitStore` type; the Postgres store does one atomic `INSERT … ON CONFLICT … RETURNING count` on the `RateLimitBucket` table (fixed window, PK `(key, windowStart)`). Swapping the backend means writing another store, not touching the actions.
+- Expired rows are deleted opportunistically on 2% of checks (index on `expiresAt`), instead of a cron job or a delete on every request.
+- Thresholds live in `apps/web/src/lib/rate-limit-policies.ts`: `loginIp` 20/15min, `loginEmail` 10/15min (reset on successful login), `signupIp` 5/h, `signupEmailCheckIp` 30/min, `loanRequestUser` 10/h.
+- The client IP comes from `x-forwarded-for` (first entry), then `x-real-ip`, else the explicit `"unknown"` bucket (`lib/client-ip.ts`). On Vercel the edge sets these headers; locally `next start` sets `x-forwarded-for` to `::1`.
+- Login limits are enforced in the Credentials `authorize()` logic (`features/auth/lib/authorize-credentials.ts`), not only in `loginAction`, so direct POSTs to `/api/auth/callback/credentials` are covered. A limit hit throws `RateLimitedSignin` (`CredentialsSignin` with `code = "rate_limited"`), which Auth.js rethrows unchanged to server-side `signIn()`; `loginAction` maps it to `auth.login.rateLimitedMessage`.
+- Signup counts after validation but before the duplicate-email check. The email availability check returns `isAvailable: null` ("unknown") when limited, and `SignupForm` then neither blocks nor confirms the address. Loan requests are limited per user id, just before creation.
+- Server actions never return a raw 429: they return the usual form state with a `rateLimitedMessage` key (`auth.login`, `auth.signup`, `requests.form`, in `it.ts` and `en.ts`).
+- Response time parity: when the account is unknown, has no password or is unverified, `authorizeCredentials` still runs `verifyPassword` against a dummy scrypt hash computed once at module load, so timing does not reveal registered emails.
+- `resetDatabase()` clears `RateLimitBucket`; the e2e `globalSetup` empties it on every run (all e2e signups come from the same local IP).
+- The `RateLimitBucket` migration must be applied to the production database manually, before deploying code that uses it.
 
 ## 11. Main future features
 
