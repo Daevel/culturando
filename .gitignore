@@ -72,3 +72,8 @@ apps/web/next-env.d.ts
 out
 
 vitest.config.*.timestamp*
+
+# Playwright e2e
+apps/web/playwright-report/
+apps/web/test-results/
+apps/web/e2e/.server.log
