@@ -55,6 +55,7 @@ Main stack:
 - `@culturando/translation` for shared dictionaries and textual keys;
 - Biome for linting and formatting;
 - Vitest, through the `@nx/vitest` inference plugin, for unit tests, plus a separate `web` integration suite against a real PostgreSQL database;
+- Playwright for a single end-to-end smoke test of the critical path (local only, not in CI);
 - shared packages under `packages/*`.
 
 Stack planned for the following phases:
@@ -918,6 +919,20 @@ Authorization integration tests (RNF-04) call the real server actions against a 
 - `apps/web/src/test/db-test-helpers.ts` provides `resetDatabase`, `createTestUser`, `createTestBook` and `createTestLoanRequest`. `resetDatabase` refuses to run unless `DATABASE_URL` contains `test`.
 - Locally, use a separate `culturando_test` database on the Docker container (host port 5433): `docker exec culturando-postgres psql -U culturando -d culturando -c "CREATE DATABASE culturando_test;"`, then `DATABASE_URL=postgresql://culturando:culturando@localhost:5433/culturando_test pnpm exec prisma migrate deploy --schema packages/db/prisma/schema.prisma` and run the suite with the same `DATABASE_URL`.
 - Server actions read `FormData` like the real forms submit it: an absent field is `null`, which `z.string().optional()` rejects, so tests must set optional fields to `""` as the browser does.
+
+#### E2E smoke test
+
+One Playwright smoke test covers the critical path end to end: owner signup, email confirmation, login, book creation, requester signup/confirmation/login, loan request, owner acceptance. It is a smoke test, not a suite: happy path only, Chromium only, no negative cases (authorization is covered by the integration tests), no search/map/OCR/profile.
+
+- Playwright (`@playwright/test`, root devDependency, Chromium only: `pnpm exec playwright install chromium`) is wired as a plain `package.json` script, not through `@nx/playwright`: run it with `pnpm --filter web test:e2e`. It is **not** part of CI yet; adding it is a separate decision.
+- Files: `apps/web/playwright.config.ts`, `apps/web/e2e/*.e2e.ts` (outside `src/`, so Vitest and the app tsconfig ignore them), `e2e/global-setup.ts`, `e2e/support/`.
+- The `webServer` runs `next build` + `next start --port 3100` (production build: stable timings, same behavior as Vercel). It calls `next build` directly, not `nx build`, because the Nx cache does not key on env vars such as `NEXT_PUBLIC_APP_URL`. The build writes to the same `apps/web/.next` as `nx build`.
+- The server env is forced in the config and wins over `apps/web/.env.local` (which points at the dev DB and at Resend): `DATABASE_URL` → `culturando_e2e` (override with `E2E_DATABASE_URL`), `EMAIL_PROVIDER=console`, `NEXT_PUBLIC_APP_URL`/`AUTH_URL` → `http://localhost:3100`, an e2e-only `AUTH_SECRET`, `GEOAPIFY_API_KEY=""` (Nominatim only, no Geoapify quota).
+- `culturando_e2e` is separate from `culturando_test` (integration tests truncate every table). `globalSetup` runs `prisma migrate deploy` on it, which also creates the database if missing, and refuses URLs without `e2e`.
+- Email confirmation: `next start` output is redirected to `apps/web/e2e/.server.log`; `waitForVerificationUrl(email)` polls it for the `EMAIL_PROVIDER=console` block and returns path + query (only the token hash is stored in the DB, so the link cannot be read from there). With `reuseExistingServer` (default outside CI), a reused server must write to that same log file.
+- Isolation between runs: emails (`@example.com`) and book title carry a per-run id, so the DB is never reset. Owner and requester use separate browser contexts (separate Auth.js cookies). Button labels come from `getTranslation(key, "it")`, inputs are selected by `id`.
+- Book creation depends on Nominatim twice (address suggestions, server-side geocoding, no application-level timeout) and on Open Library: those steps have explicit 20s/30s budgets and the test timeout is 120s. A timeout there is most likely an external flake: rerun before debugging the app.
+- `apps/web/next-env.d.ts` is git-ignored: `next dev` and `next build` rewrite it with a different routes import; the web type-check passes without it.
 
 ### 10.6 Database migrations rule
 

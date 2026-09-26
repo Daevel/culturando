@@ -17,7 +17,7 @@ Il processo di validazione è stato organizzato su due livelli complementari. Il
 
 La relazione adottata è di tipo tracciabile: ogni requisito rilevante viene collegato a uno o più casi d'uso, a un controllo tecnico o funzionale e a un esito verificabile. Tale impostazione evita di presentare la validazione come una lista generica di prove e consente invece di mostrare in che modo le funzionalità implementate rispondano agli obiettivi stabiliti in fase di analisi.
 
-Nel contesto del presente elaborato, la validazione non viene presentata come una certificazione produttiva del sistema. Il progetto resta un prototipo universitario: dispone di una suite di test unitari automatizzati limitata alla logica pura e di un insieme circoscritto di test di integrazione dedicati ai vincoli di proprietà sulle operazioni relative a libri e richieste, ma non di test end-to-end. La strategia adottata combina quindi controlli automatizzati disponibili nel repository e scenari manuali ripetibili, sufficienti a verificare i flussi principali e i vincoli progettuali più rilevanti.
+Nel contesto del presente elaborato, la validazione non viene presentata come una certificazione produttiva del sistema. Il progetto resta un prototipo universitario: dispone di una suite di test unitari automatizzati limitata alla logica pura e di un insieme circoscritto di test di integrazione dedicati ai vincoli di proprietà sulle operazioni relative a libri e richieste, oltre che di un unico smoke test end-to-end sul percorso critico, dalla registrazione all'accettazione di una richiesta; manca invece una suite end-to-end estesa agli altri flussi. La strategia adottata combina quindi controlli automatizzati disponibili nel repository e scenari manuali ripetibili, sufficienti a verificare i flussi principali e i vincoli progettuali più rilevanti.
 
 
 \subsection{Livelli di verifica adottati}
@@ -37,6 +37,7 @@ I livelli di verifica adottati sono sintetizzati in \cref{tab:livelli-verifica}.
         Verifica statica & \typescript{}, ESLint, Biome, regole \nx{} & Individuare errori di tipo, violazioni sintattiche, problemi di formattazione e incoerenze rispetto alle convenzioni del workspace. \\
         Test unitari & \vitest{} tramite \nx{} & Verificare in modo automatico e ripetibile la logica pura: approssimazione delle coordinate pubbliche, hashing delle password, schemi di validazione dei form e riconoscimento del ruolo amministrativo. \\
         Test di integrazione & \vitest{} su database \postgresql{} dedicato & Verificare in modo automatico che le operazioni lato server su libri e richieste rispettino i vincoli di proprietà e di autenticazione. \\
+        Smoke test end-to-end & \playwright{} su build di produzione & Verificare in modo automatico, con browser e server HTTP reali, il percorso critico da registrazione e conferma email fino a pubblicazione di un libro, richiesta e accettazione. \\
         Build e integrazione & Build \nextjs{} tramite \nx{} & Verificare che l'applicazione possa essere compilata in modalità produzione e che le route principali siano riconosciute dal framework. \\
         Ambiente locale & Script di sviluppo, database \postgresql{} e \postgis{} & Verificare la riproducibilità dell'ambiente necessario al prototipo e la disponibilità dei servizi locali. \\
         Scenari funzionali & Prove manuali sui flussi principali & Verificare requisiti osservabili relativi ad account, libri, ricerca, richieste, dashboard e geolocalizzazione. \\
@@ -47,7 +48,7 @@ I livelli di verifica adottati sono sintetizzati in \cref{tab:livelli-verifica}.
 
 La distinzione tra livelli è rilevante perché non tutti gli errori emergono nello stesso momento. Un progetto può superare la compilazione \typescript{} ma fallire la build di produzione; allo stesso modo, una build corretta non dimostra automaticamente che i vincoli di proprietà, disponibilità o privacy siano rispettati durante l'interazione utente. Per questa ragione la validazione del prototipo richiede sia strumenti automatici sia scenari applicativi mirati.
 
-Dal punto di vista operativo, verifica statica, test unitari e build sono eseguiti automaticamente da una pipeline di integrazione continua basata su GitHub Actions, attivata a ogni pull request e a ogni aggiornamento del ramo principale. La stessa pipeline applica le migration \prisma{} a un database \postgresql{}/\postgis{} temporaneo, esegue su di esso i test di integrazione e segnala eventuali divergenze tra lo schema dichiarato e le migration versionate. I controlli automatici non dipendono quindi da un'esecuzione manuale; restano invece esclusi dalla pipeline il deploy e gli scenari funzionali, che continuano a richiedere l'applicazione in esecuzione.
+Dal punto di vista operativo, verifica statica, test unitari e build sono eseguiti automaticamente da una pipeline di integrazione continua basata su GitHub Actions, attivata a ogni pull request e a ogni aggiornamento del ramo principale. La stessa pipeline applica le migration \prisma{} a un database \postgresql{}/\postgis{} temporaneo, esegue su di esso i test di integrazione e segnala eventuali divergenze tra lo schema dichiarato e le migration versionate. I controlli automatici non dipendono quindi da un'esecuzione manuale; restano invece esclusi dalla pipeline il deploy, lo smoke test end-to-end, eseguito per ora soltanto in locale, e gli scenari funzionali manuali.
 
 
 % ==================================================
@@ -103,6 +104,7 @@ Durante la build è stato prodotto un avviso non bloccante relativo al supporto 
     \testid{VQ-04} & Build di produzione & \testpass{} & Build \nextjs{} completata; 14/14 pagine statiche generate; route applicative riconosciute. \\
     \testid{VQ-06} & Test unitari \vitest{} & \testpass{} & 173 test superati in 8 file, dopo la correzione di due difetti individuati dalla suite (Sezione~\ref{subsec:unit-testing}). \\
     \testid{VQ-07} & Test di integrazione \vitest{} & \testpass{} & 15 test superati in 5 file su database \postgresql{} di test locale (Sezione~\ref{subsec:integration-testing}). \\
+    \testid{VQ-08} & Smoke test end-to-end \playwright{} & \testpass{} & 1 test superato in 4 esecuzioni locali consecutive su build di produzione e database dedicato (Sezione~\ref{subsec:e2e-smoke}). \\
     \bottomrule
 \end{longtable}
 
@@ -124,6 +126,17 @@ I test di integrazione verificano i vincoli di autorizzazione collegati a RNF-04
 I casi coperti riguardano la modifica e l'eliminazione di un libro, consentite al solo proprietario; la creazione di una richiesta, negata al proprietario del libro e agli utenti non autenticati; l'accettazione e il rifiuto, riservati al proprietario e limitati alle richieste in attesa; l'annullamento, riservato al richiedente e anch'esso limitato alle richieste in attesa. La suite è eseguita con un comando distinto da quello dei test unitari, in modo sequenziale, e rifiuta di operare su un database il cui indirizzo di connessione non identifichi esplicitamente un ambiente di test, poiché ogni caso svuota le tabelle coinvolte prima dell'esecuzione. L'esecuzione locale ha prodotto 15 test superati in 5 file.
 
 La copertura resta circoscritta. Il controllo del ruolo amministrativo è verificato dal solo test unitario della funzione dedicata e non attraverso il rendering della pagina, mentre le operazioni su profilo, catalogazione, ricerca e geolocalizzazione non dispongono di test di integrazione.
+
+\subsection{Smoke test end-to-end}
+\label{subsec:e2e-smoke}
+
+Lo smoke test end-to-end, realizzato con \playwright{}, percorre in un browser reale il flusso considerato critico per il prototipo: registrazione di un proprietario, conferma dell'indirizzo email, accesso, pubblicazione di un libro, registrazione e accesso di un secondo utente, invio di una richiesta e sua accettazione da parte del proprietario. A differenza dei test di integrazione, nessun componente dell'applicazione viene sostituito: il test interagisce con la build di produzione servita via HTTP, e i due utenti operano in contesti di navigazione distinti, ciascuno con la propria sessione \authjs{} basata su cookie. L'esito è verificato sull'interfaccia, attraverso il passaggio della richiesta allo stato accettato.
+
+L'ambiente di esecuzione è isolato da quello di sviluppo. Il server utilizza un database \postgresql{} dedicato, distinto sia da quello di sviluppo sia da quello dei test di integrazione, a cui vengono applicate le migration versionate prima dell'esecuzione. L'invio delle email è configurato in modalità di sola registrazione su log: il test ricava il collegamento di conferma dall'output del server, senza ricorrere a una casella di posta reale, poiché nel database viene memorizzata soltanto l'impronta del token. Email e titolo del libro contengono un identificativo diverso per ogni esecuzione, così che esecuzioni ripetute non entrino in conflitto senza richiedere un ripristino del database.
+
+La creazione del libro dipende da servizi esterni non controllati dal prototipo: i suggerimenti di indirizzo e il geocoding lato server interrogano Nominatim, mentre la ricerca della copertina interroga Open Library. Poiché il geocoding non prevede un timeout applicativo, i passaggi che attendono questi servizi hanno limiti di tempo espliciti, in modo che un rallentamento esterno produca un fallimento circoscritto e riconoscibile, distinto da un difetto dell'applicazione. Quattro esecuzioni locali consecutive sono state completate con successo.
+
+La copertura resta deliberatamente minima. Il test verifica un solo percorso con esito positivo, su un unico browser, e non comprende casi negativi, che per le autorizzazioni sono affidati ai test di integrazione, né ricerca, mappa, catalogazione assistita e gestione del profilo. Non è inoltre ancora eseguito dalla pipeline di integrazione continua.
 
 \subsection{Riproducibilità dell'ambiente}
 \label{subsec:environment-validation}
@@ -445,11 +458,11 @@ La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel 
     \midrule
     \endhead
 
-    RF-01 & UC-01 & TC-AUTH-01, TC-AUTH-02 & \testpass{} \\
-    RF-02 & UC-01 & TC-AUTH-03, TC-AUTH-04 & \testpass{} \\
-    RF-03 & UC-02 & TC-SEARCH-02, TC-REQ-03 & \testpass{} \\
+    RF-01 & UC-01 & TC-AUTH-01, TC-AUTH-02, VQ-08 & \testpass{} \\
+    RF-02 & UC-01 & TC-AUTH-03, TC-AUTH-04, VQ-08 & \testpass{} \\
+    RF-03 & UC-02 & TC-SEARCH-02, TC-REQ-03, VQ-08 & \testpass{} \\
     RF-04 & UC-03 & Modifica profilo e avatar & \testpass{} \\
-    RF-05 & UC-04 & TC-BOOK-01, TC-BOOK-02 & \testpass{} \\
+    RF-05 & UC-04 & TC-BOOK-01, TC-BOOK-02, VQ-08 & \testpass{} \\
     RF-06 & UC-04 & Controllo caricamento immagini e thumbnail & \testpass{} \\
     RF-07 & UC-05 & TC-BOOK-02, TC-BOOK-03 & \testpass{} \\
     RF-08 & UC-04 & TC-CAT-01, TC-CAT-02, TC-CAT-03, TC-CAT-04, TC-CAT-05 & \testpass{} \\
@@ -457,8 +470,8 @@ La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel 
     RF-10 & UC-06 & TC-SEARCH-01 & \testpass{} \\
     RF-11 & UC-07 & TC-NEAR-01, TC-NEAR-02, TC-NEAR-05 & \testpass{} \\
     RF-12 & UC-08 & TC-MAP-01, TC-MAP-02, TC-MAP-03 & \testpass{} \\
-    RF-13 & UC-09 & TC-REQ-01, TC-REQ-02, TC-REQ-03, TC-REQ-04 & \testpass{} \\
-    RF-14 & UC-10, UC-11 & TC-REQ-05 e controllo cancellazione richiesta pending & \testpass{} \\
+    RF-13 & UC-09 & TC-REQ-01, TC-REQ-02, TC-REQ-03, TC-REQ-04, VQ-08 & \testpass{} \\
+    RF-14 & UC-10, UC-11 & TC-REQ-05, VQ-08 e controllo cancellazione richiesta pending & \testpass{} \\
     RF-15 & UC-09 & TC-REQ-02 & \testpass{} \\
     RF-16 & UC-12 & Accesso alla dashboard personale & \testpass{} \\
     RF-17 & UC-13 & Accesso alla dashboard amministrativa con ruolo admin & \testpass{} \\
@@ -479,6 +492,6 @@ La tracciabilità conclusiva collega requisiti, casi d'uso e prove definite nel 
     \bottomrule
 \end{longtable}
 
-La matrice mostra che la validazione automatica copre in modo diretto gli aspetti statici, architetturali e di build, la logica pura verificata dai test unitari e, per RNF-04, i vincoli di proprietà su libri e richieste verificati dai test di integrazione, mentre i requisiti funzionali di dominio sono stati verificati tramite sessioni manuali e controlli tecnici mirati. Questa distinzione è intenzionale: type checking, linting, Biome e build dimostrano la coerenza tecnica del progetto, ma la soddisfazione degli scenari d'uso richiede anche l'osservazione dei flussi di registrazione, catalogazione, richieste, discovery geografica e mappa.
+La matrice mostra che la validazione automatica copre in modo diretto gli aspetti statici, architetturali e di build, la logica pura verificata dai test unitari e, per RNF-04, i vincoli di proprietà su libri e richieste verificati dai test di integrazione e, limitatamente al percorso critico, il flusso applicativo completo verificato dallo smoke test end-to-end, mentre i requisiti funzionali di dominio sono stati verificati tramite sessioni manuali e controlli tecnici mirati. Questa distinzione è intenzionale: type checking, linting, Biome e build dimostrano la coerenza tecnica del progetto, ma la soddisfazione degli scenari d'uso richiede anche l'osservazione dei flussi di registrazione, catalogazione, richieste, discovery geografica e mappa.
 
 Gli elementi ancora parziali non invalidano il nucleo della validazione, ma delimitano l'interpretazione dei risultati. La chiamata live a Geoapify non è stata rieseguita nella sessione documentata, pur essendo presente il ramo applicativo del provider principale; inoltre RNF-08 rimane coperto dalla build locale ma non da una verifica completa di deploy produttivo. Questi aspetti rappresentano quindi punti residui di verifica operativa, distinti dai requisiti funzionali principali che risultano coperti dalla sessione di validazione.
