@@ -5,6 +5,7 @@ vi.mock("@/config/auth", () => ({ auth: vi.fn() }));
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 
 import { auth } from "@/config/auth";
+import { rateLimitPolicies } from "@/lib/rate-limit-policies";
 import { createTestBook, createTestUser, resetDatabase } from "@/test/db-test-helpers";
 
 import type { LoanRequestFormState } from "../types/loan-request-form.types";
@@ -82,5 +83,27 @@ describe("createLoanRequestAction — authorization", () => {
       status: "pending",
       type: "loan",
     });
+  });
+
+  it("blocks a requester who exceeded the per-user request limit", async () => {
+    const owner = await createTestUser();
+    const requester = await createTestUser();
+    const book = await createTestBook(owner.id);
+    const { limit } = rateLimitPolicies.loanRequestUser;
+
+    vi.mocked(auth).mockResolvedValue({ user: { id: requester.id } } as never);
+
+    for (let index = 0; index < limit; index += 1) {
+      const result = await createLoanRequestAction(book.id, initialState, formDataFor("info"));
+      expect(result.success).toBe(true);
+    }
+
+    const blocked = await createLoanRequestAction(book.id, initialState, formDataFor("info"));
+
+    expect(blocked).toMatchObject({
+      success: false,
+      messageKey: "requests.form.rateLimitedMessage",
+    });
+    expect(await prisma.loanRequest.count({ where: { requesterId: requester.id } })).toBe(limit);
   });
 });

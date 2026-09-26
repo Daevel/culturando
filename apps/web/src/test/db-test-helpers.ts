@@ -19,6 +19,7 @@ export async function resetDatabase() {
     prisma.book.deleteMany(),
     prisma.emailVerificationToken.deleteMany(),
     prisma.user.deleteMany(),
+    prisma.rateLimitBucket.deleteMany(),
   ]);
 }
 
