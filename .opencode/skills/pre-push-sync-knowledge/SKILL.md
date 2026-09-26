@@ -772,6 +772,12 @@ If a `package.json` dependency changes, verify the lockfile the way CI does (`pn
 pnpm install --frozen-lockfile --config.optimistic-repeat-install=false
 ```
 
+When verifying an intermediate commit from a separate checkout (for example a `git worktree`) with Nx commands (`nx run-many`, `nx test`, `pnpm test`, …), first remove `NX_WORKSPACE_ROOT_PATH` from the shell environment. If it is set, Nx runs the targets on the main repository instead of the separate checkout, and may even replay them from the cache, producing a false green. Direct commands that do not go through Nx (`pnpm install`, `tsc`, `vitest`) are not affected.
+
+```bash
+env -u NX_WORKSPACE_ROOT_PATH pnpm exec nx run-many -t test --skip-nx-cache
+```
+
 ---
 
 ## Final rule before the push

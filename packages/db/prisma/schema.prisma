@@ -198,3 +198,15 @@ model LoanRequest {
   @@index([status])
   @@index([type])
 }
+
+// Fixed-window rate limit counters (apps/web/src/lib/rate-limit.ts). One row per key and
+// window; rows past expiresAt are dead and removed by an opportunistic cleanup.
+model RateLimitBucket {
+  key         String
+  windowStart DateTime
+  count       Int      @default(0)
+  expiresAt   DateTime
+
+  @@id([key, windowStart])
+  @@index([expiresAt])
+}

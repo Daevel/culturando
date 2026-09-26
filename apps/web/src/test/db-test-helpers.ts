@@ -19,6 +19,7 @@ export async function resetDatabase() {
     prisma.book.deleteMany(),
     prisma.emailVerificationToken.deleteMany(),
     prisma.user.deleteMany(),
+    prisma.rateLimitBucket.deleteMany(),
   ]);
 }
 
@@ -56,7 +57,8 @@ export async function createTestUser(overrides: TestUserOverrides = {}) {
       // Verified by default: most authorization scenarios don't care about
       // email verification, only about ownership/role. Override explicitly
       // in tests that do care about it.
-      emailVerifiedAt: overrides.emailVerifiedAt ?? new Date(),
+      // `in` rather than `??`: an explicit null must create an unverified user.
+      emailVerifiedAt: "emailVerifiedAt" in overrides ? overrides.emailVerifiedAt : new Date(),
     },
   });
 }

@@ -4,6 +4,7 @@ import { AuthError } from "next-auth";
 
 import { signIn } from "@/config/auth";
 import { routes } from "@/config/routes";
+import { isRateLimitedSigninError } from "../lib/login-rate-limit";
 import { validateLoginForm } from "../schemas/login.schema";
 import type { AuthFormState } from "../types/auth-form.types";
 
@@ -51,6 +52,14 @@ export async function loginAction(
       redirectTo: routes.dashboard,
     });
   } catch (error) {
+    if (isRateLimitedSigninError(error)) {
+      return {
+        success: false,
+        errors: {},
+        messageKey: "auth.login.rateLimitedMessage",
+      };
+    }
+
     if (error instanceof AuthError) {
       return {
         success: false,

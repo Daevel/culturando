@@ -52,6 +52,7 @@ export const it = {
       secondaryActionLabel: "Registrati",
       successMessage: "Accesso effettuato correttamente.",
       invalidCredentialsMessage: "Credenziali non valide.",
+      rateLimitedMessage: "Troppi tentativi di accesso. Riprova tra qualche minuto.",
       fields: {
         email: {
           label: "Email",
@@ -77,6 +78,7 @@ export const it = {
       successMessage:
         "Ti abbiamo inviato una mail di conferma. Aprila e conferma il tuo indirizzo per attivare l'account.",
       emailAlreadyExistsMessage: "Questo indirizzo email è stato già usato",
+      rateLimitedMessage: "Troppe registrazioni da questa connessione. Riprova più tardi.",
       genericErrorMessage: "Non è stato possibile creare l'account.",
       toast: {
         title: "Controlla la tua email",
@@ -710,6 +712,7 @@ export const it = {
       successMessage: "Richiesta inviata correttamente.",
       unauthorizedMessage: "Devi accedere per inviare una richiesta.",
       unavailableBookMessage: "Questo libro non può ricevere richieste.",
+      rateLimitedMessage: "Hai inviato troppe richieste. Riprova più tardi.",
       ownerMessage: "Non puoi inviare una richiesta per un tuo libro.",
       genericErrorMessage: "Non è stato possibile inviare la richiesta.",
     },
