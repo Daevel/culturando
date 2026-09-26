@@ -51,6 +51,7 @@ export const en = {
       secondaryActionLabel: "Sign up",
       successMessage: "Signed in successfully.",
       invalidCredentialsMessage: "Invalid credentials.",
+      rateLimitedMessage: "Too many login attempts. Please try again in a few minutes.",
       fields: {
         email: {
           label: "Email",
@@ -76,6 +77,7 @@ export const en = {
       successMessage:
         "We sent you a confirmation email. Open it and confirm your address to activate your account.",
       emailAlreadyExistsMessage: "This email address has already been used",
+      rateLimitedMessage: "Too many sign-ups from this connection. Please try again later.",
       genericErrorMessage: "The account could not be created.",
       toast: {
         title: "Check your email",
@@ -701,6 +703,7 @@ export const en = {
       successMessage: "Request sent successfully.",
       unauthorizedMessage: "You must sign in to send a request.",
       unavailableBookMessage: "This book cannot receive requests.",
+      rateLimitedMessage: "You have sent too many requests. Please try again later.",
       ownerMessage: "You cannot send a request for your own book.",
       genericErrorMessage: "The request could not be sent.",
     },
