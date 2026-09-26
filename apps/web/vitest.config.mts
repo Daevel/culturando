@@ -9,6 +9,8 @@ export default defineConfig(() => ({
     globals: true,
     environment: "node",
     include: ["{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
+    // Integration specs need a real database: they run via vitest.integration.config.mts.
+    exclude: ["**/node_modules/**", "**/*.integration.spec.{ts,tsx}"],
     reporters: ["default"],
     coverage: {
       reportsDirectory: "./test-output/vitest/coverage",

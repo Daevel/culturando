@@ -54,7 +54,7 @@ Main stack:
 - `@culturando/assets` to centralize the shared public asset paths;
 - `@culturando/translation` for shared dictionaries and textual keys;
 - Biome for linting and formatting;
-- Vitest, through the `@nx/vitest` inference plugin, for unit tests;
+- Vitest, through the `@nx/vitest` inference plugin, for unit tests, plus a separate `web` integration suite against a real PostgreSQL database;
 - shared packages under `packages/*`.
 
 Stack planned for the following phases:
@@ -898,14 +898,26 @@ Unit tests use Vitest, wired through the `@nx/vitest` inference plugin registere
 - Run all tests with `pnpm test` (`nx run-many -t test`), or a single project with `nx test web` / `nx test @culturando/geo`.
 - Spec files are named `*.spec.ts` and live next to the file under test, not in a `__tests__` folder.
 - Import `describe`, `it` and `expect` explicitly from `vitest`.
-- The priority is pure logic: `packages/geo` coordinate approximation (privacy requirements RNF-01/RNF-02), `apps/web/src/lib/password.ts` and the Zod schemas under `features/*/schemas`.
+- The priority is pure logic: `packages/geo` coordinate approximation (privacy requirements RNF-01/RNF-02), `apps/web/src/lib/password.ts`, `apps/web/src/lib/authorization.ts` (`isAdminSession`, the admin role gate used by `app/dashboard/admin/page.tsx`) and the Zod schemas under `features/*/schemas`.
 - A known, unfixed defect is documented with `it.fails(...)` plus a comment: the test asserts the correct behavior and starts failing once the defect is fixed, signalling that the marker must be removed.
+- `apps/web/vitest.config.mts` excludes `*.integration.spec.{ts,tsx}`, so `pnpm test` never needs a database.
 - `apps/web/package.json` declares `"nx": { "projectType": "application" }` because the Vitest plugin infers projects as libraries, which would make `@nx/enforce-module-boundaries` treat `web` as a buildable library. If lint reports those errors after changing Nx plugins, run `nx reset`.
 
 There are currently no open `it.fails` markers. The first test batch found two defects that are now fixed and covered by regular tests:
 
 - `verifyPassword` (`apps/web/src/lib/password.ts`) accepted any password when the stored hash had an invalid hex key, because the decoded key was empty; it now rejects stored keys whose decoded length differs from the scrypt key length.
 - `normalizeCoordinates` (`packages/geo/src/coordinates.ts`) coerced `null` coordinates to `(0, 0)` via `Number(null)`; it now returns `null` like for a missing coordinate, and the Geoapify guard in `packages/geo/src/geocoding.ts` rejects both `null` and `undefined` provider values.
+
+#### Integration tests
+
+Authorization integration tests (RNF-04) call the real server actions against a real PostgreSQL database:
+
+- Files are named `*.integration.spec.ts`, next to the action under test. Currently covered: `update-book`, `delete-book` (owner only), `create-loan-request` (not the owner, not anonymous), `update-loan-request-status` (owner only, pending only), `cancel-loan-request` (requester only, pending only). The admin gate is covered only by the `isAdminSession` unit test, not by an integration test.
+- They run through `apps/web/vitest.integration.config.mts` with `pnpm --filter web test:integration` (a `package.json` script, exposed by Nx as the `test:integration` target; `nx run-many -t test` does not run it). The config maps `@/` to `src/` and sets `fileParallelism: false` (Vitest 4 removed `poolOptions.singleFork`), because every test truncates the shared database.
+- Only `auth()` (`@/config/auth`), `next/cache` and, where needed, `next/navigation` (`redirect` rethrown as a catchable `REDIRECT:<path>` error) are mocked; results are asserted both on the action return value and on the persisted rows.
+- `apps/web/src/test/db-test-helpers.ts` provides `resetDatabase`, `createTestUser`, `createTestBook` and `createTestLoanRequest`. `resetDatabase` refuses to run unless `DATABASE_URL` contains `test`.
+- Locally, use a separate `culturando_test` database on the Docker container (host port 5433): `docker exec culturando-postgres psql -U culturando -d culturando -c "CREATE DATABASE culturando_test;"`, then `DATABASE_URL=postgresql://culturando:culturando@localhost:5433/culturando_test pnpm exec prisma migrate deploy --schema packages/db/prisma/schema.prisma` and run the suite with the same `DATABASE_URL`.
+- Server actions read `FormData` like the real forms submit it: an absent field is `null`, which `z.string().optional()` rejects, so tests must set optional fields to `""` as the browser does.
 
 ### 10.6 Database migrations rule
 
@@ -921,7 +933,7 @@ Prisma Migrate is the official schema workflow; `db:push` remains available only
 GitHub Actions runs `.github/workflows/ci.yml` on pull requests to `main` and on pushes to `main`, without Nx Cloud:
 
 - `checks` job (fail-fast): `pnpm install --frozen-lockfile`, `biome:ci`, `db:generate`, `nx run-many -t lint`, `tsc -p apps/web/tsconfig.json --noEmit` (there is no Nx `typecheck` target), `nx run-many -t test`, `nx run-many -t build`;
-- `migrations` job: applies the Prisma migrations to an ephemeral `postgis/postgis:17-3.5-alpine` service container and fails on schema drift.
+- `migrations` job: applies the Prisma migrations to an ephemeral `postgis/postgis:17-3.5-alpine` service container, runs `pnpm --filter web test:integration` against it, then fails on schema drift. The service database is named `culturando_test` so that the `db-test-helpers` guard accepts it.
 
 Deployment is intentionally not part of CI yet.
 

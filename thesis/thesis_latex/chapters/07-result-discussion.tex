@@ -30,7 +30,7 @@ La catalogazione assistita introduce un ulteriore trade-off. Il recupero automat
 \section{Limiti del prototipo}
 \label{sec:limiti-prototipo}
 
-Il primo limite è metodologico e riguarda la validazione. Il repository dispone di controlli automatici di tipo statico e di build e di una suite di test unitari limitata alla logica pura, ma non di test di integrazione ed end-to-end. Di conseguenza, gli esiti positivi ottenuti non possono essere interpretati come prova esaustiva del comportamento applicativo. I casi funzionali descritti nel Capitolo~\ref{chap:testing-validazione} documentano una sessione controllata e ripetibile, ma restano dipendenti dall'osservazione manuale e da dati di prova locali.
+Il primo limite è metodologico e riguarda la validazione. Il repository dispone di controlli automatici di tipo statico e di build, di una suite di test unitari limitata alla logica pura e di test di integrazione circoscritti ai vincoli di proprietà su libri e richieste, ma non di test end-to-end. Di conseguenza, gli esiti positivi ottenuti non possono essere interpretati come prova esaustiva del comportamento applicativo. I casi funzionali descritti nel Capitolo~\ref{chap:testing-validazione} documentano una sessione controllata e ripetibile, ma restano dipendenti dall'osservazione manuale e da dati di prova locali.
 
 Un secondo limite riguarda la dipendenza da servizi esterni. La disponibilità e la qualità dei risultati di geocoding, metadati bibliografici e OCR dipendono da provider e configurazioni non interamente controllate dal prototipo. I fallback riducono la fragilità operativa, ma non eliminano la variabilità dei risultati. In particolare, provider geografici diversi possono restituire coordinate differenti per lo stesso indirizzo, e provider bibliografici esterni possono non coprire tutti gli ISBN inseriti dagli utenti.
 
@@ -43,7 +43,7 @@ Infine, la valutazione non include dati d'uso raccolti da utenti reali. Non sono
 \section{Sviluppi futuri}
 \label{sec:sviluppi-futuri}
 
-Il primo sviluppo futuro riguarda l'automazione della validazione funzionale. La traccia di test definita ed eseguita manualmente potrebbe essere trasformata almeno in parte in test di integrazione o test end-to-end, mantenendo dati coerenti e utenti aventi ruoli diversi. Ciò ridurrebbe la dipendenza dall'osservazione manuale e permetterebbe di ripetere con maggiore continuità i controlli su autenticazione, catalogazione, geolocalizzazione e richieste.
+Il primo sviluppo futuro riguarda l'estensione dell'automazione della validazione funzionale. I test di integrazione introdotti per i vincoli di proprietà su libri e richieste potrebbero essere estesi agli altri flussi della traccia manuale e affiancati da test end-to-end che esercitino l'interfaccia, mantenendo dati coerenti e utenti aventi ruoli diversi. Ciò ridurrebbe la dipendenza dall'osservazione manuale e permetterebbe di ripetere con maggiore continuità i controlli su autenticazione, catalogazione, geolocalizzazione e richieste.
 
 Un secondo sviluppo riguarda il rafforzamento della privacy geografica. L'approssimazione attuale potrebbe essere sostituita o affiancata da strategie più robuste, ad esempio granularità variabile in base al contesto, soglie minime di densità, visualizzazione per aree invece che per punti o politiche configurabili dall'utente. Queste evoluzioni richiederebbero però una valutazione più approfondita del rischio e dell'impatto sull'utilità della ricerca.
 
