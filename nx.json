@@ -55,6 +55,7 @@
   "targetDefaults": {
     "build": {
       "cache": true,
+      "dependsOn": ["^build", "^generate"],
       "outputs": ["{projectRoot}/.next"]
     },
     "lint": {
