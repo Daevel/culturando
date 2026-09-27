@@ -115,6 +115,12 @@ export function SignupForm() {
           return;
         }
 
+        if (isAvailable === null) {
+          // Rate limited: no verdict either way.
+          setEmailAvailabilityStatus("idle");
+          return;
+        }
+
         setEmailAvailabilityStatus(isAvailable ? "available" : "unavailable");
 
         if (!isAvailable) {
@@ -177,6 +183,14 @@ export function SignupForm() {
       setEmailAvailabilityStatus("checking");
       const isAvailable = await checkEmailAvailability(String(emailValue ?? ""));
       setIsCheckingEmail(false);
+
+      if (isAvailable === null) {
+        // Rate limited: let the user continue, signupAction still rejects duplicates.
+        setEmailAvailabilityStatus("idle");
+        setCurrentStep((step) => Math.min(step + 1, signupSteps.length - 1));
+        return;
+      }
+
       setEmailAvailabilityStatus(isAvailable ? "available" : "unavailable");
 
       if (!isAvailable) {
@@ -418,7 +432,8 @@ export function SignupForm() {
   );
 }
 
-async function checkEmailAvailability(emailValue: string) {
+/** `null` means the availability is unknown (the check is rate limited). */
+async function checkEmailAvailability(emailValue: string): Promise<boolean | null> {
   const email = emailValue.trim().toLowerCase();
 
   if (!looksLikeEmail(email)) {

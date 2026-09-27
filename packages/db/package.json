@@ -22,5 +22,17 @@
   },
   "devDependencies": {
     "prisma": "^6.19.0"
+  },
+  "nx": {
+    "targets": {
+      "generate": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "prisma generate --schema packages/db/prisma/schema.prisma",
+          "cwd": "{workspaceRoot}"
+        },
+        "cache": false
+      }
+    }
   }
 }

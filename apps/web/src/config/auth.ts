@@ -2,7 +2,7 @@ import { prisma } from "@culturando/db";
 import NextAuth, { type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
-import { verifyPassword } from "@/lib/password";
+import { authorizeCredentials } from "@/features/auth/lib/authorize-credentials";
 
 function isUserRole(value: unknown): value is "admin" | "user" {
   return value === "admin" || value === "user";
@@ -64,41 +64,7 @@ const nextAuth = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
-        const email = String(credentials?.email ?? "")
-          .trim()
-          .toLowerCase();
-        const password = String(credentials?.password ?? "");
-        if (!email || !password) {
-          return null;
-        }
-
-        const user = await prisma.user.findUnique({
-          where: {
-            email,
-          },
-        });
-
-        if (!user?.passwordHash || !user.emailVerifiedAt) {
-          return null;
-        }
-
-        const isValidPassword = await verifyPassword(password, user.passwordHash);
-
-        if (!isValidPassword) {
-          return null;
-        }
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          avatarUrl: user.avatarUrl ?? undefined,
-          nickname: user.nickname ?? undefined,
-          role: user.role,
-          salutationPreference: user.salutationPreference,
-        };
-      },
+      authorize: (credentials, request) => authorizeCredentials(credentials, request.headers),
     }),
   ],
 });

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@/config/auth";
 import { routes } from "@/config/routes";
 import { getStoredBookOwnerId } from "@/features/books/actions/books.repository";
+import { checkRateLimitPolicy } from "@/lib/rate-limit-policies";
 import { validateLoanRequestForm } from "../schemas/loan-request.schema";
 import type { LoanRequestFormField, LoanRequestFormState } from "../types/loan-request-form.types";
 import { createStoredLoanRequest } from "./loan-requests.repository";
@@ -65,6 +66,16 @@ export async function createLoanRequestAction(
       success: false,
       errors: {},
       messageKey: "requests.form.genericErrorMessage",
+    };
+  }
+
+  const rateLimit = await checkRateLimitPolicy("loanRequestUser", requesterId);
+
+  if (!rateLimit.allowed) {
+    return {
+      success: false,
+      errors: {},
+      messageKey: "requests.form.rateLimitedMessage",
     };
   }
 

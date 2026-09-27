@@ -20,6 +20,13 @@ export default defineConfig(() => ({
     globals: true,
     environment: "node",
     include: ["src/**/*.integration.spec.{ts,tsx}"],
+    // next-auth imports "next/server" without an extension, which Node's ESM resolver
+    // rejects outside Next's bundler: let Vite resolve it instead.
+    server: {
+      deps: {
+        inline: ["next-auth"],
+      },
+    },
     reporters: ["default"],
     testTimeout: 15_000,
     hookTimeout: 15_000,
